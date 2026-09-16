@@ -7,17 +7,20 @@ import type { CanonModule } from "@/types";
 /**
  * Change one premise; watch which readings move.
  *
- * The display deliberately keeps the canonical reading on screen next to the revised
- * one. The interesting quantity is not the new reading on its own — it is how many
- * dimensions had to move to accommodate a single altered assumption, and which ones
- * stayed put.
+ * The layout is the argument. An earlier version stacked the premise buttons
+ * above the consequences, roughly 450px apart — so clicking a premise changed
+ * five things, four of which were off screen, and scrolling down to read them
+ * took the control (and any sign of which premise was active) out of view.
+ * Cause and effect were never visible together, which is the one thing this
+ * instrument exists to show.
  *
- * Every premise also carries what it cannot do. A counterfactual engine with no
- * constraints would be an argument that any reading is available, which is the
- * opposite of this project's claim.
+ * Now the control is pinned: a rail on wide screens, a compact bar under the
+ * header on narrow ones, matching the Icarus ascent above it so the page has one
+ * grammar rather than two.
  */
 export function CounterfactualEngine({ module: mod }: { module: CanonModule }) {
   const [premiseId, setPremiseId] = useState<string | null>(null);
+  const [frameOpen, setFrameOpen] = useState(false);
   const reduce = useReducedMotion();
   const premise = mod.premises.find((p) => p.id === premiseId) ?? null;
 
@@ -26,112 +29,154 @@ export function CounterfactualEngine({ module: mod }: { module: CanonModule }) {
   const changedFor = (dimension: string) =>
     premise?.consequences.find((c) => c.dimension === dimension)?.reading ?? null;
 
-  return (
-    <div>
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-14">
-        <section aria-labelledby={`${mod.id}-frame`}>
-          <h3 id={`${mod.id}-frame`} className="kicker">
-            The canonical frame
-          </h3>
-          <ol className="mt-4 space-y-3">
-            {mod.canonicalFrame.map((line, i) => (
-              <li key={i} className="flex gap-3">
-                <span className="mt-[5px] font-mono text-[0.6rem] tracking-widest text-faint tabular">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="text-[0.92rem] leading-relaxed text-muted">{line}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-5 text-[0.74rem] leading-relaxed text-faint">{mod.attribution}</p>
-        </section>
+  const moved = mod.dimensions.filter((d) => {
+    const after = changedFor(d);
+    return Boolean(after && after !== baselineFor(d));
+  }).length;
 
-        <section aria-labelledby={`${mod.id}-premises`}>
-          <h3 id={`${mod.id}-premises`} className="kicker">
-            Change one assumption
-          </h3>
-          <p className="mt-3 text-[0.86rem] leading-relaxed text-faint">
-            Not the events — none of the four lines opposite changes. Only what you assume about why.
-          </p>
-          <div className="mt-5 space-y-2">
+  return (
+    <div className="lg:grid lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-14">
+      {/* ── The control. Pinned, so it is never off screen while you read. ── */}
+      <div className="sticky top-[3.4rem] z-20 -mx-5 mb-8 px-5 sm:-mx-8 sm:px-8 lg:mx-0 lg:mb-0 lg:self-start lg:px-0 lg:pt-2">
+        <div
+          className="border p-3.5 backdrop-blur-md sm:p-5"
+          style={{ background: "rgb(var(--bg) / 0.92)", borderColor: "rgb(var(--line) / 0.22)" }}
+        >
+          <p className="kicker mb-2 sm:mb-3">Change one assumption</p>
+          <ul className="space-y-0.5">
             {mod.premises.map((p) => {
               const active = p.id === premiseId;
               return (
-                <button
-                  key={p.id}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setPremiseId(active ? null : p.id)}
-                  className={`block w-full border px-4 py-3 text-left transition-colors ${
-                    active
-                      ? "border-accent bg-accent/[0.06]"
-                      : "border-line/12 hover:border-fg/40 hover:bg-surface"
-                  }`}
-                >
-                  <span className={`block font-display text-[1.04rem] leading-snug ${active ? "text-accent" : ""}`}>
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setPremiseId(active ? null : p.id)}
+                    className="pick py-1.5 text-[0.88rem] leading-snug sm:py-2 sm:text-[0.92rem]"
+                    style={
+                      active
+                        ? { borderColor: "rgb(var(--accent))", background: "rgb(var(--accent) / 0.12)" }
+                        : undefined
+                    }
+                  >
                     {p.label}
-                  </span>
-                  <span className="mt-1 block text-[0.84rem] leading-snug text-faint">{p.statement}</span>
-                </button>
+                  </button>
+                </li>
               );
             })}
+          </ul>
+
+          <div className="mt-4 flex items-baseline justify-between gap-3 border-t pt-3" style={{ borderColor: "rgb(var(--line) / 0.15)" }}>
+            <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em]" style={{ color: "rgb(var(--faint))" }}>
+              {premise ? "readings that move" : "inherited reading"}
+            </span>
+            <span
+              className="font-mono text-[0.86rem] tabular"
+              style={{ color: premise ? "rgb(var(--accent))" : "rgb(var(--faint))" }}
+            >
+              {premise ? `${moved} / ${mod.dimensions.length}` : "—"}
+            </span>
           </div>
-          {premiseId && (
-            <button type="button" className="btn-quiet mt-4" onClick={() => setPremiseId(null)}>
-              ← Back to the inherited reading
-            </button>
+
+          {/* The statement restates the button on a small screen, where the rail is
+              already taking half the viewport. Kept where there is room for it. */}
+          {premise && (
+            <p className="mt-3 hidden text-[0.82rem] leading-snug sm:block" style={{ color: "rgb(var(--muted))" }}>
+              {premise.statement}
+            </p>
           )}
-        </section>
+        </div>
       </div>
 
-      <div className="mt-14">
-        <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line/20 pb-3">
-          <h3 className="kicker">Interpretive consequences</h3>
-          <p className="font-mono text-[0.64rem] uppercase tracking-[0.14em] text-faint">
-            {premise ? `${premise.consequences.length} of ${mod.dimensions.length} dimensions move` : "Inherited reading"}
-          </p>
+      {/* ── The effect. ──────────────────────────────────────────────────── */}
+      <div className="min-w-0">
+        {/* The fixed events, collapsed by default — they are the thing that does
+            not change, and leaving them open pushed the consequences off screen. */}
+        <div className="hair">
+          <button
+            type="button"
+            aria-expanded={frameOpen}
+            onClick={() => setFrameOpen((v) => !v)}
+            className="flex w-full items-center justify-between gap-4 py-4 text-left"
+          >
+            <span className="kicker">What happens — unchanged, whichever you pick</span>
+            <span
+              aria-hidden="true"
+              className={`font-mono text-sm transition-transform duration-300 ${frameOpen ? "rotate-45" : ""}`}
+              style={{ color: "rgb(var(--faint))" }}
+            >
+              +
+            </span>
+          </button>
+          <motion.div
+            initial={false}
+            animate={{ height: frameOpen ? "auto" : 0, opacity: frameOpen ? 1 : 0 }}
+            transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <ol className="space-y-3 pb-6">
+              {mod.canonicalFrame.map((line, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="mt-[5px] font-mono text-[0.58rem] tabular" style={{ color: "rgb(var(--faint))" }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-[0.92rem] leading-relaxed" style={{ color: "rgb(var(--muted))" }}>
+                    {line}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="pb-6 text-[0.74rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
+              {mod.attribution}
+            </p>
+          </motion.div>
         </div>
 
         <ul>
           {mod.dimensions.map((dim, i) => {
             const before = baselineFor(dim);
             const after = changedFor(dim);
-            const moved = Boolean(after && after !== before);
+            const didMove = Boolean(after && after !== before);
             return (
-              <li key={dim} className="grid gap-3 border-b border-line/12 py-6 md:grid-cols-[11rem_1fr] md:gap-8">
-                <div>
-                  <p className="font-mono text-[0.66rem] uppercase leading-relaxed tracking-[0.12em] text-faint">
+              <li key={dim} className="hair py-6">
+                <div className="flex items-baseline gap-3">
+                  <span
+                    className="font-mono text-[0.58rem] uppercase leading-relaxed tracking-[0.13em]"
+                    style={{ color: premise && didMove ? "rgb(var(--accent))" : "rgb(var(--faint))" }}
+                  >
                     {dim}
-                  </p>
+                  </span>
                   {premise && (
-                    <p
-                      className={`mt-1.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] ${
-                        moved ? "text-accent" : "text-faint"
-                      }`}
+                    <span
+                      className="font-mono text-[0.56rem] uppercase tracking-[0.13em]"
+                      style={{ color: didMove ? "rgb(var(--accent))" : "rgb(var(--faint))" }}
                     >
-                      {moved ? "● moves" : "○ holds"}
-                    </p>
+                      {didMove ? "moves" : "holds"}
+                    </span>
                   )}
                 </div>
-                <div>
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.p
-                      key={`${premiseId ?? "base"}-${i}`}
-                      initial={reduce ? false : { opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={reduce ? undefined : { opacity: 0, y: -6 }}
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      className="text-[0.94rem] leading-relaxed text-fg"
-                    >
-                      {after ?? before}
-                    </motion.p>
-                  </AnimatePresence>
-                  {premise && moved && (
-                    <p className="mt-2 text-[0.82rem] leading-relaxed text-faint line-through decoration-ink-ghost/40">
-                      {before}
-                    </p>
-                  )}
-                </div>
+
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.p
+                    key={`${premiseId ?? "base"}-${i}`}
+                    initial={reduce ? false : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduce ? undefined : { opacity: 0, y: -6 }}
+                    transition={{ duration: 0.3, delay: reduce ? 0 : i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-2.5 text-[0.98rem] leading-[1.6]"
+                  >
+                    {after ?? before}
+                  </motion.p>
+                </AnimatePresence>
+
+                {premise && didMove && (
+                  <p
+                    className="mt-2 text-[0.84rem] leading-relaxed line-through"
+                    style={{ color: "rgb(var(--faint))", textDecorationColor: "rgb(var(--accent) / 0.5)" }}
+                  >
+                    {before}
+                  </p>
+                )}
               </li>
             );
           })}
@@ -146,9 +191,13 @@ export function CounterfactualEngine({ module: mod }: { module: CanonModule }) {
               transition={{ duration: 0.35 }}
               className="overflow-hidden"
             >
-              <div className="mt-8 border-l-2 border-cold bg-cold/[0.04] px-5 py-5 sm:px-6">
-                <p className="kicker text-cold">What this premise cannot do</p>
-                <p className="mt-2 text-[0.94rem] leading-relaxed text-fg">{premise.resists}</p>
+              <div className="mt-8 border-l-2 pl-5" style={{ borderColor: "rgb(var(--accent))" }}>
+                <p className="kicker mb-2" style={{ color: "rgb(var(--accent))" }}>
+                  What this premise cannot absorb
+                </p>
+                <p className="max-w-measure text-[0.94rem] leading-relaxed" style={{ color: "rgb(var(--muted))" }}>
+                  {premise.resists}
+                </p>
               </div>
             </motion.div>
           )}

@@ -52,12 +52,30 @@ export default function RewritePage() {
         </Reveal>
       </Shell>
 
-      <Shell className="mt-28">
+      {/* A second case, harder, with the same instrument — introduced rather than
+          dropped in, because the page has just come out of a full-screen ascent. */}
+      <Shell className="mt-32">
         <Reveal>
-          <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
-            <h2 className="font-display text-d4">{achilles.title}</h2>
-            <p className="kicker">Harder — the gap is older than the readings</p>
+          <div className="max-w-column">
+            <p className="kicker">A second case</p>
+            <h2 className="mt-5 font-display text-d3">{achilles.title}</h2>
+            <div className="say mt-7 max-w-measure">
+              <p>
+                Icarus is the clean case: Ovid gives the acts and almost none of the interior, so the
+                motive is obviously supplied by the reader.
+              </p>
+              <p>
+                This one is harder, because the gap in the text is one that readers have been filling
+                — and arguing about — for two and a half thousand years. Change a premise and count
+                what has to move with it.
+              </p>
+            </div>
           </div>
+        </Reveal>
+      </Shell>
+
+      <Shell className="mt-14">
+        <Reveal>
           <CounterfactualEngine module={achilles} />
         </Reveal>
       </Shell>
