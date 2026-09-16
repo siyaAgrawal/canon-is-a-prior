@@ -1,4 +1,4 @@
-import type { AIResponse, ParticipantResponse } from "@/types";
+import type { AIResponse, ParticipantResponse, Trace } from "@/types";
 
 /**
  * Persistence contract for the experiment.
@@ -13,6 +13,8 @@ export interface ExperimentStore {
   init(): Promise<void>;
   saveResponse(r: ParticipantResponse): Promise<void>;
   listResponses(scenarioId?: string): Promise<ParticipantResponse[]>;
+  saveTrace(t: Trace): Promise<void>;
+  listTraces(instrument?: Trace["instrument"]): Promise<Trace[]>;
   saveAIResponse(r: AIResponse): Promise<void>;
   listAIResponses(scenarioId?: string): Promise<AIResponse[]>;
   counts(): Promise<{ responses: number; aiResponses: number; sessions: number }>;

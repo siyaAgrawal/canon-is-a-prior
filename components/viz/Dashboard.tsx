@@ -33,10 +33,10 @@ interface Stats {
 
 function Metric({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="border-t border-rule pt-4">
-      <p className="eyebrow">{label}</p>
+    <div className="border-t border-line/20 pt-4">
+      <p className="kicker">{label}</p>
       <p className="mt-2 font-display text-3xl leading-none tabular">{value}</p>
-      {note && <p className="mt-2 text-[0.76rem] leading-snug text-ink-ghost">{note}</p>}
+      {note && <p className="mt-2 text-[0.76rem] leading-snug text-faint">{note}</p>}
     </div>
   );
 }
@@ -65,13 +65,33 @@ function Spark({ values }: { values: number[] }) {
  * numbers are zeros and the charts are replaced by empty states — never by
  * illustrative data, and never by a percentage that hides a denominator of three.
  */
+interface TraceCounts {
+  total: number;
+  sessions: number;
+  byInstrument: Record<string, number>;
+}
+
+const INSTRUMENT_LABEL: Record<string, string> = {
+  entry: "Homepage — which assumptions were tried",
+  shape: "Claims — judgements, and how many controls passed",
+  versions: "Character lab — trajectory and accommodations",
+  criteria: "Criteria — which property decided it",
+  rewrite: "Icarus — which premises were opened",
+  map: "Map — which nodes were opened",
+};
+
 export function Dashboard() {
   const [state, setState] = useState<"loading" | "error" | "ok">("loading");
   const [stats, setStats] = useState<Stats | null>(null);
+  const [traces, setTraces] = useState<TraceCounts | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let live = true;
+    fetch("/api/trace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((b) => live && b && setTraces(b))
+      .catch(() => undefined);
     fetch("/api/stats")
       .then(async (r) => {
         const body = await r.json();
@@ -95,18 +115,18 @@ export function Dashboard() {
 
   if (state === "loading") {
     return (
-      <div className="border border-dashed border-rule px-6 py-16 text-center">
-        <p className="eyebrow animate-pulse-soft">Reading the dataset…</p>
+      <div className="border border-dashed border-line/20 px-6 py-16 text-center">
+        <p className="kicker animate-pulse-soft">Reading the dataset…</p>
       </div>
     );
   }
 
   if (state === "error" || !stats) {
     return (
-      <div className="border border-dashed border-rust/40 bg-rust/[0.03] px-6 py-10 text-center">
-        <p className="eyebrow text-rust">The dataset could not be read</p>
-        <p className="mt-2 text-[0.85rem] text-ink-faint">{error}</p>
-        <p className="mx-auto mt-4 max-w-measure text-[0.8rem] text-ink-ghost">
+      <div className="border border-dashed border-accent/40 bg-accent/[0.03] px-6 py-10 text-center">
+        <p className="kicker text-accent">The dataset could not be read</p>
+        <p className="mt-2 text-[0.85rem] text-faint">{error}</p>
+        <p className="mx-auto mt-4 max-w-measure text-[0.8rem] text-faint">
           This message is shown rather than an empty chart, because a failed read and an empty
           dataset are different things and should not look the same.
         </p>
@@ -147,12 +167,30 @@ export function Dashboard() {
             }
           />
         </div>
-        <p className="mt-8 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-ink-ghost">
+        <p className="mt-8 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-faint">
           Storage: {stats.storage} ·{" "}
           {totals.firstResponseAt
             ? `first response ${new Date(totals.firstResponseAt).toISOString().slice(0, 10)}`
             : "no responses recorded"}
         </p>
+      </section>
+
+      <section>
+        <h3 className="font-display text-d4">Everything else that is recorded</h3>
+        <p className="mt-3 max-w-reading text-[0.86rem] leading-relaxed text-faint">
+          Every instrument on the site writes one row when you finish with it — ids and counts, never
+          anything typed, because there is nowhere to type. These are the totals.
+        </p>
+        <ul className="mt-6">
+          {Object.keys(INSTRUMENT_LABEL).map((k) => (
+            <li key={k} className="hair flex items-baseline justify-between gap-4 py-3">
+              <span className="text-[0.9rem]">{INSTRUMENT_LABEL[k]}</span>
+              <span className="font-mono text-[0.86rem] tabular" style={{ color: "rgb(var(--fg))" }}>
+                {traces ? (traces.byInstrument?.[k] ?? 0) : "—"}
+              </span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {totals.responses === 0 ? (
@@ -171,7 +209,7 @@ export function Dashboard() {
         <>
           <section>
             <h3 className="font-display text-2xl">Per scenario</h3>
-            <p className="mt-2 max-w-reading text-[0.86rem] leading-relaxed text-ink-faint">
+            <p className="mt-2 max-w-reading text-[0.86rem] leading-relaxed text-faint">
               Disagreement is the average distance between any two participants&rsquo;
               distributions, shown across stages from prior to final. A line that falls means
               evidence brought people together; a line that rises means it pushed them apart.
@@ -181,19 +219,19 @@ export function Dashboard() {
               <table className="w-full min-w-[34rem] border-collapse text-left">
                 <caption className="sr-only">Response counts and disagreement by scenario</caption>
                 <thead>
-                  <tr className="border-b border-rule">
-                    <th scope="col" className="py-2 pr-4 eyebrow font-normal">Scenario</th>
-                    <th scope="col" className="py-2 pr-4 eyebrow font-normal">Track</th>
-                    <th scope="col" className="py-2 pr-4 eyebrow font-normal text-right">n</th>
-                    <th scope="col" className="py-2 pr-4 eyebrow font-normal">Disagreement</th>
-                    <th scope="col" className="py-2 eyebrow font-normal text-right">Model runs</th>
+                  <tr className="border-b border-line/20">
+                    <th scope="col" className="py-2 pr-4 kicker font-normal">Scenario</th>
+                    <th scope="col" className="py-2 pr-4 kicker font-normal">Track</th>
+                    <th scope="col" className="py-2 pr-4 kicker font-normal text-right">n</th>
+                    <th scope="col" className="py-2 pr-4 kicker font-normal">Disagreement</th>
+                    <th scope="col" className="py-2 kicker font-normal text-right">Model runs</th>
                   </tr>
                 </thead>
                 <tbody>
                   {withData.map((s) => (
-                    <tr key={s.scenarioId} className="border-b border-rule-soft">
+                    <tr key={s.scenarioId} className="border-b border-line/12">
                       <td className="py-3 pr-4 text-[0.88rem]">{s.title}</td>
-                      <td className="py-3 pr-4 font-mono text-[0.68rem] uppercase tracking-wider text-ink-ghost">
+                      <td className="py-3 pr-4 font-mono text-[0.68rem] uppercase tracking-wider text-faint">
                         {s.track}
                       </td>
                       <td className="py-3 pr-4 text-right font-mono text-[0.8rem] tabular">{s.n}</td>
@@ -201,18 +239,18 @@ export function Dashboard() {
                         {s.disagreement ? (
                           <span className="flex items-center gap-3">
                             <Spark values={s.disagreement} />
-                            <span className="font-mono text-[0.72rem] tabular text-ink-faint">
+                            <span className="font-mono text-[0.72rem] tabular text-faint">
                               {Math.round(s.disagreement[0] * 100)}% →{" "}
                               {Math.round(s.disagreement[s.disagreement.length - 1] * 100)}%
                             </span>
                           </span>
                         ) : (
-                          <span className="font-mono text-[0.7rem] text-ink-ghost">
+                          <span className="font-mono text-[0.7rem] text-faint">
                             below n = {threshold}
                           </span>
                         )}
                       </td>
-                      <td className="py-3 text-right font-mono text-[0.8rem] tabular text-ink-faint">
+                      <td className="py-3 text-right font-mono text-[0.8rem] tabular text-faint">
                         {s.aiRuns}
                       </td>
                     </tr>
@@ -224,7 +262,7 @@ export function Dashboard() {
 
           <section>
             <h3 className="font-display text-2xl">Which evidence moved people most</h3>
-            <p className="mt-2 max-w-reading text-[0.86rem] leading-relaxed text-ink-faint">
+            <p className="mt-2 max-w-reading text-[0.86rem] leading-relaxed text-faint">
               Mean movement caused by each evidence item, as a share of the maximum possible move.
               Only scenarios at or above n = {threshold} appear.
             </p>
@@ -239,21 +277,21 @@ export function Dashboard() {
                     <li key={s.scenarioId}>
                       <div className="flex items-baseline justify-between gap-3">
                         <p className="text-[0.9rem]">{s.title}</p>
-                        <p className="font-mono text-[0.7rem] tabular text-ink-ghost">n = {s.n}</p>
+                        <p className="font-mono text-[0.7rem] tabular text-faint">n = {s.n}</p>
                       </div>
                       <ul className="mt-2 space-y-1.5">
                         {s.updateMagnitude?.map((m, i) => (
                           <li key={m.evidenceId} className="flex items-center gap-3">
-                            <span className="w-20 shrink-0 font-mono text-[0.66rem] text-ink-ghost">
+                            <span className="w-20 shrink-0 font-mono text-[0.66rem] text-faint">
                               evidence {i + 1}
                             </span>
-                            <span className="h-[7px] flex-1 bg-ink/[0.06]">
+                            <span className="h-[7px] flex-1 bg-fg/[0.06]">
                               <span
-                                className="block h-full bg-rust"
+                                className="block h-full bg-accent"
                                 style={{ width: `${Math.min(100, m.mean * 100)}%` }}
                               />
                             </span>
-                            <span className="w-12 shrink-0 text-right font-mono text-[0.72rem] tabular text-ink-faint">
+                            <span className="w-12 shrink-0 text-right font-mono text-[0.72rem] tabular text-faint">
                               {Math.round(m.mean * 100)}%
                             </span>
                           </li>
@@ -268,7 +306,7 @@ export function Dashboard() {
 
           <section>
             <h3 className="font-display text-2xl">The ambiguity map</h3>
-            <p className="mt-2 max-w-reading text-[0.86rem] leading-relaxed text-ink-faint">
+            <p className="mt-2 max-w-reading text-[0.86rem] leading-relaxed text-faint">
               Each scenario placed by how much evidence it supplies against how much participants
               still disagree at the end. The interesting region is the bottom right: plenty of
               evidence, and people still divided.
@@ -333,7 +371,7 @@ function AmbiguityMap({ rows }: { rows: ScenarioRow[] }) {
           FINAL DISAGREEMENT →
         </text>
       </svg>
-      <figcaption className="mt-3 text-[0.76rem] text-ink-ghost">
+      <figcaption className="mt-3 text-[0.76rem] text-faint">
         Point size reflects the number of responses. Disagreement is mean pairwise total variation
         distance after all evidence.
       </figcaption>

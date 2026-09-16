@@ -41,8 +41,8 @@ export function Complementarity() {
         : "Partial both. Some path information, some fringes — and their sum is bounded.";
 
   return (
-    <div className="card p-6 sm:p-8">
-      <p className="eyebrow">Interactive</p>
+    <div className="panel p-6 sm:p-8">
+      <p className="kicker">Interactive</p>
       <h3 className="mt-2 font-display text-2xl leading-tight">Not a switch. A trade.</h3>
 
       <svg
@@ -67,8 +67,8 @@ export function Complementarity() {
 
       <div className="mt-6">
         <label htmlFor="distinguishability" className="flex flex-wrap items-baseline justify-between gap-3">
-          <span className="text-[0.9rem] text-ink-soft">How much can you tell which path it took?</span>
-          <span className="font-mono text-[0.78rem] tabular text-indigo">D = {d.toFixed(2)}</span>
+          <span className="text-[0.9rem] text-muted">How much can you tell which path it took?</span>
+          <span className="font-mono text-[0.78rem] tabular text-cold">D = {d.toFixed(2)}</span>
         </label>
         <input
           id="distinguishability"
@@ -77,25 +77,25 @@ export function Complementarity() {
           max={100}
           value={Math.round(d * 100)}
           onChange={(e) => setD(Number(e.target.value) / 100)}
-          className="mt-2 text-indigo"
+          className="mt-2 text-cold"
           aria-valuetext={`Path distinguishability ${d.toFixed(2)}`}
         />
       </div>
 
-      <div className="mt-5 grid gap-4 border-t border-rule-soft pt-5 sm:grid-cols-2">
+      <div className="mt-5 grid gap-4 border-t border-line/12 pt-5 sm:grid-cols-2">
         <div>
-          <p className="eyebrow">Fringe visibility</p>
-          <p className="mt-1 font-mono text-lg tabular text-indigo">V = {visibility.toFixed(2)}</p>
+          <p className="kicker">Fringe visibility</p>
+          <p className="mt-1 font-mono text-lg tabular text-cold">V = {visibility.toFixed(2)}</p>
         </div>
         <div>
-          <p className="eyebrow">The constraint</p>
-          <p className="mt-1 font-mono text-lg tabular text-rust">V² + D² = {(visibility ** 2 + d ** 2).toFixed(2)}</p>
+          <p className="kicker">The constraint</p>
+          <p className="mt-1 font-mono text-lg tabular text-accent">V² + D² = {(visibility ** 2 + d ** 2).toFixed(2)}</p>
         </div>
       </div>
 
-      <p className="mt-5 text-[0.9rem] leading-relaxed text-ink-soft">{label}</p>
+      <p className="mt-5 text-[0.9rem] leading-relaxed text-muted">{label}</p>
 
-      <p className="mt-4 border-t border-rule-soft pt-4 text-[0.78rem] leading-relaxed text-ink-ghost">
+      <p className="mt-4 border-t border-line/12 pt-4 text-[0.78rem] leading-relaxed text-faint">
         Schematic, not a simulation. The relation V² + D² ≤ 1 is real — Greenberger and Yasin
         formulated it in 1988 and Dürr, Nonn and Rempe tested it in 1998 — and it is the honest
         version of &ldquo;wave or particle&rdquo;: the two descriptions are not alternatives you pick

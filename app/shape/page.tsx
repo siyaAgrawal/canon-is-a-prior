@@ -53,7 +53,7 @@ export default function ShapePage() {
                 of a shared role, one did not survive at all, and three were never claims. That is a
                 thinner result than &ldquo;the same shape appears everywhere&rdquo;.
               </p>
-              <p className="text-ink">
+              <p className="text-fg">
                 It is also the result, so it is what the site says.
               </p>
             </div>

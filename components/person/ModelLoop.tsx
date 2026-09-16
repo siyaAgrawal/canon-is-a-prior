@@ -50,13 +50,13 @@ export function ModelLoop() {
                   <span
                     aria-hidden="true"
                     className={`mt-[7px] h-[11px] w-[11px] shrink-0 rounded-full border transition-colors ${
-                      active ? "border-rust bg-rust" : "border-ink/40 bg-paper group-hover:border-rust"
+                      active ? "border-accent bg-accent" : "border-fg/40 bg-bg group-hover:border-accent"
                     }`}
                   />
                   <span className="min-w-0 flex-1">
                     <span
                       className={`block font-display text-[1.12rem] leading-snug transition-colors ${
-                        active ? "text-rust" : "group-hover:text-rust"
+                        active ? "text-accent" : "group-hover:text-accent"
                       }`}
                     >
                       {n.label}
@@ -67,7 +67,7 @@ export function ModelLoop() {
                       transition={{ duration: reduce ? 0 : 0.3 }}
                       className="block overflow-hidden"
                     >
-                      <span className="mt-1.5 block text-[0.86rem] leading-relaxed text-ink-faint">
+                      <span className="mt-1.5 block text-[0.86rem] leading-relaxed text-faint">
                         {n.note}
                       </span>
                     </motion.span>
@@ -79,11 +79,11 @@ export function ModelLoop() {
         </ol>
 
         <div className="relative mt-1 pl-[26px]">
-          <span aria-hidden="true" className="absolute left-[5px] top-0 h-6 w-px bg-rust/50" />
-          <p className="pt-5 font-mono text-[0.6rem] uppercase leading-relaxed tracking-[0.14em] text-rust">
+          <span aria-hidden="true" className="absolute left-[5px] top-0 h-6 w-px bg-accent/50" />
+          <p className="pt-5 font-mono text-[0.6rem] uppercase leading-relaxed tracking-[0.14em] text-accent">
             ↑ and back into the model
           </p>
-          <p className="mt-2 max-w-measure text-[0.85rem] leading-relaxed text-ink-faint">
+          <p className="mt-2 max-w-measure text-[0.85rem] leading-relaxed text-faint">
             Which is where it stops being a process and starts being a loop. The model decided what
             you did. What you did shaped what came back. What came back is now evidence for the
             model.
@@ -93,7 +93,7 @@ export function ModelLoop() {
 
       <div className="lg:pt-6">
         <div className="max-w-measure">
-          <p className="font-display text-display-s leading-snug">
+          <p className="font-display text-d5 leading-snug">
             None of this means the person is fictional.
           </p>
           <div className="say mt-5">
@@ -107,7 +107,7 @@ export function ModelLoop() {
               convenient. Drop it the other way and you forget you are running a model at all, which
               is the ordinary condition and much more common.
             </p>
-            <p className="text-ink">
+            <p className="text-fg">
               The model is not the problem. Models are how anyone thinks about anyone. Forgetting it
               is a model is the problem.
             </p>

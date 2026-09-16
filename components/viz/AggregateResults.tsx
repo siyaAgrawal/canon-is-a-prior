@@ -53,17 +53,17 @@ export function AggregateResults({ scenario }: { scenario: Scenario }) {
 
   if (state === "loading") {
     return (
-      <div className="border border-dashed border-rule px-6 py-10 text-center">
-        <p className="eyebrow animate-pulse-soft">Reading the dataset…</p>
+      <div className="border border-dashed border-line/20 px-6 py-10 text-center">
+        <p className="kicker animate-pulse-soft">Reading the dataset…</p>
       </div>
     );
   }
 
   if (state === "error") {
     return (
-      <div className="border border-dashed border-rust/40 bg-rust/[0.03] px-6 py-8 text-center">
-        <p className="eyebrow text-rust">Could not read the dataset</p>
-        <p className="mt-2 text-[0.85rem] text-ink-faint">{error}</p>
+      <div className="border border-dashed border-accent/40 bg-accent/[0.03] px-6 py-8 text-center">
+        <p className="kicker text-accent">Could not read the dataset</p>
+        <p className="mt-2 text-[0.85rem] text-faint">{error}</p>
       </div>
     );
   }
@@ -92,8 +92,8 @@ export function AggregateResults({ scenario }: { scenario: Scenario }) {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <p className="eyebrow">Group results</p>
-        <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-ink-ghost tabular">
+        <p className="kicker">Group results</p>
+        <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-faint tabular">
           n = {data.n}
         </p>
       </div>
@@ -113,13 +113,13 @@ export function AggregateResults({ scenario }: { scenario: Scenario }) {
         />
       </div>
 
-      <div className="border-t border-rule-soft pt-6">
-        <p className="eyebrow mb-3">Did people converge?</p>
-        <p className="text-[0.9rem] leading-relaxed text-ink-soft">
+      <div className="border-t border-line/12 pt-6">
+        <p className="kicker mb-3">Did people converge?</p>
+        <p className="text-[0.9rem] leading-relaxed text-muted">
           Average disagreement between any two participants went from{" "}
-          <span className="font-mono tabular text-rust">{Math.round(disagreementStart * 100)}%</span> before
+          <span className="font-mono tabular text-accent">{Math.round(disagreementStart * 100)}%</span> before
           any evidence to{" "}
-          <span className="font-mono tabular text-rust">{Math.round(disagreementEnd * 100)}%</span> after all
+          <span className="font-mono tabular text-accent">{Math.round(disagreementEnd * 100)}%</span> after all
           of it.{" "}
           {disagreementEnd < disagreementStart
             ? "Evidence narrowed the gap between readers."
@@ -127,7 +127,7 @@ export function AggregateResults({ scenario }: { scenario: Scenario }) {
               ? "Evidence widened the gap — people moved in different directions from the same facts."
               : "Evidence left the gap where it was."}
         </p>
-        <p className="mt-2 text-[0.78rem] leading-relaxed text-ink-ghost">
+        <p className="mt-2 text-[0.78rem] leading-relaxed text-faint">
           Measured as mean pairwise total variation distance. 0% would mean everyone submitted the
           same distribution; 100% would mean no two people put weight on the same reading.
         </p>

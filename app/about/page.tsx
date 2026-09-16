@@ -34,7 +34,7 @@ export default function AboutPage() {
                 No other domain hands you that. Historians do not label their priors. Neither do
                 physicists, or juries, or anyone describing a colleague.
               </p>
-              <p className="text-ink">
+              <p className="text-fg">
                 I went looking for the same operation elsewhere and kept finding it, which was
                 exciting for about two months and then became the actual problem.
               </p>
@@ -77,7 +77,7 @@ export default function AboutPage() {
                 If a scenario is badly written, a metric is misapplied, or a source is being made to
                 say more than it does, that is a real error and worth finding. The ones already known
                 about are on the{" "}
-                <Link href="/lab" className="underline decoration-dotted underline-offset-2 hover:text-ink">
+                <Link href="/lab" className="underline decoration-dotted underline-offset-2 hover:text-fg">
                   method page
                 </Link>
                 .
@@ -90,8 +90,8 @@ export default function AboutPage() {
       <Shell className="mt-24">
         <Reveal>
           <div className="max-w-column">
-            <h2 className="font-display text-display-s">Sources</h2>
-            <p className="mt-3 max-w-measure text-[0.86rem] leading-relaxed text-ink-faint">
+            <h2 className="font-display text-d5">Sources</h2>
+            <p className="mt-3 max-w-measure text-[0.86rem] leading-relaxed text-faint">
               Nothing listed that was not consulted, and nothing described as supporting a claim it
               does not make. Where this project uses an idea more loosely than its source does, the
               note says so.
@@ -99,7 +99,7 @@ export default function AboutPage() {
             <div className="mt-10 space-y-12">
               {sourceSections.map((section) => (
                 <section key={section.id}>
-                  <h3 className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-rust">
+                  <h3 className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-accent">
                     {section.title}
                   </h3>
                   <ul className="mt-4">
@@ -119,10 +119,10 @@ export default function AboutPage() {
                             s.title
                           )}
                         </p>
-                        <p className="mt-1 text-[0.8rem] text-ink-faint">
+                        <p className="mt-1 text-[0.8rem] text-faint">
                           {s.authors} · {s.year} · <span className="italic">{s.where}</span>
                         </p>
-                        <p className="mt-2 max-w-measure text-[0.84rem] leading-relaxed text-ink-faint">
+                        <p className="mt-2 max-w-measure text-[0.84rem] leading-relaxed text-faint">
                           {s.useNote}
                         </p>
                       </li>

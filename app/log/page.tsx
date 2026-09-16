@@ -26,23 +26,23 @@ export default function LogPage() {
           {logEntries.map((e, i) => (
             <Reveal key={`${e.date}-${i}`}>
               <article className="hair pt-8">
-                <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-ink-ghost">
+                <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-faint">
                   {e.displayDate}
                 </p>
-                <h2 className="mt-4 font-display text-display-s leading-[1.35]">{e.question}</h2>
+                <h2 className="mt-4 font-display text-d5 leading-[1.35]">{e.question}</h2>
                 <dl className="mt-8 space-y-6">
                   {FIELDS.map(([label, key]) => {
                     const value = e[key];
                     return (
                       <div key={label} className="grid gap-1.5 sm:grid-cols-[8rem_1fr] sm:gap-7">
-                        <dt className="font-mono text-[0.6rem] uppercase leading-relaxed tracking-[0.13em] text-rust">
+                        <dt className="font-mono text-[0.6rem] uppercase leading-relaxed tracking-[0.13em] text-accent">
                           {label}
                         </dt>
                         <dd>
                           {value ? (
-                            <p className="text-[0.95rem] leading-[1.7] text-ink-soft">{value}</p>
+                            <p className="text-[0.95rem] leading-[1.7] text-muted">{value}</p>
                           ) : (
-                            <p className="font-mono text-[0.64rem] uppercase tracking-[0.13em] text-ink-ghost">
+                            <p className="font-mono text-[0.64rem] uppercase tracking-[0.13em] text-faint">
                               — nothing yet —
                             </p>
                           )}

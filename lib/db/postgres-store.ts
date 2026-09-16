@@ -1,4 +1,4 @@
-import type { AIResponse, ParticipantResponse } from "@/types";
+import type { AIResponse, ParticipantResponse, Trace } from "@/types";
 import type { ExperimentStore } from "./store";
 
 /**
@@ -69,6 +69,16 @@ export class PostgresStore implements ExperimentStore {
             created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
           );
           CREATE INDEX IF NOT EXISTS ai_response_scenario_idx ON ai_response (scenario_id);
+          CREATE TABLE IF NOT EXISTS trace (
+            id          TEXT PRIMARY KEY,
+            session_id  TEXT NOT NULL,
+            instrument  TEXT NOT NULL,
+            payload     JSONB NOT NULL,
+            duration_ms INTEGER NOT NULL,
+            schema      INTEGER NOT NULL DEFAULT 1,
+            created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+          );
+          CREATE INDEX IF NOT EXISTS trace_instrument_idx ON trace (instrument);
         `);
       })();
     }
@@ -97,6 +107,33 @@ export class PostgresStore implements ExperimentStore {
       scenarioId: row.scenario_id,
       track: row.track,
       steps: row.steps,
+      durationMs: row.duration_ms,
+      schema: row.schema,
+      createdAt: new Date(row.created_at).toISOString(),
+    }));
+  }
+
+  async saveTrace(t: Trace) {
+    await this.init();
+    const pool = await this.pg();
+    await pool.query(
+      `INSERT INTO trace (id, session_id, instrument, payload, duration_ms, schema, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (id) DO NOTHING`,
+      [t.id, t.sessionId, t.instrument, JSON.stringify(t.payload), t.durationMs, t.schema, t.createdAt],
+    );
+  }
+
+  async listTraces(instrument?: Trace["instrument"]): Promise<Trace[]> {
+    await this.init();
+    const pool = await this.pg();
+    const res = instrument
+      ? await pool.query(`SELECT * FROM trace WHERE instrument = $1 ORDER BY created_at`, [instrument])
+      : await pool.query(`SELECT * FROM trace ORDER BY created_at`);
+    return res.rows.map((row: any) => ({
+      id: row.id,
+      sessionId: row.session_id,
+      instrument: row.instrument,
+      payload: row.payload,
       durationMs: row.duration_ms,
       schema: row.schema,
       createdAt: new Date(row.created_at).toISOString(),
@@ -133,11 +170,15 @@ export class PostgresStore implements ExperimentStore {
   }
 
   async counts() {
-    const [responses, ai] = await Promise.all([this.listResponses(), this.listAIResponses()]);
+    const [responses, ai, traces] = await Promise.all([
+      this.listResponses(),
+      this.listAIResponses(),
+      this.listTraces(),
+    ]);
     return {
       responses: responses.length,
       aiResponses: ai.length,
-      sessions: new Set(responses.map((r) => r.sessionId)).size,
+      sessions: new Set([...responses, ...traces].map((r) => r.sessionId)).size,
     };
   }
 }

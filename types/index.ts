@@ -123,3 +123,30 @@ export interface ScenarioAggregate {
   /** Mean L1/2 movement caused by each evidence item. */
   updateMagnitude: { evidenceId: string; mean: number; median: number }[];
 }
+
+/**
+ * A trace: one interaction with any instrument on the site.
+ *
+ * The machines experiment stores a fully typed ParticipantResponse because its
+ * shape is fixed and its statistics depend on it. Everything else — the entry
+ * reading, the claim judgements, the character-lab trajectory, the criteria
+ * picks, the premise changes — stores a trace instead: same anonymous session,
+ * same append-only discipline, a payload shaped by the instrument.
+ *
+ * The payload is validated per instrument before it is written. Nothing free-text
+ * is ever accepted, so a trace cannot carry anything a participant typed, because
+ * there is nowhere on this site to type.
+ */
+export type Instrument = "entry" | "shape" | "versions" | "criteria" | "rewrite" | "map";
+
+export interface Trace {
+  id: string;
+  sessionId: string;
+  instrument: Instrument;
+  /** Instrument-specific, validated server-side against a known shape. */
+  payload: Record<string, unknown>;
+  /** Milliseconds of engagement, used only to spot non-engagement. */
+  durationMs: number;
+  createdAt: string;
+  schema: 1;
+}

@@ -97,15 +97,15 @@ export function ScaleBreak() {
                   onClick={() => setOpen(isOpen ? null : c.id)}
                   className="group flex w-full items-baseline gap-5 py-5 text-left sm:gap-8"
                 >
-                  <span className="w-6 shrink-0 font-mono text-[0.6rem] tracking-[0.16em] text-ink-ghost tabular">
+                  <span className="w-6 shrink-0 font-mono text-[0.6rem] tracking-[0.16em] text-faint tabular">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="flex-1 font-display text-display-m transition-colors group-hover:text-rust">
+                  <span className="flex-1 font-display text-d4 transition-colors group-hover:text-accent">
                     {c.domain}
                   </span>
                   <span
                     aria-hidden="true"
-                    className={`shrink-0 font-mono text-sm text-ink-ghost transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}
+                    className={`shrink-0 font-mono text-sm text-faint transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}
                   >
                     +
                   </span>
@@ -119,15 +119,15 @@ export function ScaleBreak() {
                 className="overflow-hidden"
               >
                 <div className="grid gap-x-8 gap-y-6 pb-10 sm:grid-cols-[6.5rem_1fr] sm:pl-[3.4rem]">
-                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-ink-ghost">
+                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-faint">
                     unchanged
                   </p>
-                  <p className="text-[0.92rem] leading-relaxed text-ink-faint">{c.same}</p>
+                  <p className="text-[0.92rem] leading-relaxed text-faint">{c.same}</p>
 
-                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-rust">changed</p>
-                  <p className="font-display text-[1.1rem] leading-snug text-ink">{c.changed}</p>
+                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-accent">changed</p>
+                  <p className="font-display text-[1.1rem] leading-snug text-fg">{c.changed}</p>
 
-                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-ink-ghost">then</p>
+                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-faint">then</p>
                   <div>
                     <p className="say">{c.then}</p>
                     {c.href && (

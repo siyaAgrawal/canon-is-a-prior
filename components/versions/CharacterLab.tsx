@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { items, readings, STANCE_LABEL, type Stance } from "@/data/character";
+import { recordTrace } from "@/lib/record";
+import { Recorded } from "@/components/ui/Recorded";
 
 /**
  * What it costs to keep a reading.
@@ -13,8 +15,9 @@ import { items, readings, STANCE_LABEL, type Stance } from "@/data/character";
  * reading they then kept — accommodation, which is how a good model survives
  * awkward evidence and also how a wrong one does.
  *
- * Nothing is recorded. The numbers describe this session and are gone when you
- * leave.
+ * The trajectory is recorded — reading ids, stances and counts, nothing typed —
+ * because how often a first reading survives is the thing this instrument exists
+ * to find out. The page says so where it happens.
  */
 
 interface Step {
@@ -30,6 +33,8 @@ export function CharacterLab() {
   const [idx, setIdx] = useState(0);
   const [stance, setStance] = useState<Stance | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
+  const startedAt = useRef(Date.now());
+  const sent = useRef(false);
 
   const item = items[idx];
   const labelOf = (id: string | null) => readings.find((r) => r.id === id)?.label ?? "—";
@@ -54,6 +59,23 @@ export function CharacterLab() {
   ).length;
   const survived = firstReading === finalReading;
 
+  // Recorded once the trajectory is complete. The payload is ids and counts —
+  // there is nothing here a participant typed, because there is nowhere to type.
+  useEffect(() => {
+    if (phase !== "done" || sent.current || steps.length === 0) return;
+    sent.current = true;
+    void recordTrace(
+      "versions",
+      {
+        steps: steps.map((s) => ({ itemId: s.itemId, reading: s.reading, stance: s.stance })),
+        switches,
+        accommodations: accommodations + breaksAbsorbed,
+        survived,
+      },
+      Date.now() - startedAt.current,
+    );
+  }, [phase, steps, switches, accommodations, breaksAbsorbed, survived]);
+
   const fade = reduce
     ? {}
     : {
@@ -66,12 +88,12 @@ export function CharacterLab() {
   if (phase === "prior") {
     return (
       <div>
-        <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-ink-ghost">
+        <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-faint">
           One fact to begin with
         </p>
-        <p className="mt-5 max-w-column font-display text-display-m leading-[1.3]">{items[0].text}</p>
+        <p className="mt-5 max-w-column font-display text-d4 leading-[1.3]">{items[0].text}</p>
 
-        <p className="mt-10 text-[0.9rem] text-ink-faint">What kind of person is this?</p>
+        <p className="mt-10 text-[0.9rem] text-faint">What kind of person is this?</p>
         <ul className="mt-3 max-w-measure">
           {readings.map((r) => (
             <li key={r.id}>
@@ -82,7 +104,7 @@ export function CharacterLab() {
                 onClick={() => setReading(r.id)}
               >
                 <span className="block font-display text-[1.05rem]">{r.label}</span>
-                <span className="mt-0.5 block text-[0.82rem] leading-snug text-ink-faint">{r.gloss}</span>
+                <span className="mt-0.5 block text-[0.82rem] leading-snug text-faint">{r.gloss}</span>
               </button>
             </li>
           ))}
@@ -100,7 +122,7 @@ export function CharacterLab() {
         >
           That&rsquo;s my reading
         </button>
-        <p className="mt-4 max-w-measure text-[0.8rem] leading-relaxed text-ink-ghost">
+        <p className="mt-4 max-w-measure text-[0.8rem] leading-relaxed text-faint">
           Wren is invented. There is no correct answer and none will be revealed, because none
           exists. Six more facts follow.
         </p>
@@ -116,21 +138,21 @@ export function CharacterLab() {
             {items.map((it, n) => (
               <span
                 key={it.id}
-                className={`h-[3px] flex-1 ${n < idx ? "bg-rust/60" : n === idx ? "bg-rust" : "bg-ink/10"}`}
+                className={`h-[3px] flex-1 ${n < idx ? "bg-accent/60" : n === idx ? "bg-accent" : "bg-fg/10"}`}
               />
             ))}
           </div>
-          <span className="font-mono text-[0.62rem] tabular text-ink-ghost">
+          <span className="font-mono text-[0.62rem] tabular text-faint">
             {idx + 1}/{items.length}
           </span>
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div key={item.id} {...fade}>
-            <p className="max-w-column font-display text-display-m leading-[1.3]">{item.text}</p>
+            <p className="max-w-column font-display text-d4 leading-[1.3]">{item.text}</p>
 
-            <p className="mt-10 text-[0.9rem] text-ink-faint">
-              You currently read Wren as <span className="text-rust">{labelOf(reading)}</span>. What is
+            <p className="mt-10 text-[0.9rem] text-faint">
+              You currently read Wren as <span className="text-accent">{labelOf(reading)}</span>. What is
               this fact doing to that?
             </p>
             <ul className="mt-3 max-w-measure">
@@ -144,7 +166,7 @@ export function CharacterLab() {
             </ul>
 
             <div className="hair mt-8 pt-6">
-              <p className="text-[0.86rem] text-ink-faint">Keep your reading, or change it.</p>
+              <p className="text-[0.86rem] text-faint">Keep your reading, or change it.</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {readings.map((r) => (
                   <button
@@ -154,8 +176,8 @@ export function CharacterLab() {
                     onClick={() => setReading(r.id)}
                     className={`border px-3 py-1.5 font-mono text-[0.64rem] uppercase tracking-[0.12em] transition-colors ${
                       reading === r.id
-                        ? "border-ink bg-ink text-paper"
-                        : "border-rule text-ink-faint hover:border-ink hover:text-ink"
+                        ? "border-fg bg-fg text-bg"
+                        : "border-line/20 text-faint hover:border-fg hover:text-fg"
                     }`}
                   >
                     {r.label}
@@ -214,26 +236,26 @@ export function CharacterLab() {
             <li key={s.itemId} className="hair py-6">
               <div className="grid gap-x-8 gap-y-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                 <div>
-                  <p className="text-[0.94rem] leading-relaxed text-ink">{it.text}</p>
+                  <p className="text-[0.94rem] leading-relaxed text-fg">{it.text}</p>
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     <span
                       className={`font-mono text-[0.6rem] uppercase tracking-[0.13em] ${
                         s.stance === "fits"
-                          ? "text-ink-ghost"
+                          ? "text-faint"
                           : s.stance === "complicates"
-                            ? "text-gold"
-                            : "text-rust"
+                            ? "text-sun"
+                            : "text-accent"
                       }`}
                     >
                       {s.stance}
                     </span>
-                    <span className="font-mono text-[0.6rem] uppercase tracking-[0.13em] text-ink-ghost">
+                    <span className="font-mono text-[0.6rem] uppercase tracking-[0.13em] text-faint">
                       {changed ? `→ ${labelOf(s.reading)}` : `kept ${labelOf(s.reading)}`}
                     </span>
                   </div>
                 </div>
-                <p className="text-[0.85rem] leading-relaxed text-ink-faint">
-                  <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-rust">
+                <p className="text-[0.85rem] leading-relaxed text-faint">
+                  <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-accent">
                     Written to —{" "}
                   </span>
                   {it.cuts}
@@ -245,11 +267,14 @@ export function CharacterLab() {
       </ol>
 
       <div className="hair pt-8">
-        <p className="max-w-measure text-[0.8rem] leading-relaxed text-ink-ghost">
-          Nothing here was recorded. Wren does not exist and the seven facts were written to press in
-          particular directions, which I have now told you, and which I could not have told you
-          before without changing what you did.
+        <p className="max-w-measure text-[0.8rem] leading-relaxed text-faint">
+          Wren does not exist, and the seven facts were written to press in particular directions —
+          which I have now told you, and could not have told you before without changing what you
+          did.
         </p>
+        <div className="mt-4">
+          <Recorded what="Which reading you held at each fact, what you did with it, and how many facts a kept reading absorbed." />
+        </div>
         <button
           type="button"
           className="btn-quiet mt-5"
@@ -259,6 +284,8 @@ export function CharacterLab() {
             setIdx(0);
             setReading(null);
             setStance(null);
+            sent.current = false;
+            startedAt.current = Date.now();
           }}
         >
           ↺ Start over with a different first reading

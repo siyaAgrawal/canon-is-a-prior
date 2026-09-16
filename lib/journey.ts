@@ -1,89 +1,63 @@
 /**
- * Territories, not chapters.
+ * Every place on the site, and the room it belongs to.
  *
- * The first build numbered everything 00 to 11, which made the site read as a
- * course with a syllabus. Nothing here is numbered and nothing has a prescribed
- * order beyond the homepage. The groups exist so the navigation is legible, not
- * so the reader completes them.
+ * There is no sequence. Nothing requires anything else to have been visited, no
+ * page is reachable only from another, and every entry here is a real route that
+ * renders standalone on a cold load.
  */
+
+export type Room = "origin" | "myth" | "physics" | "doubt" | "inference" | "spatial" | "human" | "record";
 
 export interface Place {
   href: string;
   title: string;
-  /** Shown under the title in the menu. Should say what you *do* there. */
+  /** What you do there, not what it is about. */
   line: string;
+  room: Room;
+  group: "explore" | "thread" | "record";
 }
 
-export interface Territory {
-  id: string;
-  label: string;
-  places: Place[];
-}
+export const places: Place[] = [
+  { href: "/versions", title: "Versions", line: "One character, two assumptions. Then seven facts about a stranger, and what it costs you to keep your first reading.", room: "origin", group: "explore" },
+  { href: "/rewrite", title: "Icarus", line: "Climb. Change why he climbed. Watch the same fall mean something else.", room: "myth", group: "explore" },
+  { href: "/shape", title: "The shape", line: "Ten connections. Three are mine and false. Find them before I tell you.", room: "doubt", group: "explore" },
 
-export const territories: Territory[] = [
-  {
-    id: "instruments",
-    label: "Instruments",
-    places: [
-      { href: "/rewrite", title: "Rewrite the canon", line: "Same events. Change one premise. Watch what has to move with it." },
-      { href: "/versions", title: "The character lab", line: "Fixed evidence about a person, in order. What it costs you to keep your first reading." },
-      { href: "/criteria", title: "Coherent, supported, true", line: "Three explanations, one set of facts. Find out which criterion you actually use." },
-      { href: "/machines", title: "Humans and models", line: "The same ambiguous evidence, given to people and to a language model." },
-    ],
-  },
-  {
-    id: "cases",
-    label: "Cases",
-    places: [
-      { href: "/categories", title: "When the category breaks", line: "de Broglie, and what happens when inherited words stop fitting." },
-      { href: "/person", title: "The model of a person", line: "The quiet one. Short." },
-    ],
-  },
-  {
-    id: "doubt",
-    label: "Doubt",
-    places: [
-      { href: "/shape", title: "Is the shape really there?", line: "Structural claims, some mine, some invented. Judge which are found and which are imposed." },
-      { href: "/map", title: "The map", line: "Every connection, with its breaks drawn as breaks." },
-    ],
-  },
-  {
-    id: "record",
-    label: "Record",
-    places: [
-      { href: "/lab", title: "Method and data", line: "What is being measured, what has been collected, what this cannot show." },
-      { href: "/log", title: "Log", line: "What I thought. What broke. What I still don't know." },
-      { href: "/about", title: "Where this came from", line: "Fanfiction. Genuinely." },
-      { href: "/ethics", title: "What is stored", line: "Almost nothing, and why." },
-    ],
-  },
+  { href: "/categories", title: "When the category breaks", line: "Wave or particle — and what it costs to have some of each.", room: "physics", group: "thread" },
+  { href: "/person", title: "The model of a person", line: "The quiet room.", room: "human", group: "thread" },
+  { href: "/machines", title: "How interpretations move", line: "Which criterion you actually use, and what a language model does with the same evidence.", room: "inference", group: "thread" },
+  { href: "/map", title: "The map", line: "Every connection, with the severed ones drawn as severed.", room: "spatial", group: "thread" },
+
+  { href: "/about", title: "Origin", line: "Fanfiction. Then a myth, a measurement, a person.", room: "record", group: "record" },
+  { href: "/lab", title: "Method & data", line: "What is measured, what has been collected, what this cannot show.", room: "record", group: "record" },
+  { href: "/log", title: "Log", line: "What I thought. What broke. What I still don't know.", room: "record", group: "record" },
 ];
 
-export const allPlaces: Place[] = territories.flatMap((t) => t.places);
+export const groupLabel: Record<Place["group"], string> = {
+  explore: "Explore",
+  thread: "Follow the thread",
+  record: "See the record",
+};
 
 export function placeFor(pathname: string): Place | undefined {
-  return allPlaces.find((p) => p.href === pathname);
+  return places.find((p) => p.href === pathname);
 }
 
-export function territoryFor(pathname: string): Territory | undefined {
-  return territories.find((t) => t.places.some((p) => p.href === pathname));
+export function roomFor(pathname: string): Room {
+  if (pathname === "/") return "origin";
+  return placeFor(pathname)?.room ?? "record";
 }
 
-/**
- * Suggested next stops. Not a sequence — a short list of where this page's
- * argument actually continues, chosen per page rather than by position.
- */
-export const continuations: Record<string, string[]> = {
-  "/rewrite": ["/versions", "/shape"],
-  "/versions": ["/person", "/criteria"],
-  "/person": ["/versions", "/shape"],
+/** Two onward routes per page, chosen because the thought continues there. */
+export const onward: Record<string, string[]> = {
+  "/": ["/versions", "/shape"],
+  "/versions": ["/rewrite", "/person"],
+  "/rewrite": ["/categories", "/shape"],
   "/categories": ["/shape", "/map"],
-  "/criteria": ["/machines", "/shape"],
-  "/machines": ["/lab", "/criteria"],
+  "/person": ["/versions", "/shape"],
+  "/machines": ["/lab", "/shape"],
   "/shape": ["/map", "/log"],
   "/map": ["/shape", "/lab"],
   "/lab": ["/machines", "/log"],
   "/log": ["/shape", "/about"],
-  "/about": ["/versions", "/log"],
-  "/ethics": ["/lab"],
+  "/about": ["/versions", "/rewrite"],
 };

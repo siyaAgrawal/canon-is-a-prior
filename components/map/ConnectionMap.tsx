@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { recordTrace } from "@/lib/record";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { clusterLabels, mapEdges, mapNodes, type EdgeStrength, type MapNode } from "@/data/connections";
@@ -31,6 +32,20 @@ export function ConnectionMap() {
   const [mounted, setMounted] = useState(false);
   const reduce = useReducedMotion();
   const panelRef = useRef<HTMLDivElement>(null);
+  const openedRef = useRef<string[]>([]);
+  const startedAt = useRef(Date.now());
+
+  useEffect(() => {
+    const send = () => {
+      if (openedRef.current.length === 0) return;
+      void recordTrace("map", { opened: openedRef.current.slice(0, 40) }, Date.now() - startedAt.current);
+    };
+    window.addEventListener("pagehide", send);
+    return () => {
+      window.removeEventListener("pagehide", send);
+      send();
+    };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -58,6 +73,7 @@ export function ConnectionMap() {
     Boolean(selected) && id !== selected && !connected.some((c) => c.other.id === id);
 
   const select = (id: string | null) => {
+    if (id && !openedRef.current.includes(id)) openedRef.current.push(id);
     setSelected(id);
     if (id) requestAnimationFrame(() => panelRef.current?.focus({ preventScroll: true }));
   };
@@ -74,7 +90,7 @@ export function ConnectionMap() {
           {(Object.keys(clusterLabels) as (keyof typeof clusterLabels)[]).map((k) => (
             <span key={k} className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full" style={{ background: clusterLabels[k].color }} aria-hidden="true" />
-              <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-ink-faint">
+              <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-faint">
                 {clusterLabels[k].label}
               </span>
             </span>
@@ -88,7 +104,7 @@ export function ConnectionMap() {
               aria-pressed={view === v}
               onClick={() => setView(v)}
               className={`border px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.12em] transition-colors ${
-                view === v ? "border-ink bg-ink text-paper" : "border-rule text-ink-faint hover:border-ink hover:text-ink"
+                view === v ? "border-fg bg-fg text-bg" : "border-line/20 text-faint hover:border-fg hover:text-fg"
               }`}
             >
               {v}
@@ -98,19 +114,25 @@ export function ConnectionMap() {
       </div>
 
       {view === "map" && (
-        <div className="relative overflow-x-auto border border-rule-soft bg-paper-raised no-scrollbar">
+        <div className="relative overflow-x-auto border border-line/12 bg-surface no-scrollbar">
           <svg
             viewBox={`0 0 ${W} ${H}`}
-            className="h-auto w-full min-w-[720px]"
+            className="h-auto w-full min-w-[760px]"
             role="group"
             aria-label="Concept map. Use the list view for a linear, fully keyboard-navigable version."
           >
             <defs>
-              <pattern id="map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(23,24,26,0.045)" strokeWidth="1" />
+              <pattern id="map-grid" width="44" height="44" patternUnits="userSpaceOnUse">
+                <path d="M 44 0 L 0 0 0 44" fill="none" stroke="rgb(var(--line) / 0.07)" strokeWidth="1" />
               </pattern>
             </defs>
             <rect width={W} height={H} fill="url(#map-grid)" />
+            {/* Faint depth. The field is supposed to feel like space, not paper. */}
+            <radialGradient id="map-depth" cx="50%" cy="38%" r="70%">
+              <stop offset="0%" stopColor="#7AB2CC" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#7AB2CC" stopOpacity="0" />
+            </radialGradient>
+            <rect width={W} height={H} fill="url(#map-depth)" />
 
             {mapEdges.map((e, i) => {
               const a = mapNodes.find((n) => n.id === e.from);
@@ -126,9 +148,7 @@ export function ConnectionMap() {
                   key={`${e.from}-${e.to}-${i}`}
                   d={`M ${px(a)} ${py(a)} Q ${mx} ${my} ${px(b)} ${py(b)}`}
                   fill="none"
-                  stroke={
-                    s.color ?? (active ? clusterLabels[a.cluster].color : "rgba(23,24,26,0.34)")
-                  }
+                  stroke={s.color ?? (active ? clusterLabels[a.cluster].color : "rgb(var(--line) / 0.4)")}
                   strokeWidth={active ? s.width + 0.8 : s.width}
                   strokeDasharray={s.dash}
                   opacity={dim ? 0.1 : active ? 0.95 : e.strength === "break" ? 0.66 : 0.5}
@@ -168,20 +188,30 @@ export function ConnectionMap() {
                     y={-13}
                     textAnchor="middle"
                     fontSize={active ? 14 : 12.5}
-                    fill={active ? color : "#17181A"}
+                    fill={active ? color : "rgb(var(--fg))"}
                     className="font-display"
                   >
                     {n.label}
                   </text>
-                  <text x={0} y={18} textAnchor="middle" fontSize={9} fill="rgba(23,24,26,0.5)" className="font-sans">
+                  {/* A ring marks a node you can actually go to. */}
+                  {n.href && (
+                    <circle
+                      r={active ? 13 : 10}
+                      fill="none"
+                      stroke={color}
+                      strokeOpacity={active ? 0.7 : 0.3}
+                      strokeDasharray="2 3"
+                    />
+                  )}
+                  <text x={0} y={18} textAnchor="middle" fontSize={9} fill="rgb(var(--faint))" className="font-sans">
                     {n.note}
                   </text>
                 </g>
               );
             })}
           </svg>
-          <p className="border-t border-rule-soft px-4 py-2 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-ink-ghost">
-            Tap a node. Scroll sideways if it is cut off — or switch to list view.
+          <p className="border-t border-line/12 px-4 py-2 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-faint">
+            Tap a node. A ringed node is a place you can go. Scroll sideways, or use list view.
           </p>
         </div>
       )}
@@ -203,12 +233,12 @@ export function ConnectionMap() {
                         type="button"
                         aria-pressed={n.id === selected}
                         onClick={() => select(n.id === selected ? null : n.id)}
-                        className={`block w-full border-b border-rule-soft py-2.5 text-left transition-colors ${
-                          n.id === selected ? "text-rust" : "hover:text-rust"
+                        className={`block w-full border-b border-line/12 py-2.5 text-left transition-colors ${
+                          n.id === selected ? "text-accent" : "hover:text-accent"
                         }`}
                       >
                         <span className="block font-display text-[1.04rem] leading-snug">{n.label}</span>
-                        <span className="block text-[0.8rem] leading-snug text-ink-faint">{n.note}</span>
+                        <span className="block text-[0.8rem] leading-snug text-faint">{n.note}</span>
                       </button>
                     </li>
                   ))}
@@ -227,7 +257,7 @@ export function ConnectionMap() {
               animate={{ opacity: 1, y: 0 }}
               exit={reduce ? undefined : { opacity: 0, y: -6 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="card p-6 sm:p-8"
+              className="panel p-6 sm:p-8"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <h3 className="font-display text-2xl" style={{ color: clusterLabels[node.cluster].color }}>
@@ -237,7 +267,7 @@ export function ConnectionMap() {
                   Close
                 </button>
               </div>
-              <p className="prose-note mt-4">{node.detail}</p>
+              <p className="say mt-4">{node.detail}</p>
 
               {node.href && (
                 <Link href={node.href} className="btn mt-5">
@@ -245,8 +275,8 @@ export function ConnectionMap() {
                 </Link>
               )}
 
-              <div className="mt-8 border-t border-rule-soft pt-6">
-                <p className="eyebrow mb-4">
+              <div className="mt-8 border-t border-line/12 pt-6">
+                <p className="kicker mb-4">
                   What connects these — {connected.length} link{connected.length === 1 ? "" : "s"}
                 </p>
                 <ul className="space-y-5">
@@ -256,30 +286,30 @@ export function ConnectionMap() {
                         <button
                           type="button"
                           onClick={() => select(other.id)}
-                          className="font-display text-[1.05rem] text-ink hover:text-rust"
+                          className="font-display text-[1.05rem] text-ink hover:text-accent"
                         >
                           {other.label}
                         </button>
                         <span
                           className={`border px-2 py-0.5 font-mono text-[0.58rem] uppercase tracking-[0.12em] ${
                             edge.strength === "structural"
-                              ? "border-moss/40 text-moss"
+                              ? "border-evidence/40 text-evidence"
                               : edge.strength === "historical"
-                                ? "border-indigo/40 text-indigo"
+                                ? "border-cold/40 text-cold"
                                 : edge.strength === "break"
-                                  ? "border-rust text-rust"
+                                  ? "border-accent text-accent"
                                   : edge.strength === "open"
-                                    ? "border-dashed border-ink/35 text-ink-faint"
-                                    : "border-gold/50 text-gold"
+                                    ? "border-dashed border-fg/35 text-faint"
+                                    : "border-sun/50 text-sun"
                           }`}
                         >
                           {edge.strength}
                         </span>
                       </div>
-                      <p className="mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">{edge.claim}</p>
+                      <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted">{edge.claim}</p>
                       {edge.caveat && (
-                        <p className="mt-1.5 border-l-2 border-gold/40 pl-3 text-[0.84rem] leading-relaxed text-ink-faint">
-                          <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-gold">
+                        <p className="mt-1.5 border-l-2 border-sun/40 pl-3 text-[0.84rem] leading-relaxed text-faint">
+                          <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-sun">
                             Not claiming —{" "}
                           </span>
                           {edge.caveat}
@@ -295,10 +325,10 @@ export function ConnectionMap() {
               key="idle"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="border border-dashed border-rule px-6 py-8"
+              className="border border-dashed border-line/20 px-6 py-8"
             >
-              <p className="eyebrow">Nothing selected</p>
-              <p className="mt-3 max-w-reading text-[0.92rem] leading-relaxed text-ink-soft">
+              <p className="kicker">Nothing selected</p>
+              <p className="mt-3 max-w-reading text-[0.92rem] leading-relaxed text-muted">
                 Choose any node to see what it is doing here and which connections it actually
                 supports. Each link declares its own strength, and the weaker kind has to say what it
                 is not claiming.
@@ -317,7 +347,7 @@ export function ConnectionMap() {
                         strokeDasharray={STROKE[k].dash}
                       />
                     </svg>
-                    <span className="text-[0.82rem] text-ink-faint">{STROKE[k].label}</span>
+                    <span className="text-[0.82rem] text-faint">{STROKE[k].label}</span>
                   </li>
                 ))}
               </ul>

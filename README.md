@@ -31,6 +31,28 @@ See [DESIGN.md](DESIGN.md) for why the first version of this site was scrapped.
 
 ---
 
+## The dataset
+
+**Every instrument records.** Finishing with any of them writes one row:
+
+| Instrument | What it stores |
+|---|---|
+| `entry` | Which assumptions about Draco you tried, in order |
+| `rewrite` | Which Icarus premises you opened, and dwell time |
+| `versions` | The reading held at each fact, what you did with it, switches and accommodations |
+| `shape` | Your ten judgements, and how many of the three controls passed |
+| `criteria` | Which explanation you picked in each case, and whether one property decided both |
+| `map` | Which nodes you opened |
+
+Plus the scenario experiment on `/machines`, which stores a fully typed
+`ParticipantResponse` because its statistics depend on the shape.
+
+Payloads are **closed**, not merely validated: `lib/trace-schema.ts` declares the permitted
+keys per instrument and the API strips everything else before writing. A field the schema
+does not know is dropped, so the claim "nothing you typed is stored" is enforced rather than
+intended — and asserted in `npm test`. Every recording instrument discloses what it wrote, on
+screen, where it wrote it.
+
 ## The rule everything else depends on
 
 **No fabricated data.** No invented participant counts, results, accuracy figures, model
@@ -61,31 +83,34 @@ They are load-bearing. Do not "fix" them into real claims.
 
 ## Routes
 
-Fourteen pages, grouped as four territories with no prescribed order. There is no numbered
-sequence — the first build had one and it made the project read like a syllabus.
+Twelve pages in four rooms. **Every route loads standalone, survives a refresh, and is
+reachable from the index (or the `I` key) on every page.** No page requires another to have
+been visited, and every URL this project has ever published still redirects somewhere useful.
 
-| | | |
+| Route | Room | What you do there |
 |---|---|---|
-| **`/`** | Entry | One word of evidence. You read him before any evidence arrives; then you find out I chose the five readings you picked from. |
-| **Instruments** | | |
-| `/shape` | The recursive one | Ten structural claims — some defended, one abandoned, three controls. Judge before the reveal. |
-| `/versions` | Character lab | Seven facts about an invented person. Measures what it cost to keep your first reading, not whether it was right. |
-| `/rewrite` | Counterfactual lab | Change one premise in Icarus or the Iliad. Every premise declares what it cannot absorb. |
-| `/criteria` | Which criterion | Three explanations, one set of facts, none best at everything. Twice, to see if you're consistent. |
-| `/machines` | Humans and models | 34 scenarios given to people and to a language model under identical constraints. **The only page that records anything.** |
-| **Cases** | | |
-| `/categories` | de Broglie | What happens when an inherited pair of words stops fitting. Includes a working V² + D² ≤ 1 model. |
-| `/person` | The quiet one | The model of a person is not the person. One diagram. |
-| **Doubt** | | |
-| `/map` | The graph | 25 nodes, 38 edges, with severed connections drawn as severed. |
-| **Record** | | |
-| `/lab` | Method and data | Live counts, pre-registered predictions, limitations. |
-| `/log` | Log | Question / what I thought / what broke / what changed / what I still don't know. |
-| `/about` | Origin | Fanfiction, plainly. Plus every source with a note on how it's used. |
-| `/ethics` | What is stored | Almost nothing, and the trade-off that buys. |
-| `/console` | Model runs | Token-protected. Not indexed. |
+| `/` | night library | A name, some words people have used for him, three things he does. Change what the cruelty is evidence of; the facts hold still and every reading rewrites. |
+| `/versions` | night library | Why fanfiction is the original laboratory, then seven facts about an invented person — measuring what it costs to keep your first reading. |
+| `/rewrite` | ground → sun | Scroll and he climbs. The sky lightens, the figure rises, and changing why he climbed re-reads all four fixed events. |
+| `/shape` | forensic | Ten structural claims. Some defended, one abandoned, **three written as controls**. Judge before the reveal. |
+| `/categories` | cold bench | de Broglie, and a working V² + D² ≤ 1 model of what it costs to have some of each description. |
+| `/person` | the quiet room | The model of a person is not the person. One diagram, almost no text. |
+| `/machines` | graphite | Which criterion you actually use, then the same ambiguous evidence given to people and to a language model. |
+| `/map` | deep field | 25 nodes, 38 edges. Severed connections drawn as severed. Ringed nodes are places you can go — the map is also navigation. |
+| `/lab` | archive | Live counts, pre-registered predictions, limitations, and `#ethics` — everything stored about you. |
+| `/log` | archive | Question / what I thought / what broke / what changed / what I still don't know. |
+| `/about` | archive | Fanfiction, plainly. Plus every source with a note on how it is used. |
+| `/console` | archive | Model runs. Token-protected, not indexed. |
 
-Four API routes: `/api/responses`, `/api/stats`, `/api/export`, `/api/ai`.
+Five API routes: `/api/trace`, `/api/responses`, `/api/stats`, `/api/export`, `/api/ai`.
+
+### Rooms
+
+The site is one institution with several rooms. A room is a set of CSS custom properties
+set on `<body>`; every component reads from them, so a button, a chart or a tag looks native
+in the candlelit origin room and on the cold physics bench without being forked. The type
+scale, spacing, controls, tags and navigation never change. Colour is semantic —
+`evidence` is always the same green, `rupture` always the same crimson.
 
 ---
 
@@ -154,8 +179,11 @@ Then redeploy. The "not collecting" notice disappears on its own.
 ```
 app/              14 routes + 4 API routes
 components/
-  ui/             Tag (the epistemic apparatus), page chrome, Reveal, Continue
+  nav/            Chrome (persistent header), Index (the constellation, `I` key)
+  ui/             Tag (epistemic apparatus), Recorded (disclosure), primitives, Continue
   experiment/     Entry, BeliefExperiment, SimplexSliders, MachineTrack, AIConsole
+  origin/         SameEvidence (the Draco hook), Marginalia (original SVG)
+  myth/           IcarusAscent (the vertical climb)
   shape/          ShapeAudit, ScaleBreak
   versions/       CharacterLab
   criteria/       CriteriaTest
@@ -165,6 +193,7 @@ components/
   map/            ConnectionMap
   viz/            trajectories, distributions, dashboard, empty states
 data/             scenarios, claims + controls, character, criteria, canon, map, sources
+lib/trace-schema  closed per-instrument payload schemas
 lib/              stats, simplex, aggregate, validate, session, journey, db adapters
 research/         lab.ts (pre-registered), log.ts
 test/             math.test.ts
@@ -178,6 +207,7 @@ types/            the domain model
 | `Scenario`, `Interpretation`, `EvidenceItem` | `types/index.ts`; data in `data/scenarios-*.ts` |
 | `ParticipantResponse` | One trajectory: ordered `BeliefStep` distributions + optional confidence |
 | `AIResponse` | Same shape plus `model`, `promptVersion`, per-stage rationales |
+| `Trace` | Any instrument's interaction: `{sessionId, instrument, payload, durationMs}` |
 | `Claim` | `data/claims.ts` — `verdict`, `reasoning`, `wouldChangeIf` |
 | `CanonModule`, `CounterfactualPremise` | `data/canon.ts` — each premise carries `resists` |
 | `MapNode`, `MapEdge` | `data/connections.ts` — edges declare strength and caveat |
@@ -221,6 +251,10 @@ interpretations, at least two evidence items, and a `designNote` per item saying
 written to discriminate. Notes are shown only after the participant finishes, so the intent
 cannot steer the update it measures. `npm test` enforces shape and minimum prose length.
 
+**An instrument that records** → add a schema *and* an `ALLOWED` key list in
+`lib/trace-schema.ts`, then call `recordTrace()` and put a `<Recorded>` disclosure on the
+page. An instrument with no schema is refused by the API rather than stored as a blob.
+
 **A claim** → `data/claims.ts`. It needs a `verdict`, `reasoning` readable by someone who
 disagrees, and `wouldChangeIf`. A claim that forbids nothing is not a claim. Add its id to
 the fixed order in `ShapeAudit.tsx` — controls are interleaved so status cannot be inferred
@@ -248,9 +282,9 @@ incoming data. Changes go in `research/log.ts` as a dated entry.
 
 ## Privacy
 
-A random identifier in `localStorage`, the scenario id, the distributions, optional
-confidence, elapsed time. No accounts, no email, no IP logging, no analytics, no tracking
-cookies. Thirteen of the fourteen pages record nothing at all.
+A random identifier in `localStorage`, plus ids and counts from whichever instrument you
+finished. No accounts, no email, no IP logging, no analytics, no tracking cookies, and
+nothing typed — there is nowhere on the site to type.
 
 The trade-off, stated on `/ethics` rather than buried: anonymity this strong means there is
 no way to find and delete an individual response afterwards.
@@ -258,12 +292,14 @@ no way to find and delete an individual response afterwards.
 ## Accessibility
 
 Real `<input type="range">` elements, so keyboard and screen-reader behaviour is the
-platform's rather than reimplemented. Charts carry visually-hidden data tables rather than a
-one-line summary — a line chart is not describable in a sentence. Colour is never the only
-channel; every series is labelled directly. Palette contrast measured at 4.5:1 or better
-against the paper background, with the values noted in `tailwind.config.ts`. The connection
-map has a full list view for keyboard use. `prefers-reduced-motion` is respected globally in
-CSS and per-component via `useReducedMotion`.
+platform's rather than reimplemented. Charts carry visually-hidden data tables — a line chart
+is not describable in a sentence. Colour is never the only channel; every series is labelled
+directly, and the epistemic tags encode status in their *shape* as well as their colour
+(open = a box with no right side, abandoned = struck and severed, analogy = two linked
+halves). Every fg/muted/faint pairing was checked at 4.5:1 or better against its own room
+background. The connection map has a full list view; the Icarus ascent degrades to a static
+sky with no scroll dependency. The index traps focus and restores it. `prefers-reduced-motion`
+is respected globally in CSS and per-component via `useReducedMotion`.
 
 ## Stack
 

@@ -32,9 +32,9 @@ export function StorageNotice() {
   if (!note) return null;
 
   return (
-    <div role="status" className="mb-8 border-l-2 border-rust bg-rust/[0.04] px-5 py-4">
-      <p className="eyebrow text-rust">Not collecting right now</p>
-      <p className="mt-2 text-[0.9rem] leading-relaxed text-ink">
+    <div role="status" className="mb-8 border-l-2 border-accent bg-accent/[0.04] px-5 py-4">
+      <p className="kicker text-accent">Not collecting right now</p>
+      <p className="mt-2 text-[0.9rem] leading-relaxed text-fg">
         {note} You can still do the experiment and see your own trajectory — nothing about it
         changes — but your response will not be added to the dataset, and the site will say so
         rather than pretending otherwise.

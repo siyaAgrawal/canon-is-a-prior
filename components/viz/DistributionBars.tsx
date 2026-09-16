@@ -30,7 +30,7 @@ export function DistributionBars({
 
   return (
     <figure className="w-full">
-      {label && <figcaption className="eyebrow mb-3">{label}</figcaption>}
+      {label && <figcaption className="kicker mb-3">{label}</figcaption>}
       <ul className={compact ? "space-y-2" : "space-y-3.5"}>
         {interpretations.map((interp, i) => {
           const c = colorAt(i);
@@ -45,17 +45,17 @@ export function DistributionBars({
                 <span className="shrink-0 font-mono text-[0.78rem] tabular" style={{ color: c.stroke }}>
                   {Math.round(v)}%
                   {before !== undefined && (
-                    <span className="ml-1.5 text-ink-ghost">
+                    <span className="ml-1.5 text-faint">
                       ({Math.round(before)} {compareLabel})
                     </span>
                   )}
                 </span>
               </div>
-              <div className="relative mt-1 h-[7px] w-full bg-ink/[0.06]">
+              <div className="relative mt-1 h-[7px] w-full bg-fg/[0.06]">
                 {before !== undefined && (
                   <span
                     aria-hidden="true"
-                    className="absolute inset-y-0 left-0 border-r border-ink/35"
+                    className="absolute inset-y-0 left-0 border-r border-fg/35"
                     style={{ width: `${before}%` }}
                   />
                 )}

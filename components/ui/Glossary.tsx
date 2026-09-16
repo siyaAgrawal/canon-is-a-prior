@@ -20,7 +20,7 @@ export function Term({ term, children }: { term: string; children: ReactNode }) 
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={id}
-        className="border-b border-dotted border-indigo/60 text-indigo transition-colors hover:border-indigo hover:bg-indigo/5"
+        className="border-b border-dotted border-cold/60 text-cold transition-colors hover:border-cold hover:bg-cold/5"
       >
         {term}
       </button>
@@ -28,7 +28,7 @@ export function Term({ term, children }: { term: string; children: ReactNode }) 
         <span
           id={id}
           role="note"
-          className="mt-2 block border-l-2 border-indigo/30 bg-paper-raised px-4 py-3 text-[0.86rem] leading-relaxed text-ink-soft"
+          className="mt-2 block border-l-2 border-cold/30 bg-surface px-4 py-3 text-[0.86rem] leading-relaxed text-muted"
         >
           {children}
         </span>

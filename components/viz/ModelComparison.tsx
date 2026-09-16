@@ -45,17 +45,17 @@ export function ModelComparison({ scenario }: { scenario: Scenario }) {
 
   if (state === "loading") {
     return (
-      <div className="border border-dashed border-rule px-6 py-10 text-center">
-        <p className="eyebrow animate-pulse-soft">Checking for model runs…</p>
+      <div className="border border-dashed border-line/20 px-6 py-10 text-center">
+        <p className="kicker animate-pulse-soft">Checking for model runs…</p>
       </div>
     );
   }
 
   if (state === "error") {
     return (
-      <div className="border border-dashed border-rust/40 bg-rust/[0.03] px-6 py-8 text-center">
-        <p className="eyebrow text-rust">Could not read model runs</p>
-        <p className="mt-2 text-[0.85rem] text-ink-faint">{error}</p>
+      <div className="border border-dashed border-accent/40 bg-accent/[0.03] px-6 py-8 text-center">
+        <p className="kicker text-accent">Could not read model runs</p>
+        <p className="mt-2 text-[0.85rem] text-faint">{error}</p>
       </div>
     );
   }
@@ -82,10 +82,10 @@ export function ModelComparison({ scenario }: { scenario: Scenario }) {
         const hEnd = normalizedEntropy(stages[stages.length - 1]);
         const movement = totalVariation(stages[0], stages[stages.length - 1]);
         return (
-          <article key={run.id} className="card p-5 sm:p-7">
-            <header className="flex flex-wrap items-baseline justify-between gap-3 border-b border-rule-soft pb-4">
-              <p className="font-mono text-[0.72rem] tracking-[0.1em] text-ink">{run.model}</p>
-              <p className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-ink-ghost">
+          <article key={run.id} className="panel p-5 sm:p-7">
+            <header className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line/12 pb-4">
+              <p className="font-mono text-[0.72rem] tracking-[0.1em] text-fg">{run.model}</p>
+              <p className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-faint">
                 prompt {run.promptVersion} · {run.origin} · {new Date(run.createdAt).toISOString().slice(0, 10)}
               </p>
             </header>
@@ -99,37 +99,37 @@ export function ModelComparison({ scenario }: { scenario: Scenario }) {
               />
             </div>
 
-            <dl className="mt-6 grid gap-4 border-t border-rule-soft pt-5 sm:grid-cols-3">
+            <dl className="mt-6 grid gap-4 border-t border-line/12 pt-5 sm:grid-cols-3">
               <div>
-                <dt className="eyebrow">Total movement</dt>
-                <dd className="mt-1 font-mono text-lg tabular text-rust">{Math.round(movement * 100)}%</dd>
+                <dt className="kicker">Total movement</dt>
+                <dd className="mt-1 font-mono text-lg tabular text-accent">{Math.round(movement * 100)}%</dd>
               </div>
               <div>
-                <dt className="eyebrow">Spread at start</dt>
-                <dd className="mt-1 font-mono text-lg tabular text-indigo">
+                <dt className="kicker">Spread at start</dt>
+                <dd className="mt-1 font-mono text-lg tabular text-cold">
                   {h0 === null ? "—" : `${Math.round(h0 * 100)}%`}
                 </dd>
               </div>
               <div>
-                <dt className="eyebrow">Spread at end</dt>
-                <dd className="mt-1 font-mono text-lg tabular text-indigo">
+                <dt className="kicker">Spread at end</dt>
+                <dd className="mt-1 font-mono text-lg tabular text-cold">
                   {hEnd === null ? "—" : `${Math.round(hEnd * 100)}%`}
                 </dd>
               </div>
             </dl>
 
-            <div className="mt-6 border-t border-rule-soft pt-5">
-              <p className="eyebrow mb-3">What the model said, stage by stage</p>
+            <div className="mt-6 border-t border-line/12 pt-5">
+              <p className="kicker mb-3">What the model said, stage by stage</p>
               <ol className="space-y-3">
                 {run.rationales.map((r, i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="mt-[3px] font-mono text-[0.6rem] tracking-widest text-ink-ghost tabular">
+                    <span className="mt-[3px] font-mono text-[0.6rem] tracking-widest text-faint tabular">
                       {stageLabels[i]}
                     </span>
-                    <span className="flex-1 text-[0.86rem] leading-relaxed text-ink-soft">
-                      {r || <span className="italic text-ink-ghost">no rationale returned</span>}
+                    <span className="flex-1 text-[0.86rem] leading-relaxed text-muted">
+                      {r || <span className="italic text-faint">no rationale returned</span>}
                       {run.steps[i].confidence !== null && (
-                        <span className="ml-2 font-mono text-[0.7rem] text-ink-ghost">
+                        <span className="ml-2 font-mono text-[0.7rem] text-faint">
                           [stated confidence {run.steps[i].confidence}%]
                         </span>
                       )}

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { PageHead, Shell } from "@/components/ui/primitives";
 import { Continue } from "@/components/ui/Continue";
 import { Reveal } from "@/components/ui/Reveal";
-import { Tag } from "@/components/ui/Tag";
+import { Shell, Boundary } from "@/components/ui/primitives";
 import { ConnectionMap } from "@/components/map/ConnectionMap";
 import { mapEdges } from "@/data/connections";
+import { Recorded } from "@/components/ui/Recorded";
 
 export const metadata: Metadata = {
   title: "The map",
-  description: "Every connection this project draws, with the severed ones drawn as severed.",
+  description: "Every connection, with the severed ones drawn as severed. Also the way around.",
 };
 
 export default function MapPage() {
@@ -16,27 +16,31 @@ export default function MapPage() {
 
   return (
     <>
-      <PageHead
-        title="The map"
-        tag={<Tag kind="analogy" />}
-        note={
-          <p>
-            It started as a folded sheet with coloured pen on it. Every line now has to say what kind
-            of line it is, and the ones I cut are still drawn.
-          </p>
-        }
-      />
+      <section className="pt-16 sm:pt-20">
+        <Shell>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-column">
+              <p className="kicker">This map is not the territory</p>
+              <h1 className="mt-4 font-display text-d2">The map</h1>
+            </div>
+            <p className="max-w-measure text-[0.86rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
+              It started as a folded sheet with coloured pen on it. Every line now has to declare
+              what kind of line it is, and the ones I cut are still drawn.
+            </p>
+          </div>
+        </Shell>
+      </section>
 
-      <Shell className="mt-14">
+      <Shell className="mt-12">
         <Reveal>
           <ConnectionMap />
         </Reveal>
       </Shell>
 
-      <Shell className="mt-24">
+      <Shell className="mt-20">
         <Reveal>
           <div className="max-w-column">
-            <div className="grid gap-6 sm:grid-cols-5">
+            <div className="grid gap-5 sm:grid-cols-5">
               {(
                 [
                   ["Structural", n("structural")],
@@ -47,26 +51,24 @@ export default function MapPage() {
                 ] as const
               ).map(([label, count]) => (
                 <div key={label} className="hair pt-4">
-                  <p className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-ink-ghost">
-                    {label}
-                  </p>
+                  <p className="kicker">{label}</p>
                   <p className="mt-1.5 font-display text-2xl tabular">{count}</p>
                 </div>
               ))}
             </div>
 
-            <div className="say mt-14 max-w-measure">
-              <p>
-                Drawing a line between two ideas costs nothing and feels like insight. Requiring each
-                one to declare its kind — and requiring the analogies to name their own disanalogy —
-                removed several and demoted more, including the line this project is named after.
-              </p>
-              <p className="text-ink">
-                <strong>prior → canon</strong> is dashed. A prior is a normalised distribution over a
-                stated hypothesis space. A canon is none of those things. What survives is a claim
-                about the role played, which is smaller than the title and is the reason the title is
-                a first discovery rather than a conclusion.
-              </p>
+            <div className="mt-12">
+              <Recorded what="Which nodes you opened, in order — a rough measure of which connections people actually check." />
+            </div>
+
+            <div className="mt-16">
+              <Boundary title="The line this project is named after is dashed">
+                <p>
+                  A prior is a normalised distribution over a stated hypothesis space. A canon is
+                  none of those things. What survives is a claim about the role played — smaller than
+                  the title, and the reason the title is a first discovery rather than a conclusion.
+                </p>
+              </Boundary>
             </div>
           </div>
         </Reveal>

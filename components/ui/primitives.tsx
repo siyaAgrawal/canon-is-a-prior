@@ -1,124 +1,77 @@
 import type { ReactNode } from "react";
 
 export function Shell({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-wide px-5 sm:px-8 ${className}`}>{children}</div>;
+  return <div className={`shell ${className}`}>{children}</div>;
 }
 
 export function Reading({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-reading ${className}`}>{children}</div>;
 }
 
-export function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="eyebrow">{children}</p>;
+export function Kicker({ children }: { children: ReactNode }) {
+  return <p className="kicker">{children}</p>;
 }
 
 /**
- * A page opening.
- *
- * No number, no standfirst. The first build put a paragraph under every title
- * explaining what the reader was about to understand, which is the single most
- * reliable way to stop them finding it themselves. If a page needs framing, the
- * framing is one line and it is a question or an observation, not a summary.
+ * A page opening. No standfirst — if a page needs framing it is one line, and it
+ * is an observation or a question rather than a summary of what follows.
  */
 export function PageHead({
   title,
   note,
   tag,
+  kicker,
 }: {
   title: string;
   note?: ReactNode;
   tag?: ReactNode;
+  kicker?: string;
 }) {
   return (
-    <header className="pt-14 sm:pt-20">
+    <header className="pt-16 sm:pt-24">
       <Shell>
         <div className="max-w-column">
+          {kicker && <p className="kicker mb-5">{kicker}</p>}
           {tag && <div className="mb-5">{tag}</div>}
-          <h1 className="text-display-l">{title}</h1>
-          {note && <div className="say mt-6 max-w-measure">{note}</div>}
+          <h1 className="font-display text-d2">{title}</h1>
+          {note && <div className="say mt-7 max-w-measure">{note}</div>}
         </div>
       </Shell>
     </header>
   );
 }
 
-/** A marginal note in the author's hand. Decorative in placement, substantive in content. */
-export function Annotation({
-  children,
-  className = "",
-  tone = "rust",
-}: {
-  children: ReactNode;
-  className?: string;
-  tone?: "rust" | "indigo" | "gold" | "moss";
-}) {
-  const colors = {
-    rust: "text-rust",
-    indigo: "text-indigo",
-    gold: "text-gold",
-    moss: "text-moss",
-  } as const;
+export function Rule({ label }: { label?: string }) {
+  if (!label) return <hr className="hair my-16 border-0" />;
   return (
-    <p className={`hand ${colors[tone]} ${className}`}>
-      <span aria-hidden="true" className="mr-1.5 opacity-60">
-        ↳
-      </span>
+    <div className="my-16 flex items-center gap-4">
+      <span className="h-px flex-1" style={{ background: "rgb(var(--line) / var(--line-a))" }} />
+      <span className="kicker">{label}</span>
+      <span className="h-px flex-1" style={{ background: "rgb(var(--line) / var(--line-a))" }} />
+    </div>
+  );
+}
+
+/** A marginal note in the researcher's hand. */
+export function Aside({ children }: { children: ReactNode }) {
+  return (
+    <p
+      className="max-w-measure text-[0.84rem] leading-relaxed"
+      style={{ color: "rgb(var(--faint))" }}
+    >
       {children}
     </p>
   );
 }
 
-export function PullQuote({ children, cite }: { children: ReactNode; cite?: string }) {
+/** Where a claim needs an explicit boundary drawn around it. */
+export function Boundary({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <figure className="my-12 border-l-2 border-rust/40 pl-6 sm:pl-8">
-      <blockquote className="font-display text-display-m leading-[1.15]">{children}</blockquote>
-      {cite && <figcaption className="mt-4 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-ink-faint">{cite}</figcaption>}
-    </figure>
-  );
-}
-
-export function Rule({ label }: { label?: string }) {
-  if (!label) return <hr className="my-14 border-0 border-t border-rule-soft" />;
-  return (
-    <div className="my-14 flex items-center gap-4">
-      <span className="h-px flex-1 bg-rule-soft" />
-      <span className="eyebrow">{label}</span>
-      <span className="h-px flex-1 bg-rule-soft" />
+    <div className="border-l-2 py-1 pl-6" style={{ borderColor: "rgb(var(--accent))" }}>
+      <p className="kicker mb-2" style={{ color: "rgb(var(--accent))" }}>
+        {title}
+      </p>
+      <div className="say max-w-measure text-[0.98rem]">{children}</div>
     </div>
-  );
-}
-
-export function NoteCard({
-  title,
-  children,
-  tone = "plain",
-}: {
-  title?: string;
-  children: ReactNode;
-  tone?: "plain" | "warn" | "quiet";
-}) {
-  const tones = {
-    plain: "border-rule-soft",
-    warn: "border-rust/30 bg-rust/[0.035]",
-    quiet: "border-rule-soft bg-paper-sunk/60",
-  } as const;
-  return (
-    <div className={`note ${tones[tone]}`}>
-      {title && <p className="eyebrow mb-2">{title}</p>}
-      <div className="prose-note">{children}</div>
-    </div>
-  );
-}
-
-/** Numbered step markers used in the belief-trajectory diagrams. */
-export function StepMarker({ label, active = false }: { label: string; active?: boolean }) {
-  return (
-    <span
-      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border font-mono text-[0.6rem] tabular ${
-        active ? "border-rust bg-rust text-paper" : "border-rule text-ink-faint"
-      }`}
-    >
-      {label}
-    </span>
   );
 }

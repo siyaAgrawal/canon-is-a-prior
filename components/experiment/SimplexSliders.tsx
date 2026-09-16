@@ -53,12 +53,12 @@ export function SimplexSliders({
                 <span className="font-display text-[1.06rem] leading-tight" style={{ color: c.stroke }}>
                   {interp.label}
                 </span>
-                <span className="mt-0.5 block text-[0.82rem] leading-snug text-ink-faint">{interp.gloss}</span>
+                <span className="mt-0.5 block text-[0.82rem] leading-snug text-faint">{interp.gloss}</span>
               </label>
               <span className="flex shrink-0 items-baseline gap-2">
                 {delta !== null && delta !== 0 && (
                   <span
-                    className={`font-mono text-[0.66rem] tabular ${delta > 0 ? "text-moss" : "text-ink-ghost"}`}
+                    className={`font-mono text-[0.66rem] tabular ${delta > 0 ? "text-evidence" : "text-faint"}`}
                     aria-hidden="true"
                   >
                     {delta > 0 ? "+" : ""}
@@ -75,7 +75,7 @@ export function SimplexSliders({
               {prev !== undefined && (
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-0 top-[13px] h-[3px] bg-ink/15"
+                  className="pointer-events-none absolute left-0 top-[13px] h-[3px] bg-fg/15"
                   style={{ width: `${prev}%` }}
                 />
               )}
@@ -102,9 +102,9 @@ export function SimplexSliders({
         );
       })}
 
-      <div className="flex items-center justify-between border-t border-rule-soft pt-3">
-        <span className="eyebrow">Total</span>
-        <span className="font-mono text-[0.9rem] tabular text-ink-faint">{total}%</span>
+      <div className="flex items-center justify-between border-t border-line/12 pt-3">
+        <span className="kicker">Total</span>
+        <span className="font-mono text-[0.9rem] tabular text-faint">{total}%</span>
       </div>
       <p aria-live="polite" className="sr-only">
         Total {total} percent.{" "}

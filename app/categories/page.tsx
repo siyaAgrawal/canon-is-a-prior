@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function CategoriesPage() {
   return (
     <>
-      <section className="breath pb-0">
+      <section className="pt-[16vh] pb-0">
         <Shell>
           <div className="max-w-column">
             <h1 className="statement">Is it a wave or a particle?</h1>
@@ -49,7 +49,7 @@ export default function CategoriesPage() {
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Tag kind="observed" />
-              <span className="text-[0.8rem] text-ink-ghost">
+              <span className="text-[0.8rem] text-faint">
                 Sourced. Thesis, both 1927 experiments, and Bohr&rsquo;s 1928 paper are on the sources
                 list.
               </span>
@@ -84,7 +84,7 @@ export default function CategoriesPage() {
               </p>
             </div>
 
-            <div className="mt-12 border-l-2 border-gold/60 pl-6">
+            <div className="mt-12 border-l-2 border-sun/60 pl-6">
               <div className="mb-3"><Tag kind="analogy" /></div>
               <p className="say max-w-measure text-[0.95rem]">
                 And here the comparison stops hard. The trade-off above is a relation — derived,
@@ -92,7 +92,7 @@ export default function CategoriesPage() {
                 description you can have. Nothing in reading has anything like it. No theorem tells
                 you how much &ldquo;curious&rdquo; costs you in &ldquo;prideful&rdquo;.
               </p>
-              <p className="mt-4 max-w-measure text-[0.88rem] leading-relaxed text-ink-faint">
+              <p className="mt-4 max-w-measure text-[0.88rem] leading-relaxed text-faint">
                 So this is a good illustration of a move and a bad model of one. It is marked{" "}
                 <em>weakened</em> on the claims page for exactly that reason.
               </p>

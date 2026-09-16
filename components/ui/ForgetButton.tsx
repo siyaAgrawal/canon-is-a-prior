@@ -19,7 +19,7 @@ export function ForgetButton() {
         Clear my session identifier
       </button>
       {done && (
-        <span className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-moss" role="status">
+        <span className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-evidence" role="status">
           Cleared. A new one is generated if you submit again.
         </span>
       )}

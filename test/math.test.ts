@@ -19,6 +19,7 @@ import { evenDistribution, isValid, roundToSum, setAndRebalance, sum } from "../
 import { allScenarios } from "../data";
 import { canonModules } from "../data/canon";
 import { mapEdges, mapNodes } from "../data/connections";
+import { validateTrace, INSTRUMENTS } from "../lib/trace-schema";
 
 let failures = 0;
 function check(name: string, fn: () => void) {
@@ -251,6 +252,39 @@ check("every analogical edge states its disanalogy", () => {
 check("every map node is reachable by at least one edge", () => {
   const touched = new Set(mapEdges.flatMap((e) => [e.from, e.to]));
   mapNodes.forEach((n) => assert.ok(touched.has(n.id), `'${n.id}' is isolated`));
+});
+
+console.log("\nstored payloads");
+
+check("every instrument has a schema", () => {
+  assert.ok(INSTRUMENTS.length >= 6, `only ${INSTRUMENTS.length} instruments`);
+});
+
+check("an unknown instrument is refused", () => {
+  const r = validateTrace("not_an_instrument", {});
+  assert.equal(r.ok, false);
+});
+
+check("unknown fields are stripped, not stored", () => {
+  const r = validateTrace("versions", {
+    steps: [{ itemId: "i1", reading: "cold", stance: "fits", smuggled: "free text" }],
+    switches: 0,
+    accommodations: 0,
+    survived: true,
+    note: "this should never reach storage",
+  });
+  assert.ok(r.ok, "valid payload was rejected");
+  if (!r.ok) return;
+  assert.deepEqual(Object.keys(r.clean).sort(), ["accommodations", "steps", "survived", "switches"]);
+  assert.deepEqual(Object.keys((r.clean.steps as any[])[0]).sort(), ["itemId", "reading", "stance"]);
+  assert.ok(!JSON.stringify(r.clean).includes("free text"));
+  assert.ok(!JSON.stringify(r.clean).includes("never reach storage"));
+});
+
+check("malformed values are refused rather than coerced", () => {
+  assert.equal(validateTrace("shape", { judgements: { a: "maybe" }, controlsAccepted: 0, realRejected: 0 }).ok, false);
+  assert.equal(validateTrace("entry", { assumptions: ["ok"], switches: 1.5 }).ok, false);
+  assert.equal(validateTrace("map", { opened: ["fine", "<script>"] }).ok, false);
 });
 
 console.log(failures === 0 ? "\nAll checks passed.\n" : `\n${failures} check(s) failed.\n`);

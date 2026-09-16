@@ -11,7 +11,7 @@ import { colorAt } from "@/lib/palette";
 import { SimplexSliders } from "./SimplexSliders";
 import { BeliefTrajectory } from "@/components/viz/BeliefTrajectory";
 import { DistributionBars } from "@/components/viz/DistributionBars";
-import { Annotation, NoteCard } from "@/components/ui/primitives";
+import { Aside, Boundary } from "@/components/ui/primitives";
 
 type Phase = "prior" | "evidence" | "review";
 
@@ -166,18 +166,18 @@ export function BeliefExperiment({
     return (
       <div className="space-y-10">
         <div>
-          <p className="eyebrow">Result</p>
-          <h3 className="mt-2 text-display-m">
+          <p className="kicker">Result</p>
+          <h3 className="mt-2 text-d4">
             {overall < 0.06 ? "Your interpretation held." : "Your interpretation changed."}
           </h3>
-          <p className="prose-note mt-4 max-w-reading">
+          <p className="say mt-4 max-w-reading">
             {overall < 0.06
               ? "Across all the evidence, your distribution moved very little. That is a legitimate outcome — evidence that does not discriminate should not move you — and it is also the outcome that is hardest to tell apart from not engaging. Both look the same in the data."
               : `Between your first distribution and your last, belief moved ${Math.round(overall * 100)}% of the maximum possible distance. That number is a total variation distance: 0% would mean you did not move at all, 100% would mean you ended up with no weight on anything you started with.`}
           </p>
         </div>
 
-        <div className="card p-5 sm:p-7">
+        <div className="panel p-5 sm:p-7">
           <BeliefTrajectory
             interpretations={scenario.interpretations}
             stages={distributions}
@@ -194,19 +194,19 @@ export function BeliefExperiment({
             label="Where you started, and where you ended"
           />
           <div>
-            <p className="eyebrow mb-3">What moved you</p>
+            <p className="kicker mb-3">What moved you</p>
             <ul className="space-y-3">
               {movements.map((m, i) => (
                 <li key={m.evidence.id}>
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-[0.86rem] text-ink-soft">Evidence {i + 1}</span>
-                    <span className="font-mono text-[0.78rem] tabular text-ink-faint">
+                    <span className="text-[0.86rem] text-muted">Evidence {i + 1}</span>
+                    <span className="font-mono text-[0.78rem] tabular text-faint">
                       {Math.round(m.magnitude * 100)}%
                     </span>
                   </div>
-                  <div className="mt-1 h-[7px] w-full bg-ink/[0.06]">
+                  <div className="mt-1 h-[7px] w-full bg-fg/[0.06]">
                     <span
-                      className="block h-full bg-rust"
+                      className="block h-full bg-accent"
                       style={{ width: `${Math.min(100, m.magnitude * 100)}%` }}
                       aria-hidden="true"
                     />
@@ -215,13 +215,13 @@ export function BeliefExperiment({
               ))}
             </ul>
             {biggest && biggest.magnitude > 0.02 && (
-              <Annotation className="mt-4">
+              <div className="mt-4"><Aside>
                 The largest single shift came from evidence{" "}
                 {movements.findIndex((m) => m.evidence.id === biggest.evidence.id) + 1}.
-              </Annotation>
+              </Aside></div>
             )}
             {h0 !== null && h1 !== null && (
-              <NoteCard title="How committed you became" tone="quiet">
+              <div className="mt-5"><Boundary title="How committed you became">
                 <p>
                   Your spread went from {Math.round(h0 * 100)}% to {Math.round(h1 * 100)}% of maximum. A
                   high number means you kept several readings alive; a low one means you concentrated on
@@ -229,28 +229,28 @@ export function BeliefExperiment({
                   Neither direction is the correct one. Whether narrowing was warranted depends on how much
                   the evidence actually discriminated, which is exactly what is unsettled here.
                 </p>
-              </NoteCard>
+              </Boundary></div>
             )}
           </div>
         </div>
 
         <div>
-          <p className="eyebrow mb-4">Why each piece of evidence was written</p>
-          <p className="prose-note mb-5 max-w-reading">
+          <p className="kicker mb-4">Why each piece of evidence was written</p>
+          <p className="say mb-5 max-w-reading">
             These notes were hidden until now on purpose. Telling you what an item was designed to do
             would have measured whether you follow instructions rather than how you read.
           </p>
           <ol className="space-y-4">
             {scenario.evidence.map((e, i) => (
-              <li key={e.id} className="border-l-2 border-rule pl-5">
-                <p className="text-[0.9rem] leading-relaxed text-ink">
-                  <span className="font-mono text-[0.68rem] tracking-widest text-ink-ghost">
+              <li key={e.id} className="border-l-2 border-line/20 pl-5">
+                <p className="text-[0.9rem] leading-relaxed text-fg">
+                  <span className="font-mono text-[0.68rem] tracking-widest text-faint">
                     {String(i + 1).padStart(2, "0")}
                   </span>{" "}
                   {e.text}
                 </p>
-                <p className="mt-2 text-[0.84rem] leading-relaxed text-ink-faint">
-                  <span className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-rust">Design note — </span>
+                <p className="mt-2 text-[0.84rem] leading-relaxed text-faint">
+                  <span className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-accent">Design note — </span>
                   {e.designNote}
                 </p>
               </li>
@@ -258,22 +258,22 @@ export function BeliefExperiment({
           </ol>
         </div>
 
-        <div className="border-t border-rule-soft pt-6">
+        <div className="border-t border-line/12 pt-6">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             {submitState === "done" && (
-              <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-moss">
+              <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-evidence">
                 Response recorded anonymously
               </p>
             )}
             {submitState === "sending" && (
-              <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-ink-faint">Saving…</p>
+              <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-faint">Saving…</p>
             )}
             {submitState === "error" && (
               <div className="w-full">
-                <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-rust">
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-accent">
                   Not saved
                 </p>
-                <p className="mt-2 max-w-reading text-[0.88rem] leading-relaxed text-ink-soft">{submitError}</p>
+                <p className="mt-2 max-w-reading text-[0.88rem] leading-relaxed text-muted">{submitError}</p>
                 {!retryPointless && (
                   <button type="button" className="btn mt-3" onClick={() => void submit()}>
                     Try again
@@ -290,7 +290,7 @@ export function BeliefExperiment({
               Was any of that real? →
             </Link>
           </div>
-          <p className="mt-4 max-w-reading text-[0.8rem] leading-relaxed text-ink-ghost">
+          <p className="mt-4 max-w-reading text-[0.8rem] leading-relaxed text-faint">
             What was stored: a random session identifier, this scenario&rsquo;s id, your four
             distributions and the elapsed time. No name, no account, no IP address, no tracking cookie.{" "}
             <Link href="/ethics" className="underline decoration-dotted underline-offset-2">
@@ -310,7 +310,7 @@ export function BeliefExperiment({
           <span
             key={l}
             className={`h-[3px] flex-1 transition-colors duration-500 ${
-              i < stageIndex ? "bg-rust/60" : i === stageIndex ? "bg-rust" : "bg-ink/10"
+              i < stageIndex ? "bg-accent/60" : i === stageIndex ? "bg-accent" : "bg-fg/10"
             }`}
           />
         ))}
@@ -324,10 +324,10 @@ export function BeliefExperiment({
             animate={{ opacity: 1, y: 0 }}
             exit={reduce ? undefined : { opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="border-l-2 border-rust bg-rust/[0.04] px-5 py-4 sm:px-6 sm:py-5"
+            className="border-l-2 border-accent bg-accent/[0.04] px-5 py-4 sm:px-6 sm:py-5"
             role="status"
           >
-            <p className="eyebrow text-rust">New evidence — {stageIndex} of {scenario.evidence.length}</p>
+            <p className="kicker text-accent">New evidence — {stageIndex} of {scenario.evidence.length}</p>
             <p className="mt-2 font-display text-[1.12rem] leading-[1.5]">{evidenceShown.text}</p>
           </motion.div>
         )}
@@ -335,7 +335,7 @@ export function BeliefExperiment({
 
       <div>
         <p className="font-display text-[1.15rem] leading-snug">{scenario.question}</p>
-        <p className="mt-1 text-[0.84rem] text-ink-faint">
+        <p className="mt-1 text-[0.84rem] text-faint">
           {stageIndex === 0
             ? "Spread one hundred points across the readings. Raising one necessarily lowers the others — that constraint is the point."
             : "Adjust if this changes anything. Leaving it unchanged is a real answer."}
@@ -349,8 +349,8 @@ export function BeliefExperiment({
         previous={previous}
       />
 
-      <div className="border-t border-rule-soft pt-5">
-        <label className="flex flex-wrap items-center gap-3 text-[0.84rem] text-ink-faint">
+      <div className="border-t border-line/12 pt-5">
+        <label className="flex flex-wrap items-center gap-3 text-[0.84rem] text-faint">
           <span>How confident are you in this distribution?</span>
           <span className="flex min-w-[180px] flex-1 items-center gap-3">
             <input
@@ -360,7 +360,7 @@ export function BeliefExperiment({
               step={5}
               value={confidences[stageIndex] ?? 50}
               onChange={(e) => setConfidence(Number(e.target.value))}
-              className="text-ink-faint"
+              className="text-faint"
               aria-label="Confidence in this distribution, 0 to 100"
             />
             <span className="w-12 shrink-0 font-mono text-[0.8rem] tabular">
@@ -368,7 +368,7 @@ export function BeliefExperiment({
             </span>
           </span>
         </label>
-        <p className="mt-1.5 text-[0.76rem] text-ink-ghost">Optional. Confidence in the spread itself, not in any one reading.</p>
+        <p className="mt-1.5 text-[0.76rem] text-faint">Optional. Confidence in the spread itself, not in any one reading.</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
@@ -376,7 +376,7 @@ export function BeliefExperiment({
           {isLastEvidence ? "See how you moved" : stageIndex === 0 ? "Submit this prior" : "Update"}
         </button>
         {stageIndex === 0 && !touched && (
-          <span className="text-[0.8rem] text-ink-ghost">
+          <span className="text-[0.8rem] text-faint">
             It starts flat. Leaving it flat means every reading is equally plausible to you.
           </span>
         )}

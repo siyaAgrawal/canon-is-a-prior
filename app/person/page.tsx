@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function PersonPage() {
   return (
     <>
-      <section className="breath">
+      <section className="py-[16vh]">
         <Shell>
           <div className="max-w-column">
             <h1 className="statement">You have almost never met anyone.</h1>
@@ -40,16 +40,16 @@ export default function PersonPage() {
               being read wrong. A dataset does not care what you trained on it. An electron has no
               stake in which of two words you use.
             </p>
-            <p className="say mt-5 max-w-measure text-ink">
+            <p className="say mt-5 max-w-measure text-fg">
               The place where the model is not the thing, and the difference costs something, is
               here.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Tag kind="analogy" />
-              <span className="max-w-measure text-[0.8rem] leading-relaxed text-ink-ghost">
+              <span className="max-w-measure text-[0.8rem] leading-relaxed text-faint">
                 And this is where the project&rsquo;s own comparison is weakest. A person responds to
                 being modelled. Nothing else in this investigation does. That asymmetry is on the{" "}
-                <a href="/shape" className="underline decoration-dotted underline-offset-2 hover:text-ink">
+                <a href="/shape" className="underline decoration-dotted underline-offset-2 hover:text-fg">
                   claims page
                 </a>{" "}
                 and it is the reason the person/dataset comparison is marked as dangerous rather than

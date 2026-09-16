@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { claims, VERDICT_LABEL, type Claim } from "@/data/claims";
+import { recordTrace } from "@/lib/record";
+import { Recorded } from "@/components/ui/Recorded";
 
 /**
  * The reader judges this project's own connections before being told which are
@@ -25,6 +27,8 @@ export function ShapeAudit() {
   const [i, setI] = useState(0);
   const [judgements, setJudgements] = useState<Record<string, Judgement>>({});
   const [revealed, setRevealed] = useState(false);
+  const startedAt = useRef(Date.now());
+  const sent = useRef(false);
 
   // Fixed order: controls are interleaved rather than clustered, so a reader
   // cannot infer status from position.
@@ -63,6 +67,18 @@ export function ShapeAudit() {
   const realOnes = sequence.filter((c) => c.verdict === "holds");
   const realRejected = realOnes.filter((c) => judgements[c.id] === "imposed").length;
 
+  // How often the fabrications pass is the single most useful number this project
+  // can collect, so unlike the rest of the instruments this one records on reveal.
+  useEffect(() => {
+    if (!revealed || sent.current) return;
+    sent.current = true;
+    void recordTrace(
+      "shape",
+      { judgements, controlsAccepted, realRejected },
+      Date.now() - startedAt.current,
+    );
+  }, [revealed, judgements, controlsAccepted, realRejected]);
+
   if (revealed) {
     return (
       <div>
@@ -100,10 +116,10 @@ export function ShapeAudit() {
               <li key={c.id} className="hair py-8">
                 <div className="grid gap-x-8 gap-y-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
                   <div>
-                    <p className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-ink-ghost">
-                      {c.between[0]} <span className="text-rust">/</span> {c.between[1]}
+                    <p className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-faint">
+                      {c.between[0]} <span className="text-accent">/</span> {c.between[1]}
                     </p>
-                    <p className="mt-3 font-display text-[1.06rem] leading-[1.45] text-ink">{c.claim}</p>
+                    <p className="mt-3 font-display text-[1.06rem] leading-[1.45] text-fg">{c.claim}</p>
                     <div className="mt-4 flex flex-wrap items-center gap-3">
                       <span
                         className={`tag ${
@@ -119,17 +135,17 @@ export function ShapeAudit() {
                         {VERDICT_LABEL[c.verdict]}
                       </span>
                       {j && (
-                        <span className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-ink-ghost">
+                        <span className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-faint">
                           you said {j}
-                          {isControl && j === "found" && <span className="text-rust"> — it was mine</span>}
+                          {isControl && j === "found" && <span className="text-accent"> — it was mine</span>}
                         </span>
                       )}
                     </div>
                   </div>
                   <div>
                     <p className="say text-[0.94rem]">{c.reasoning}</p>
-                    <p className="mt-3 text-[0.85rem] leading-relaxed text-ink-faint">
-                      <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-rust">
+                    <p className="mt-3 text-[0.85rem] leading-relaxed text-faint">
+                      <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-accent">
                         Changes if —{" "}
                       </span>
                       {c.wouldChangeIf}
@@ -149,10 +165,15 @@ export function ShapeAudit() {
               setJudgements({});
               setI(0);
               setRevealed(false);
+              sent.current = false;
+              startedAt.current = Date.now();
             }}
           >
             ↺ Clear and run it again
           </button>
+          <div className="mt-6">
+            <Recorded what="Your ten judgements and how many controls passed." />
+          </div>
         </div>
       </div>
     );
@@ -166,12 +187,12 @@ export function ShapeAudit() {
             <span
               key={c.id}
               className={`h-[3px] flex-1 transition-colors duration-300 ${
-                judgements[c.id] ? "bg-rust/60" : n === i ? "bg-rust" : "bg-ink/10"
+                judgements[c.id] ? "bg-accent/60" : n === i ? "bg-accent" : "bg-fg/10"
               }`}
             />
           ))}
         </div>
-        <span className="font-mono text-[0.62rem] tabular text-ink-ghost">
+        <span className="font-mono text-[0.62rem] tabular text-faint">
           {Object.keys(judgements).length}/{sequence.length}
         </span>
       </div>
@@ -186,10 +207,10 @@ export function ShapeAudit() {
             transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             className="min-h-[19rem]"
           >
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-ink-ghost">
-              {claim.between[0]} <span className="text-rust">/</span> {claim.between[1]}
+            <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-faint">
+              {claim.between[0]} <span className="text-accent">/</span> {claim.between[1]}
             </p>
-            <p className="mt-6 max-w-column font-display text-display-m leading-[1.3]">{claim.claim}</p>
+            <p className="mt-6 max-w-column font-display text-d4 leading-[1.3]">{claim.claim}</p>
 
             <div className="mt-10 flex flex-wrap gap-3">
               <button type="button" className="btn" onClick={() => judge("found")}>
@@ -219,16 +240,18 @@ export function ShapeAudit() {
       <div className="hair mt-10 pt-6">
         <button
           type="button"
-          className="btn border-ink bg-ink text-paper hover:bg-transparent hover:text-ink disabled:border-ink/25 disabled:bg-transparent disabled:text-ink"
+          className="btn border-fg bg-fg text-bg hover:bg-transparent hover:text-ink disabled:border-fg/25 disabled:bg-transparent disabled:text-fg"
           disabled={!done}
           onClick={() => setRevealed(true)}
         >
           {done ? "Show me what they were" : `Judge all ${sequence.length} first`}
         </button>
-        <p className="mt-4 max-w-measure text-[0.8rem] leading-relaxed text-ink-ghost">
+        <p className="mt-4 max-w-measure text-[0.8rem] leading-relaxed text-faint">
           Some of these I defend. One I gave up. Some I wrote myself, to see whether they would pass.
-          Nothing you do here is recorded.
         </p>
+        <div className="mt-4">
+          <Recorded what="Which claims you marked found or imposed, and how many of the three controls got through — the single most useful number this project can collect." />
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import type { AIResponse, ParticipantResponse } from "@/types";
+import type { AIResponse, ParticipantResponse, Trace } from "@/types";
 import type { ExperimentStore } from "./store";
 
 /**
@@ -59,6 +59,15 @@ export class FileStore implements ExperimentStore {
     return scenarioId ? all.filter((r) => r.scenarioId === scenarioId) : all;
   }
 
+  saveTrace(t: Trace) {
+    return this.append("traces.jsonl", t);
+  }
+
+  async listTraces(instrument?: Trace["instrument"]) {
+    const all = await this.readAll<Trace>("traces.jsonl");
+    return instrument ? all.filter((t) => t.instrument === instrument) : all;
+  }
+
   saveAIResponse(r: AIResponse) {
     return this.append("ai-responses.jsonl", r);
   }
@@ -69,11 +78,15 @@ export class FileStore implements ExperimentStore {
   }
 
   async counts() {
-    const [responses, ai] = await Promise.all([this.listResponses(), this.listAIResponses()]);
+    const [responses, ai, traces] = await Promise.all([
+      this.listResponses(),
+      this.listAIResponses(),
+      this.listTraces(),
+    ]);
     return {
       responses: responses.length,
       aiResponses: ai.length,
-      sessions: new Set(responses.map((r) => r.sessionId)).size,
+      sessions: new Set([...responses, ...traces].map((r) => r.sessionId)).size,
     };
   }
 }
