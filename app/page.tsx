@@ -5,6 +5,7 @@ import { ScaleBreak } from "@/components/shape/ScaleBreak";
 import { Reveal } from "@/components/ui/Reveal";
 import { Shell } from "@/components/ui/primitives";
 import { Tag } from "@/components/ui/Tag";
+import { Pulse } from "@/components/research/Pulse";
 
 /**
  * The arc: ambiguous word → interpretation → fanfiction → character → the other
@@ -187,6 +188,10 @@ export default function Home() {
                 pattern that is not. It gets clearer with every example. Examples are easy to add.
                 Adding them feels like evidence.
               </p>
+
+              <div className="mt-14 max-w-column">
+                <Pulse />
+              </div>
 
               <div className="mt-12 flex flex-wrap items-center gap-6">
                 <Link href="/shape" className="btn btn-solid">

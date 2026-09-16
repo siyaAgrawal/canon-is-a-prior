@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { recordTrace } from "@/lib/record";
 import { Recorded } from "@/components/ui/Recorded";
+import { Pulse } from "@/components/research/Pulse";
 
 /**
  * "Sure."
@@ -270,6 +271,10 @@ export function Sure({ onDone }: { onDone?: () => void }) {
 
               <div className="mt-8">
                 <Recorded what="The reading you held at each stage, how many times you moved, and your confidence before any evidence arrived." />
+              </div>
+
+              <div className="mt-10">
+                <Pulse />
               </div>
 
               <button

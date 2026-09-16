@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Continue } from "@/components/ui/Continue";
 import { Reveal } from "@/components/ui/Reveal";
 import { Shell, Boundary } from "@/components/ui/primitives";
-import { DiscoveryBoard } from "@/components/research/DiscoveryBoard";
-import { researchQuestion, candidates, STATUS_LABEL, type Status } from "@/research/discovery";
+import { LiveFindings } from "@/components/research/LiveFindings";
+import { researchQuestion } from "@/research/discovery";
 
 export const metadata: Metadata = {
   title: "What we know so far",
@@ -12,8 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default function DiscoveryPage() {
-  const byStatus = (s: Status) => candidates.filter((c) => c.status === s).length;
-
   return (
     <>
       <section className="pt-16 sm:pt-24">
@@ -26,20 +24,14 @@ export default function DiscoveryPage() {
               know yet.
             </h1>
             <p className="say mt-9 max-w-measure">
-              Eight candidates. One abandoned before anything was collected, one weakened by the
-              project&rsquo;s own audit, six open with nothing bearing on them.
+              Eight candidates. Each one has a computation attached to it and a decision rule that
+              was fixed before any data existed. The statuses below are recomputed from storage
+              every time this page loads — including when the answer is that there is not enough
+              yet to say anything.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-5 sm:grid-cols-3 lg:grid-cols-5">
-            {(["open", "supported", "weakened", "contradicted", "abandoned"] as Status[]).map((s) => (
-              <div key={s} className="hair pt-4">
-                <p className="kicker">{STATUS_LABEL[s]}</p>
-                <p className="mt-1.5 font-display text-2xl tabular">{byStatus(s)}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 max-w-measure text-[0.84rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
+          <p className="mt-10 max-w-measure text-[0.84rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
             There is no <em>proven</em> column, and there will not be one. A claim that has survived
             everything thrown at it is <em>supported</em> — which is a statement about what was
             thrown.
@@ -49,7 +41,7 @@ export default function DiscoveryPage() {
 
       <Shell className="mt-20">
         <Reveal>
-          <DiscoveryBoard />
+          <LiveFindings />
         </Reveal>
       </Shell>
 

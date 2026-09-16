@@ -5,6 +5,7 @@ import { hypotheses, limitations, method } from "@/research/lab";
 import { allScenarios } from "@/data";
 import { cases as discriminateCases } from "@/data/discriminate";
 import { INSTRUMENTS } from "@/lib/trace-schema";
+import { computeFindings } from "@/lib/analysis";
 
 export const dynamic = "force-dynamic";
 
@@ -112,45 +113,42 @@ export async function GET(req: Request) {
   w(`Distinct sessions: ${sessions}.`);
 
   w("## 6. Results");
-  const hard = insufficient(traces.length + responses.length);
-  if (hard) {
-    w(hard);
+  w(
+    "Computed from storage at request time by the same function the site uses, so the manuscript and the live page cannot disagree. Each decision rule was fixed before any data existed.",
+  );
+
+  const findings = computeFindings(traces, responses, ai);
+  const ready = findings.filter((f) => f.ready);
+  if (ready.length === 0) {
     w(
-      "No effect sizes, no tests, and no figures are produced at this sample size. Reporting them would be the most respectable-looking mistake available to this project.",
+      `**Insufficient data on every measure.** ${traces.length} responses across ${sessions} sessions; no candidate has reached its stated minimum. No effect sizes, tests or figures are produced, and reporting them at this sample size would be the most respectable-looking mistake available here.`,
     );
-  } else {
-    const disc = traces.filter((t) => t.instrument === "discriminate");
-    const discriminatingChosen = disc.filter(
-      (t) => (t.payload as any)?.proposedTestIsDiscriminating === true,
-    ).length;
-    w(
-      `**Discriminating-test selection.** Of ${disc.length} proposals, ${discriminatingChosen} (${(
-        (discriminatingChosen / Math.max(1, disc.length)) *
-        100
-      ).toFixed(0)}%) selected an observation that separates the two models. Raw counts only; no inferential test is reported.`,
-    );
-    const cat = traces.filter((t) => t.instrument === "category");
-    if (cat.length > 0) {
-      const tally: Record<string, number> = {};
-      cat.forEach((t) => {
-        const r = String((t.payload as any)?.anomalyResponse ?? "—");
-        tally[r] = (tally[r] ?? 0) + 1;
-      });
-      w(
-        `**Anomaly response.** ${Object.entries(tally)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join("; ")}.`,
-      );
-    }
-    const shape = traces.filter((t) => t.instrument === "shape");
-    if (shape.length > 0) {
-      const accepted = shape.map((t) => Number((t.payload as any)?.controlsAccepted ?? 0));
-      const mean = accepted.reduce((a, b) => a + b, 0) / accepted.length;
-      w(
-        `**Control acceptance.** Mean fabricated connections accepted: ${mean.toFixed(2)} of 3 (n = ${shape.length}).`,
-      );
-    }
   }
+  findings.forEach((f) => {
+    const c = candidates.find((x) => x.id === f.id);
+    if (!c) return;
+    if (f.status === "abandoned") return;
+    if (!f.ready) {
+      w(
+        `**${c.claim}**`,
+        "",
+        `Insufficient data: n = ${f.n}, minimum ${f.minN}. Rule: ${f.rule}`,
+      );
+      return;
+    }
+    w(
+      `**${c.claim}**`,
+      "",
+      `${f.result} Status: ${f.status.toUpperCase()}.`,
+      "",
+      `*Rule (fixed in advance):* ${f.rule}`,
+      "",
+      `*Rival:* ${c.rival}`,
+      f.discriminating
+        ? ""
+        : `\n*This number cannot separate the claim from its rival.* ${f.caveat ?? ""}`,
+    );
+  });
 
   w("## 7. Candidate findings and their status");
   candidates.forEach((c) => {
