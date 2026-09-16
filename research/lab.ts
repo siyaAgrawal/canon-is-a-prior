@@ -129,6 +129,10 @@ export const failures: { title: string; body: string }[] = [
 
 export const limitations: { title: string; body: string }[] = [
   {
+    title: "The options are mine",
+    body: "Every experiment here hands you a fixed list of readings and no box to write a better one. You are distributing belief inside a hypothesis space someone else chose — which is the thing the project is about, performed on you, by me, unavoidably.",
+  },
+  {
     title: "Self-selection",
     body: "Everyone in this dataset chose to do an online experiment about belief revision in Greek myth. That is not a sample of anything except people who would do that. No claim on this site generalises beyond the people who happened to participate.",
   },

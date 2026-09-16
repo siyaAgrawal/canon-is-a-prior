@@ -29,11 +29,14 @@ const config: Config = {
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
-        "display-xl": ["clamp(2.75rem, 9vw, 6.5rem)", { lineHeight: "0.95", letterSpacing: "-0.03em" }],
-        "display-l": ["clamp(2rem, 6vw, 3.75rem)", { lineHeight: "1.02", letterSpacing: "-0.02em" }],
-        "display-m": ["clamp(1.55rem, 4vw, 2.5rem)", { lineHeight: "1.1", letterSpacing: "-0.015em" }],
+        /* Four display sizes and no more. The largest exists so a single sentence can
+           take a whole screen when it deserves one. */
+        "display-xl": ["clamp(2.6rem, 8.5vw, 6rem)", { lineHeight: "0.96", letterSpacing: "-0.03em" }],
+        "display-l": ["clamp(1.9rem, 5.2vw, 3.4rem)", { lineHeight: "1.06", letterSpacing: "-0.02em" }],
+        "display-m": ["clamp(1.45rem, 3.4vw, 2.1rem)", { lineHeight: "1.18", letterSpacing: "-0.012em" }],
+        "display-s": ["clamp(1.15rem, 2.2vw, 1.45rem)", { lineHeight: "1.3", letterSpacing: "-0.008em" }],
       },
-      maxWidth: { measure: "34rem", wide: "72rem", reading: "44rem" },
+      maxWidth: { measure: "32rem", wide: "74rem", reading: "40rem", column: "54rem" },
       keyframes: {
         "fade-up": { "0%": { opacity: "0", transform: "translateY(10px)" }, "100%": { opacity: "1", transform: "none" } },
         "draw": { "0%": { strokeDashoffset: "1" }, "100%": { strokeDashoffset: "0" } },

@@ -286,8 +286,8 @@ export function BeliefExperiment({
                 Contribute this response
               </button>
             )}
-            <Link href="/bayes" className="btn">
-              What you just did →
+            <Link href="/shape" className="btn">
+              Was any of that real? →
             </Link>
           </div>
           <p className="mt-4 max-w-reading text-[0.8rem] leading-relaxed text-ink-ghost">

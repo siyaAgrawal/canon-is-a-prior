@@ -162,7 +162,7 @@ export function Dashboard() {
             page appears the moment there is something real to put in it, and not before.
           </p>
           <p className="mt-3">
-            <Link href="/experiment" className="underline decoration-dotted underline-offset-2">
+            <Link href="/machines" className="underline decoration-dotted underline-offset-2">
               The first response can be yours.
             </Link>
           </p>

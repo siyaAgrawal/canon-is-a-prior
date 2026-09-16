@@ -1,49 +1,89 @@
 /**
- * The journey.
+ * Territories, not chapters.
  *
- * The site is twelve stops in a fixed order, not twelve pages. Every stop knows what
- * comes before and after it, so a visitor can read it as one continuous argument
- * without ever using the navigation menu.
+ * The first build numbered everything 00 to 11, which made the site read as a
+ * course with a syllabus. Nothing here is numbered and nothing has a prescribed
+ * order beyond the homepage. The groups exist so the navigation is legible, not
+ * so the reader completes them.
  */
 
-export interface Stop {
+export interface Place {
   href: string;
-  n: string;
   title: string;
-  /** The one line that appears in the rail and in the prev/next links. */
+  /** Shown under the title in the menu. Should say what you *do* there. */
   line: string;
-  /** Roughly how long the page takes, for the reader's benefit. */
-  minutes: number;
 }
 
-export const journey: Stop[] = [
-  { href: "/", n: "00", title: "The canon is a prior", line: "Every interpretation begins somewhere.", minutes: 2 },
-  { href: "/experiment", n: "01", title: "Update your belief", line: "You are given incomplete evidence. Make your best interpretation.", minutes: 6 },
-  { href: "/bayes", n: "02", title: "Why call it a prior?", line: "What you just did, written down.", minutes: 5 },
-  { href: "/canon", n: "03", title: "Rewrite the canon", line: "Change one assumption and watch the model reorganise.", minutes: 7 },
-  { href: "/category", n: "04", title: "When the category breaks", line: "Wave or particle — and why the question has that shape.", minutes: 5 },
-  { href: "/underdetermination", n: "05", title: "Same evidence, different reading", line: "Two people, one fact, two defensible conclusions.", minutes: 5 },
-  { href: "/humans-vs-machines", n: "06", title: "Humans vs machines", line: "The same scenarios, run through a language model.", minutes: 8 },
-  { href: "/data", n: "07", title: "The data", line: "What participants have actually shown. Possibly nothing yet.", minutes: 4 },
-  { href: "/lab", n: "08", title: "The lab", line: "Question, hypotheses, method, failures, limits.", minutes: 8 },
-  { href: "/philosophy", n: "09", title: "When should we change the story?", line: "Coherent, plausible, supported, true, useful — five different things.", minutes: 10 },
-  { href: "/map", n: "10", title: "The connection map", line: "The sheet this started on, with every line made to declare itself.", minutes: 5 },
-  { href: "/end", n: "11", title: "There is no final canon", line: "What do you do when the evidence doesn't fit the story?", minutes: 2 },
+export interface Territory {
+  id: string;
+  label: string;
+  places: Place[];
+}
+
+export const territories: Territory[] = [
+  {
+    id: "instruments",
+    label: "Instruments",
+    places: [
+      { href: "/rewrite", title: "Rewrite the canon", line: "Same events. Change one premise. Watch what has to move with it." },
+      { href: "/versions", title: "The character lab", line: "Fixed evidence about a person, in order. What it costs you to keep your first reading." },
+      { href: "/criteria", title: "Coherent, supported, true", line: "Three explanations, one set of facts. Find out which criterion you actually use." },
+      { href: "/machines", title: "Humans and models", line: "The same ambiguous evidence, given to people and to a language model." },
+    ],
+  },
+  {
+    id: "cases",
+    label: "Cases",
+    places: [
+      { href: "/categories", title: "When the category breaks", line: "de Broglie, and what happens when inherited words stop fitting." },
+      { href: "/person", title: "The model of a person", line: "The quiet one. Short." },
+    ],
+  },
+  {
+    id: "doubt",
+    label: "Doubt",
+    places: [
+      { href: "/shape", title: "Is the shape really there?", line: "Structural claims, some mine, some invented. Judge which are found and which are imposed." },
+      { href: "/map", title: "The map", line: "Every connection, with its breaks drawn as breaks." },
+    ],
+  },
+  {
+    id: "record",
+    label: "Record",
+    places: [
+      { href: "/lab", title: "Method and data", line: "What is being measured, what has been collected, what this cannot show." },
+      { href: "/log", title: "Log", line: "What I thought. What broke. What I still don't know." },
+      { href: "/about", title: "Where this came from", line: "Fanfiction. Genuinely." },
+      { href: "/ethics", title: "What is stored", line: "Almost nothing, and why." },
+    ],
+  },
 ];
 
-export const asideLinks = [
-  { href: "/log", title: "Researcher's log" },
-  { href: "/sources", title: "Sources" },
-  { href: "/about", title: "About" },
-  { href: "/ethics", title: "Ethics & privacy" },
-];
+export const allPlaces: Place[] = territories.flatMap((t) => t.places);
 
-export function stopFor(pathname: string): Stop | undefined {
-  return journey.find((s) => s.href === pathname);
+export function placeFor(pathname: string): Place | undefined {
+  return allPlaces.find((p) => p.href === pathname);
 }
 
-export function neighbours(pathname: string): { prev?: Stop; next?: Stop } {
-  const i = journey.findIndex((s) => s.href === pathname);
-  if (i < 0) return {};
-  return { prev: journey[i - 1], next: journey[i + 1] };
+export function territoryFor(pathname: string): Territory | undefined {
+  return territories.find((t) => t.places.some((p) => p.href === pathname));
 }
+
+/**
+ * Suggested next stops. Not a sequence — a short list of where this page's
+ * argument actually continues, chosen per page rather than by position.
+ */
+export const continuations: Record<string, string[]> = {
+  "/rewrite": ["/versions", "/shape"],
+  "/versions": ["/person", "/criteria"],
+  "/person": ["/versions", "/shape"],
+  "/categories": ["/shape", "/map"],
+  "/criteria": ["/machines", "/shape"],
+  "/machines": ["/lab", "/criteria"],
+  "/shape": ["/map", "/log"],
+  "/map": ["/shape", "/lab"],
+  "/lab": ["/machines", "/log"],
+  "/log": ["/shape", "/about"],
+  "/about": ["/versions", "/log"],
+  "/ethics": ["/lab"],
+};

@@ -7,11 +7,16 @@
  * precisely. "Analogical" means the comparison is suggestive and has known
  * disanalogies, which are named. "Historical" means one actually influenced the other.
  *
+ * Two kinds were added in the rebuild. "break" is a line the project drew and then
+ * cut: it marks where a resemblance stops, and it is drawn as a severed line rather
+ * than hidden. "open" is a connection suspected and not established.
+ *
  * Requiring every line to declare its own strength is the discipline that stops a
- * connection map from becoming a claim that everything is connected.
+ * connection map from becoming a claim that everything is connected. The breaks are
+ * the part that makes the rest of it worth reading.
  */
 
-export type EdgeStrength = "structural" | "analogical" | "historical";
+export type EdgeStrength = "structural" | "analogical" | "historical" | "break" | "open";
 
 export interface MapNode {
   id: string;
@@ -272,6 +277,52 @@ export const mapNodes: MapNode[] = [
       "A trial is an unusually explicit version of the problem: competing narratives, a shared evidential record, and procedural rules about who must move whom and by how much. It is also where the limits of the Bayesian framing are argued most sharply, since standards like 'beyond reasonable doubt' resist being restated as a probability threshold.",
   },
   {
+    id: "retelling",
+    label: "retelling",
+    cluster: "myth",
+    x: 62,
+    y: 88,
+    note: "The canon, run again under a changed premise.",
+    detail:
+      "Not contradiction. A retelling usually keeps every event the source supplies and absorbs them under a different assumption, which is why the result can feel simultaneously new and faithful. The Greek tragedians did it to Homer; the practice is older than the idea of an original.",
+    href: "/versions",
+    hrefLabel: "The character lab",
+  },
+  {
+    id: "training-data",
+    label: "training data",
+    cluster: "machine",
+    x: 15,
+    y: 74,
+    note: "Somebody's categories, collected as though they were the world.",
+    detail:
+      "A dataset is rows plus labels, and only the rows are collected. The labels are a set of decisions about what kind of thing each row is — decisions made by people, under deadline, with a schema someone else designed. A model learns the labels as confidently as it learns the rows.",
+  },
+  {
+    id: "identity",
+    label: "identity",
+    cluster: "machine",
+    x: 36,
+    y: 92,
+    note: "The model you run on yourself.",
+    detail:
+      "The place this project most wanted a connection and did not get one. If reinterpreting a character keeps the events fixed, reinterpreting yourself does not — the remembered facts move along with the reading. That disanalogy is recorded as an abandoned claim rather than smoothed over.",
+    href: "/shape",
+    hrefLabel: "Why this one was dropped",
+  },
+  {
+    id: "person",
+    label: "a person",
+    cluster: "machine",
+    x: 8,
+    y: 88,
+    note: "Real, entire, never available in full.",
+    detail:
+      "The case the rest of the project is a rehearsal for. Icarus cannot be hurt by being read wrong. An electron has no stake in which word you use. A person is the one place where the gap between the model and the thing costs something to somebody other than you.",
+    href: "/person",
+    hrefLabel: "The model of a person",
+  },
+  {
     id: "evidence",
     label: "evidence",
     cluster: "inference",
@@ -311,6 +362,16 @@ export const mapEdges: MapEdge[] = [
   { from: "perception", to: "llm", strength: "analogical", claim: "Both produce an interpretation by combining a learned expectation with present input.", caveat: "The mechanisms are unrelated. This is a similarity of description, and the site treats it as nothing more." },
   { from: "law", to: "evidence", strength: "structural", claim: "Legal procedure is an explicit, adversarial protocol for deciding how much a piece of evidence should move a conclusion." },
   { from: "law", to: "underdetermination", strength: "structural", claim: "The requirement to reach a verdict is precisely the requirement to decide when the evidence is enough — which is a question underdetermination poses and does not answer." },
+  { from: "fanfiction", to: "retelling", strength: "historical", claim: "Contemporary fanfiction is one form of a practice that predates the idea of an authoritative original." },
+  { from: "retelling", to: "counterfactual", strength: "structural", claim: "A retelling fixes the factual base, alters one antecedent, and works out the consequences. That is the counterfactual operation." },
+  { from: "retelling", to: "canon", strength: "structural", claim: "A retelling is only legible against the canon it departs from; without the inherited reading there is nothing for the change to register against." },
+  { from: "training-data", to: "llm", strength: "structural", claim: "What the model can represent is bounded by what the labels distinguished." },
+  { from: "training-data", to: "categories", strength: "structural", claim: "A label set is an inherited category scheme, applied before any model sees anything." },
+  { from: "identity", to: "retelling", strength: "break", claim: "ABANDONED. Reinterpreting yourself looked like retelling a character. It is not: in a retelling the events are fixed and public, and in autobiography the remembered events move with the reading. The thing claimed to be held constant is exactly what changes." },
+  { from: "person", to: "training-data", strength: "break", claim: "A person and a dataset are both known through partial records — and a person responds to being modelled, changes because of it, and is owed something. Nothing else in this project does any of those. The comparison is kept because it is useful and marked because it is dangerous." },
+  { from: "measurement", to: "hermeneutics", strength: "break", claim: "Quantum measurement does not support any claim about interpretation being observer-relative in the hermeneutic sense. The words overlap; the phenomena do not. This line is drawn only to mark that it has been cut." },
+  { from: "perception", to: "bayes", strength: "open", claim: "Whether the brain implements anything like Bayesian inference is an active empirical question. Suspected, not established, and this project has no standing to settle it." },
+  { from: "law", to: "canon", strength: "structural", claim: "Precedent is a canon with enforcement: an inherited reading that binds, and a doctrine about when it stops binding." },
   { from: "icarus", to: "ambiguity", strength: "structural", claim: "The same four-way motive ambiguity is what the language-track scenarios reproduce in miniature." },
 ];
 

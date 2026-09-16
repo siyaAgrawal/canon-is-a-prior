@@ -10,11 +10,11 @@ export const metadata: Metadata = {
     template: "%s — The Canon Is a Prior",
   },
   description:
-    "An open experiment on how humans and language models revise interpretations when the evidence is incomplete. Physics, myth, Bayesian inference, and a dataset that is honest about being empty.",
+    "Change one assumption and the person changes, though nothing they did has. An investigation into how we build the versions of reality we then call reality — and into whether the pattern it keeps finding is really there.",
   openGraph: {
     title: "The Canon Is a Prior",
     description:
-      "How do we decide what a story means when the evidence is incomplete? An interactive experiment.",
+      "Same evidence. Change one assumption. Different person. An investigation that keeps finding the same shape, and is not yet sure the shape is there.",
     type: "website",
   },
   robots: { index: true, follow: true },

@@ -1,34 +1,47 @@
 # The Canon Is a Prior
 
-> How do we decide what a story means when the evidence is incomplete?
+> Change one assumption and the person changes, though nothing they did has.
 
 **Live:** https://canon-is-a-prior.vercel.app
 
-An open, unfinished experiment on how humans and language models revise interpretations
-when evidence changes — and what makes one interpretation more justified than another.
+It started in fanfiction: the same character, the same evidence, one changed assumption,
+a different person. Then the same move turned up in a myth, a statute, a measurement, a
+dataset, and someone I knew.
 
-Live pieces:
+The project is about that operation — and, more importantly, about whether a pattern that
+keeps turning up everywhere is one I found or one I imposed.
 
-- **The experiment** — assign probabilities to competing readings of a myth, then revise
-  them as evidence arrives. Sliders are constrained to the probability simplex.
-- **The counterfactual engine** — change one premise in Icarus or the Iliad and watch which
-  other readings have to move with it. Every premise declares what it *cannot* absorb.
-- **Humans vs machines** — 34 original ambiguous-communication scenarios given to people and,
-  under identical constraints, to a language model.
-- **The data** — live from storage, including when storage is empty.
-- **The lab** — question, pre-registered hypotheses, method, failures, limitations.
-- **The connection map** — the handwritten sheet this started from, with every edge required
-  to declare whether it is structural, analogical or historical.
+Instruments (all with real state, none decorative):
+
+- **`/shape`** — the recursive one. Ten structural claims: some the project defends, one it
+  abandoned, **three written as controls**. You judge which are found and which are imposed
+  before being told. If the fabrications pass, that is the finding.
+- **`/versions`** — seven facts about an invented person. Measures not which reading you end
+  on but what it cost you to keep your first one.
+- **`/rewrite`** — change one premise in Icarus or the Iliad; watch which readings move and
+  which refuse. Every premise declares what it cannot absorb.
+- **`/criteria`** — three explanations, one set of facts, none best at everything. Reveals
+  which criterion you actually used, and whether you used the same one twice.
+- **`/machines`** — 34 original ambiguous scenarios, given to people and to a language model
+  under identical constraints. The only experiment that records anything.
+- **`/map`** — every connection, with the severed ones drawn as severed.
+
+See [DESIGN.md](DESIGN.md) for why the first build was scrapped.
 
 ## The rule this project is built around
 
 **No fabricated data, ever.** No invented participant counts, results, accuracy figures,
 model performance numbers, significance claims, citations, endorsements or awards. If the
 dataset is empty, every page says zero and renders an empty state. If a model API key is not
-configured, the comparison says so and shows nothing rather than a simulated run.
+configured, the comparison says so and shows nothing rather than a simulated run. On a
+platform whose filesystem does not persist, submissions are refused with an explanation
+instead of being accepted and lost.
 
-The one place stipulated numbers appear is the illustration on the landing page, which is
-labelled *Illustration* and says in the interface that the numbers are not measurements.
+Every claim that does work carries an epistemic tag — `OBSERVED`, `MODEL`, `ANALOGY`,
+`HYPOTHESIS`, `ILLUSTRATION`, `OPEN`, `ABANDONED`. Anything untagged is prose, not a finding.
+
+The three control claims on `/shape` are the one place the project invents something, and it
+says so on the same screen it reveals them.
 
 ## Running it
 
@@ -99,10 +112,10 @@ one row per response, per stage, per interpretation — which loads into pandas 
 ## Layout
 
 ```
-app/            routes; 12 journey chapters plus log, sources, about, ethics, console
+app/            13 routes grouped as territories, not a numbered sequence
   api/          responses, stats, export, ai
-components/     ui/ viz/ experiment/ canon/ physics/ map/ philosophy/
-data/           42 scenarios, canon modules, connection map, sources
+components/     ui/ viz/ experiment/ canon/ physics/ map/ shape/ versions/ person/ criteria/
+data/           42 scenarios, canon modules, connection map, claims + controls, sources
 lib/            stats, simplex, aggregate, validate, session, db adapters
 research/       lab content and the researcher's log
 test/           assertions on the numerical core and the dataset

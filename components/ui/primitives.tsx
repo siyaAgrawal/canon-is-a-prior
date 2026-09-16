@@ -12,27 +12,30 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   return <p className="eyebrow">{children}</p>;
 }
 
-export function ChapterHead({
-  n,
+/**
+ * A page opening.
+ *
+ * No number, no standfirst. The first build put a paragraph under every title
+ * explaining what the reader was about to understand, which is the single most
+ * reliable way to stop them finding it themselves. If a page needs framing, the
+ * framing is one line and it is a question or an observation, not a summary.
+ */
+export function PageHead({
   title,
-  standfirst,
-  kicker,
+  note,
+  tag,
 }: {
-  n: string;
   title: string;
-  standfirst: string;
-  kicker?: string;
+  note?: ReactNode;
+  tag?: ReactNode;
 }) {
   return (
     <header className="pt-14 sm:pt-20">
       <Shell>
-        <div className="flex items-start gap-5 sm:gap-8">
-          <span className="mt-2 font-mono text-[0.68rem] tracking-[0.2em] text-rust tabular">{n}</span>
-          <div className="min-w-0 flex-1">
-            {kicker && <p className="eyebrow mb-3">{kicker}</p>}
-            <h1 className="text-display-l">{title}</h1>
-            <p className="lede mt-5 max-w-reading">{standfirst}</p>
-          </div>
+        <div className="max-w-column">
+          {tag && <div className="mb-5">{tag}</div>}
+          <h1 className="text-display-l">{title}</h1>
+          {note && <div className="say mt-6 max-w-measure">{note}</div>}
         </div>
       </Shell>
     </header>

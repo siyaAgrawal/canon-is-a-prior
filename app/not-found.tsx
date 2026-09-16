@@ -1,33 +1,34 @@
 import Link from "next/link";
-import { Shell, Reading } from "@/components/ui/primitives";
-import { journey } from "@/lib/journey";
+import { Shell } from "@/components/ui/primitives";
+import { territories } from "@/lib/journey";
 
 export default function NotFound() {
   return (
-    <Shell className="py-24 sm:py-32">
-      <Reading>
-        <p className="eyebrow">404</p>
-        <h1 className="mt-4 text-display-l">This page does not exist.</h1>
-        <p className="lede mt-6">
-          Which is at least unambiguous. Most of the rest of this site is about the harder case,
-          where several answers fit and nothing settles it.
+    <Shell className="py-28">
+      <div className="max-w-column">
+        <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-ink-ghost">404</p>
+        <p className="statement mt-5">Nothing here.</p>
+        <p className="say mt-6 max-w-measure">
+          Unambiguous, for once. The rest of the site is about the harder case, where several things
+          fit and nothing settles it.
         </p>
-        <nav className="mt-12">
-          <p className="eyebrow mb-4">Try one of these</p>
-          <ul className="grid gap-x-8 sm:grid-cols-2">
-            {journey.map((s) => (
-              <li key={s.href}>
-                <Link href={s.href} className="flex gap-3 border-b border-rule-soft py-2.5 hover:text-rust">
-                  <span className="mt-[3px] font-mono text-[0.62rem] tracking-widest text-ink-ghost tabular">
-                    {s.n}
-                  </span>
-                  <span className="font-display text-[1.02rem] leading-snug">{s.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </Reading>
+        <div className="mt-14 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+          {territories.map((t) => (
+            <div key={t.id}>
+              <p className="eyebrow mb-2">{t.label}</p>
+              <ul>
+                {t.places.map((p) => (
+                  <li key={p.href}>
+                    <Link href={p.href} className="block py-1.5 text-[0.95rem] hover:text-rust">
+                      {p.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
     </Shell>
   );
 }

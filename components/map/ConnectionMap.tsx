@@ -15,10 +15,14 @@ import { clusterLabels, mapEdges, mapNodes, type EdgeStrength, type MapNode } fr
  * cost was imposed.
  */
 
-const STROKE: Record<EdgeStrength, { dash?: string; width: number; label: string }> = {
+const STROKE: Record<EdgeStrength, { dash?: string; width: number; label: string; color?: string }> = {
   structural: { width: 1.3, label: "Structural — a form both share, statable precisely" },
   analogical: { dash: "5 4", width: 1.1, label: "Analogical — suggestive, with a named disanalogy" },
   historical: { dash: "1.5 3.5", width: 1.2, label: "Historical — one actually influenced the other" },
+  // Drawn as a line with a gap cut out of its middle: a connection that was made
+  // and then severed. Keeping them visible is the point of the map.
+  break: { dash: "16 13", width: 1.6, label: "Break — drawn, then cut. Where the resemblance stops", color: "#A33B2C" },
+  open: { dash: "2 6", width: 1, label: "Open — suspected, not established" },
 };
 
 export function ConnectionMap() {
@@ -122,10 +126,12 @@ export function ConnectionMap() {
                   key={`${e.from}-${e.to}-${i}`}
                   d={`M ${px(a)} ${py(a)} Q ${mx} ${my} ${px(b)} ${py(b)}`}
                   fill="none"
-                  stroke={active ? clusterLabels[a.cluster].color : "rgba(23,24,26,0.34)"}
+                  stroke={
+                    s.color ?? (active ? clusterLabels[a.cluster].color : "rgba(23,24,26,0.34)")
+                  }
                   strokeWidth={active ? s.width + 0.8 : s.width}
                   strokeDasharray={s.dash}
-                  opacity={dim ? 0.1 : active ? 0.95 : 0.5}
+                  opacity={dim ? 0.1 : active ? 0.95 : e.strength === "break" ? 0.66 : 0.5}
                   style={{ transition: reduce ? undefined : "opacity 0.35s, stroke 0.35s" }}
                 />
               );
@@ -260,7 +266,11 @@ export function ConnectionMap() {
                               ? "border-moss/40 text-moss"
                               : edge.strength === "historical"
                                 ? "border-indigo/40 text-indigo"
-                                : "border-gold/50 text-gold"
+                                : edge.strength === "break"
+                                  ? "border-rust text-rust"
+                                  : edge.strength === "open"
+                                    ? "border-dashed border-ink/35 text-ink-faint"
+                                    : "border-gold/50 text-gold"
                           }`}
                         >
                           {edge.strength}

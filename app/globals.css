@@ -137,3 +137,50 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { scrollbar-width: none; }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Rebuild additions.
+
+   The epistemic labels below are the site's main honesty device: a claim that
+   carries no label is prose, not a claim. They are deliberately small, set in
+   mono, and never decorative — the colour encodes how much weight the thing
+   underneath is allowed to carry.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+  .tag {
+    @apply inline-flex items-center border px-[0.42rem] py-[0.12rem] font-mono
+           text-[0.55rem] uppercase leading-[1.5] tracking-[0.15em];
+  }
+  .tag-observed      { @apply border-moss/45 text-moss; }
+  .tag-model         { @apply border-indigo/45 text-indigo; }
+  .tag-interpretation{ @apply border-ink/30 text-ink-faint; }
+  .tag-analogy       { @apply border-gold/55 text-gold; }
+  .tag-hypothesis    { @apply border-rust/40 text-rust; }
+  .tag-illustration  { @apply border-ink/25 text-ink-ghost; }
+  .tag-open          { @apply border-dashed border-ink/35 text-ink-faint; }
+  .tag-abandoned     { @apply border-ink/20 text-ink-ghost line-through; }
+
+  /* A line of type large enough to be the only thing on screen. */
+  .statement { @apply font-display text-display-l; text-wrap: balance; }
+
+  /* Body text for the rebuild: fewer words, more air between them. */
+  .say { @apply text-[1.02rem] leading-[1.7] text-ink-soft; }
+  .say p + p { @apply mt-[1.15em]; }
+  .say strong { @apply font-medium text-ink; }
+  .say em { @apply italic; }
+
+  /* Hairline used instead of cards. The rebuild has almost no boxes. */
+  .hair { @apply border-t border-rule-soft; }
+
+  /* A choice the reader makes: plain text that becomes committed when selected. */
+  .pick {
+    @apply block w-full border-l-2 border-transparent py-3 pl-4 text-left
+           transition-[border-color,background-color,color] duration-200;
+  }
+  .pick:hover { @apply border-ink/25 bg-ink/[0.02]; }
+  .pick[aria-pressed="true"] { @apply border-rust bg-rust/[0.05] text-ink; }
+
+  /* Used where the page should feel like it is holding its breath. */
+  .breath { @apply py-[18vh]; }
+}

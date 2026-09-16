@@ -1,135 +1,141 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChapterHead, Reading, Shell, Annotation } from "@/components/ui/primitives";
+import { PageHead, Shell } from "@/components/ui/primitives";
+import { Continue } from "@/components/ui/Continue";
 import { Reveal } from "@/components/ui/Reveal";
+import { sourceSections } from "@/data/sources";
 
 export const metadata: Metadata = {
-  title: "About",
-  description: "Where this came from, what else is in the same drawer, and how to take it apart.",
+  title: "Where this came from",
+  description: "Fanfiction. Then a myth, then a measurement, then a person.",
 };
-
-const OTHER_WORK = [
-  {
-    name: "Khapee",
-    line: "An ordering product that real people use.",
-    body: "Built to find out what happens to a clean system when actual customers arrive. The interesting part was never the happy path — it was the order placed twice, the item that sells out mid-checkout, the person who does exactly what no flowchart anticipated.",
-  },
-  {
-    name: "VAC",
-    line: "A communication and AI project about tone and intent.",
-    body: "Concerned with whether a machine can infer what someone meant rather than what they typed. Which is the same problem as the language track here, approached from the engineering side instead of the experimental one.",
-  },
-  {
-    name: "The Canon Is a Prior",
-    line: "This.",
-    body: "An experiment about how interpretations change when evidence changes, and whether a machine's revisions look anything like a person's.",
-  },
-];
 
 export default function AboutPage() {
   return (
     <>
-      <ChapterHead
-        n="—"
-        kicker="About"
-        title="Where this came from"
-        standfirst="A folded sheet of paper, several coloured pens, and a suspicion that a connection was more than aesthetic."
-      />
+      <PageHead title="Where this came from" />
 
-      <Shell className="mt-14">
-        <Reading>
-          <Reveal>
-            <div className="prose-note">
+      <Shell className="mt-8">
+        <Reveal>
+          <div className="max-w-column">
+            <div className="say max-w-measure">
               <p>
-                I kept finding myself connecting ideas that were not supposed to belong together:
-                wave and particle, myth and fanfiction, belief and probability, code and human
-                behaviour. On paper it looked like a mind map. In my head it felt like one idea
-                wearing different clothes.
-              </p>
-              <p>
-                The suspicious part is that this feeling is cheap. Anything can be connected to
-                anything if you are willing to be vague enough, and the sensation of insight is
-                identical whether or not the connection survives being made precise. So the question
-                became whether the connection was more than aesthetic — and the only way to find out
-                was to make it specific enough to be wrong.
+                Fanfiction. Specifically Dramione, specifically several hundred thousand words of it,
+                written by strangers who had all read the same seven books and disagreed
+                fundamentally about who was in them.
               </p>
               <p>
-                Some of it did not survive. &ldquo;The canon is a prior&rdquo; as an equivalence is
-                false, and the{" "}
-                <Link href="/map" className="underline decoration-dotted underline-offset-2">
-                  map marks that line dashed
-                </Link>{" "}
-                by its own rule. What survived is narrower and, I think, more interesting: a
-                canonical reading does the job a prior does — it sets how much work a new reading has
-                to do, and it is not itself the product of the evidence it governs.
+                That is not a confession and it is not the charming origin anecdote. It is where the
+                problem is clearest, because fanfiction is the only place I know of where thousands
+                of people take an identical body of evidence, change one assumption each, and publish
+                the result — with the changed assumption stated in the tags.
               </p>
-              <p>So I built an experiment to find out whether human and machine revisions look alike.</p>
-            </div>
-          </Reveal>
-
-          <Reveal>
-            <div className="my-12 border-l-2 border-rust pl-6">
-              <p className="font-display text-xl leading-[1.5]">
-                I had a strange question. I followed the connection. Then I built something to find
-                out whether I was right.
+              <p>
+                No other domain hands you that. Historians do not label their priors. Neither do
+                physicists, or juries, or anyone describing a colleague.
               </p>
-              <p className="mt-4 text-[0.88rem] text-ink-faint">
-                It is not finished, and it would be a worse project if it pretended to be.
+              <p className="text-ink">
+                I went looking for the same operation elsewhere and kept finding it, which was
+                exciting for about two months and then became the actual problem.
               </p>
             </div>
-          </Reveal>
+          </div>
+        </Reveal>
+      </Shell>
 
-          <Reveal>
-            <h2 className="mt-16 text-display-m">Other work</h2>
-            <p className="prose-note mt-4">
-              These are separate projects and stay separate. What they have in common is a habit
-              rather than a subject: build the system, watch where it breaks, and treat the edge case
-              as the informative part rather than the annoying one.
-            </p>
-            <ul className="mt-10 space-y-8">
-              {OTHER_WORK.map((w) => (
-                <li key={w.name} className="grid gap-2 border-t border-rule-soft pt-5 sm:grid-cols-[10rem_1fr] sm:gap-8">
-                  <div>
-                    <p className="font-display text-lg leading-snug">{w.name}</p>
-                    <p className="mt-1 text-[0.8rem] leading-snug text-ink-ghost">{w.line}</p>
-                  </div>
-                  <p className="text-[0.92rem] leading-relaxed text-ink-soft">{w.body}</p>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-
-          <Reveal>
-            <h2 className="mt-16 text-display-m">How to take it apart</h2>
-            <div className="prose-note mt-5">
+      <Shell className="mt-24">
+        <Reveal>
+          <div className="max-w-column">
+            <p className="statement">On the copyright question, since it comes up.</p>
+            <div className="say mt-7 max-w-measure">
               <p>
-                The scenarios, the statistics and the hypotheses are all in the repository as plain
-                files. The metrics are implemented in one module, with the smoothing decisions
-                commented where they were made. The pre-registered hypotheses sit in a single file
-                of their own, so once the project is under version control it is checkable whether
-                they changed after data arrived.
+                Nothing on this site quotes or reproduces a copyrighted work, and the character
+                experiment uses someone I invented rather than someone else&rsquo;s. The narrative
+                material is Ovid, Homer, Aeschylus, Sophocles and Virgil, in my own paraphrase, with
+                line references on the sources list.
+              </p>
+              <p>
+                The fanfiction is the origin and the method. It is not the content.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+      </Shell>
+
+      <Shell className="mt-24">
+        <Reveal>
+          <div className="max-w-column">
+            <p className="statement">How to take it apart.</p>
+            <div className="say mt-7 max-w-measure">
+              <p>
+                The scenarios, the claims with their verdicts, the statistics and the pre-registered
+                hypotheses are plain files in the repository. The metrics module carries its
+                smoothing decisions as comments where they were made. The hypotheses sit in a file of
+                their own so an edit after data arrives is visible as a dated change.
               </p>
               <p>
                 If a scenario is badly written, a metric is misapplied, or a source is being made to
-                say more than it does, that is a real error and it is worth finding. The{" "}
-                <Link href="/lab#limitations" className="underline decoration-dotted underline-offset-2">
-                  limitations section
-                </Link>{" "}
-                is the list of the ones already known about.
+                say more than it does, that is a real error and worth finding. The ones already known
+                about are on the{" "}
+                <Link href="/lab" className="underline decoration-dotted underline-offset-2 hover:text-ink">
+                  method page
+                </Link>
+                .
               </p>
             </div>
-          </Reveal>
-
-          <Reveal>
-            <div className="mt-14">
-              <Annotation tone="gold">
-                The edge case is where the model meets reality. That is the thread running through all
-                three projects, and it took a while to notice it was one thread.
-              </Annotation>
-            </div>
-          </Reveal>
-        </Reading>
+          </div>
+        </Reveal>
       </Shell>
+
+      <Shell className="mt-24">
+        <Reveal>
+          <div className="max-w-column">
+            <h2 className="font-display text-display-s">Sources</h2>
+            <p className="mt-3 max-w-measure text-[0.86rem] leading-relaxed text-ink-faint">
+              Nothing listed that was not consulted, and nothing described as supporting a claim it
+              does not make. Where this project uses an idea more loosely than its source does, the
+              note says so.
+            </p>
+            <div className="mt-10 space-y-12">
+              {sourceSections.map((section) => (
+                <section key={section.id}>
+                  <h3 className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-rust">
+                    {section.title}
+                  </h3>
+                  <ul className="mt-4">
+                    {section.sources.map((s) => (
+                      <li key={s.id} className="hair py-4">
+                        <p className="text-[0.92rem] leading-snug">
+                          {s.url ? (
+                            <a
+                              href={s.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline decoration-rule underline-offset-4 hover:decoration-rust"
+                            >
+                              {s.title}
+                            </a>
+                          ) : (
+                            s.title
+                          )}
+                        </p>
+                        <p className="mt-1 text-[0.8rem] text-ink-faint">
+                          {s.authors} · {s.year} · <span className="italic">{s.where}</span>
+                        </p>
+                        <p className="mt-2 max-w-measure text-[0.84rem] leading-relaxed text-ink-faint">
+                          {s.useNote}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </Shell>
+
+      <Continue from="/about" />
     </>
   );
 }

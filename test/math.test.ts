@@ -232,6 +232,14 @@ check("every map edge connects two real nodes", () => {
   });
 });
 
+check("every break edge says what was cut", () => {
+  mapEdges
+    .filter((e) => e.strength === "break")
+    .forEach((e) => {
+      assert.ok(e.claim.length > 80, `${e.from}→${e.to} is a break with no explanation`);
+    });
+});
+
 check("every analogical edge states its disanalogy", () => {
   mapEdges
     .filter((e) => e.strength === "analogical")
