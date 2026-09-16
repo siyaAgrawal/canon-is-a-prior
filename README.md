@@ -4,156 +4,274 @@
 
 **Live:** https://canon-is-a-prior.vercel.app
 
-It started in fanfiction: the same character, the same evidence, one changed assumption,
-a different person. Then the same move turned up in a myth, a statute, a measurement, a
-dataset, and someone I knew.
+---
 
-The project is about that operation — and, more importantly, about whether a pattern that
-keeps turning up everywhere is one I found or one I imposed.
+## What this is
 
-Instruments (all with real state, none decorative):
+It started in fanfiction. The same character, the same scenes, the same lines — and one
+writer makes the cruelty load-bearing while another makes it fear wearing a uniform. Both
+are recognisably him. If the evidence is fixed and the person changes, the person was never
+only the evidence.
 
-- **`/shape`** — the recursive one. Ten structural claims: some the project defends, one it
-  abandoned, **three written as controls**. You judge which are found and which are imposed
-  before being told. If the fabrications pass, that is the finding.
-- **`/versions`** — seven facts about an invented person. Measures not which reading you end
-  on but what it cost you to keep your first one.
-- **`/rewrite`** — change one premise in Icarus or the Iliad; watch which readings move and
-  which refuse. Every premise declares what it cannot absorb.
-- **`/criteria`** — three explanations, one set of facts, none best at everything. Reveals
-  which criterion you actually used, and whether you used the same one twice.
-- **`/machines`** — 34 original ambiguous scenarios, given to people and to a language model
-  under identical constraints. The only experiment that records anything.
-- **`/map`** — every connection, with the severed ones drawn as severed.
+The same move turns up in a myth, a statute, a measurement, a dataset, and someone you know.
 
-See [DESIGN.md](DESIGN.md) for why the first build was scrapped.
+So there are two questions here, and the second one is the project:
 
-## The rule this project is built around
+1. When evidence is incomplete, how do we build the version of it we then call reality?
+2. **How do you tell a structural connection you found from one you imposed?**
 
-**No fabricated data, ever.** No invented participant counts, results, accuracy figures,
-model performance numbers, significance claims, citations, endorsements or awards. If the
-dataset is empty, every page says zero and renders an empty state. If a model API key is not
-configured, the comparison says so and shows nothing rather than a simulated run. On a
-platform whose filesystem does not persist, submissions are refused with an explanation
-instead of being accepted and lost.
+The second makes this recursive. It studies how models get built while being one. A person
+who has found a real pattern and a person who is seeing things report the same experience:
+it gets clearer with every example, examples are easy to add, and adding them feels like
+evidence.
 
-Every claim that does work carries an epistemic tag — `OBSERVED`, `MODEL`, `ANALOGY`,
-`HYPOTHESIS`, `ILLUSTRATION`, `OPEN`, `ABANDONED`. Anything untagged is prose, not a finding.
+Which is why the self-critique is not an appendix. It is the instrument at `/shape`.
 
-The three control claims on `/shape` are the one place the project invents something, and it
-says so on the same screen it reveals them.
+See [DESIGN.md](DESIGN.md) for why the first version of this site was scrapped.
+
+---
+
+## The rule everything else depends on
+
+**No fabricated data.** No invented participant counts, results, accuracy figures, model
+performance numbers, significance claims, citations, endorsements or awards.
+
+- Empty dataset → every page renders an explicit empty state showing zero.
+- Group aggregates are withheld below **n = 5**, so a group statistic is never one person's
+  answer wearing a disguise.
+- No model API key → the comparison says so and shows nothing. There is no demo mode.
+- Filesystem that doesn't persist → submissions are **refused with an explanation** rather
+  than accepted and silently lost.
+
+Every claim that does work carries an epistemic tag:
+
+`OBSERVED` · `MODEL` · `INTERPRETATION` · `ANALOGY` · `HYPOTHESIS` · `ILLUSTRATION` · `OPEN` · `ABANDONED`
+
+Untagged text is prose, not a finding.
+
+### The one deliberate invention
+
+Three of the ten claims on `/shape` are fabrications I wrote myself, in the same voice, by
+the same method I use for real ones. They are controls. The page reveals them as controls on
+the same screen it reveals everything else, and if they pass, that is the result.
+
+They are load-bearing. Do not "fix" them into real claims.
+
+---
+
+## Routes
+
+Fourteen pages, grouped as four territories with no prescribed order. There is no numbered
+sequence — the first build had one and it made the project read like a syllabus.
+
+| | | |
+|---|---|---|
+| **`/`** | Entry | One word of evidence. You read him before any evidence arrives; then you find out I chose the five readings you picked from. |
+| **Instruments** | | |
+| `/shape` | The recursive one | Ten structural claims — some defended, one abandoned, three controls. Judge before the reveal. |
+| `/versions` | Character lab | Seven facts about an invented person. Measures what it cost to keep your first reading, not whether it was right. |
+| `/rewrite` | Counterfactual lab | Change one premise in Icarus or the Iliad. Every premise declares what it cannot absorb. |
+| `/criteria` | Which criterion | Three explanations, one set of facts, none best at everything. Twice, to see if you're consistent. |
+| `/machines` | Humans and models | 34 scenarios given to people and to a language model under identical constraints. **The only page that records anything.** |
+| **Cases** | | |
+| `/categories` | de Broglie | What happens when an inherited pair of words stops fitting. Includes a working V² + D² ≤ 1 model. |
+| `/person` | The quiet one | The model of a person is not the person. One diagram. |
+| **Doubt** | | |
+| `/map` | The graph | 25 nodes, 38 edges, with severed connections drawn as severed. |
+| **Record** | | |
+| `/lab` | Method and data | Live counts, pre-registered predictions, limitations. |
+| `/log` | Log | Question / what I thought / what broke / what changed / what I still don't know. |
+| `/about` | Origin | Fanfiction, plainly. Plus every source with a note on how it's used. |
+| `/ethics` | What is stored | Almost nothing, and the trade-off that buys. |
+| `/console` | Model runs | Token-protected. Not indexed. |
+
+Four API routes: `/api/responses`, `/api/stats`, `/api/export`, `/api/ai`.
+
+---
 
 ## Running it
 
 ```bash
 npm install
-npm run dev      # http://localhost:3111
 ```
 
 ```bash
-npm test         # statistics, simplex constraint, and data-integrity assertions
-npm run typecheck
-npm run build
+npm run dev
 ```
+
+Then http://localhost:3111
+
+```bash
+npm test
+```
+
+33 assertions in `test/math.test.ts`, run with `tsx`. They cover the statistics against
+hand-worked values, the simplex constraint under adversarial input, and dataset integrity —
+including that every analogical map edge states its disanalogy and every break edge says
+what was cut.
+
+```bash
+npm run typecheck && npm run build
+```
+
+---
 
 ## Configuration
 
-Copy `.env.example` to `.env.local`. Everything in it is optional except where noted.
+Copy `.env.example` to `.env.local`.
 
-| Variable | Effect if unset |
+| Variable | If unset |
 | --- | --- |
-| `DATABASE_URL` | Responses are stored in `./.data/*.jsonl` (append-only JSON lines) when running locally, and refused outright on a serverless platform — see Deploying. Set it to use Postgres (Supabase, Neon, RDS); the `pg` driver ships as a dependency and tables are created on first write. |
-| `ANTHROPIC_API_KEY` | The model-evaluation route returns 501 and the UI says no runs are possible. Nothing is simulated. |
+| `DATABASE_URL` | Local runs store responses in `./.data/*.jsonl` (append-only). On a serverless platform, writes are **refused** rather than lost. Set it to use Postgres — Supabase, Neon, RDS. The `pg` driver ships as a dependency; tables are created on first write. |
+| `ANTHROPIC_API_KEY` | `/api/ai` returns 501 and the UI says no runs are possible. Nothing is simulated. |
 | `AI_MODEL` | Defaults to `claude-sonnet-5`. |
-| `RESEARCH_TOKEN` | `/api/export` and model runs refuse every request. Required — there is no open default. |
+| `RESEARCH_TOKEN` | `/api/export` and model runs refuse every request. There is no open default. |
 
 ### Deploying
 
-Deployed on Vercel, with the GitHub repository connected, so a push to `main` ships.
+On Vercel with the GitHub repo connected, so a push to `main` ships.
 
-On a serverless platform the filesystem does not survive a request. Rather than accept a
-response, report success and lose it, the site detects that case and **refuses to store
-anything** until `DATABASE_URL` is set: visitors see a notice before starting, and a
-submission returns 503 with a readable reason. Reads are unaffected, since no storage and
-an empty dataset look the same to a reader.
+The filesystem there does not survive a request. Accepting a response, reporting success and
+losing it is the exact failure this project is organised against, so `lib/db/index.ts`
+detects the platform and refuses: visitors see a notice **before** starting, and a submission
+returns 503 with a readable reason. Reads are unaffected — no storage and an empty dataset
+look the same to a reader, which is correct.
 
-To start collecting, provision any Postgres (Vercel Storage, Neon, Supabase) and set the
-connection string — from the project's Settings → Environment Variables, or from the CLI
-**inside this directory**, since `vercel env` needs the `.vercel` link that lives here:
+To start collecting, provision any Postgres and set the connection string. From the CLI this
+must run **inside this directory**, since `vercel env` needs the `.vercel` link that lives
+here:
 
 ```bash
-vercel env add DATABASE_URL production
+cd "/path/to/philosophy project" && vercel env add DATABASE_URL production
 ```
 
-Then redeploy so the new variable is picked up. Tables are created on first write, and the
-"not collecting" notice disappears on its own.
+Then redeploy. The "not collecting" notice disappears on its own.
 
-## Data model
+---
+
+## Layout
+
+```
+app/              14 routes + 4 API routes
+components/
+  ui/             Tag (the epistemic apparatus), page chrome, Reveal, Continue
+  experiment/     Entry, BeliefExperiment, SimplexSliders, MachineTrack, AIConsole
+  shape/          ShapeAudit, ScaleBreak
+  versions/       CharacterLab
+  criteria/       CriteriaTest
+  canon/          CounterfactualEngine
+  person/         ModelLoop
+  physics/        Complementarity
+  map/            ConnectionMap
+  viz/            trajectories, distributions, dashboard, empty states
+data/             scenarios, claims + controls, character, criteria, canon, map, sources
+lib/              stats, simplex, aggregate, validate, session, journey, db adapters
+research/         lab.ts (pre-registered), log.ts
+test/             math.test.ts
+types/            the domain model
+```
+
+### Data model
 
 | Entity | Where |
 | --- | --- |
-| `Scenario`, `Interpretation`, `EvidenceItem` | `types/index.ts`, data in `data/scenarios-*.ts` |
-| `ParticipantResponse` | one trajectory: an ordered list of `BeliefStep` distributions |
-| `AIResponse` | the same shape plus `model`, `promptVersion` and per-stage rationales |
-| `CanonModule`, `CounterfactualPremise` | `data/canon.ts` |
+| `Scenario`, `Interpretation`, `EvidenceItem` | `types/index.ts`; data in `data/scenarios-*.ts` |
+| `ParticipantResponse` | One trajectory: ordered `BeliefStep` distributions + optional confidence |
+| `AIResponse` | Same shape plus `model`, `promptVersion`, per-stage rationales |
+| `Claim` | `data/claims.ts` — `verdict`, `reasoning`, `wouldChangeIf` |
+| `CanonModule`, `CounterfactualPremise` | `data/canon.ts` — each premise carries `resists` |
+| `MapNode`, `MapEdge` | `data/connections.ts` — edges declare strength and caveat |
 
 Responses are append-only. An observation is not edited after the fact.
 
 ### Export
 
 ```bash
-curl -H "Authorization: Bearer $RESEARCH_TOKEN" \
-  "http://localhost:3111/api/export?kind=responses&format=csv" -o responses.csv
+curl -H "Authorization: Bearer $RESEARCH_TOKEN" "http://localhost:3111/api/export?kind=responses&format=csv" -o responses.csv
 ```
 
 `kind` is `responses` or `ai`; `format` is `csv` or `json`. CSV comes out in long format —
-one row per response, per stage, per interpretation — which loads into pandas or R unreshaped.
+one row per response, per stage, per interpretation — which loads into pandas or R without
+reshaping.
 
-## Layout
-
-```
-app/            13 routes grouped as territories, not a numbered sequence
-  api/          responses, stats, export, ai
-components/     ui/ viz/ experiment/ canon/ physics/ map/ shape/ versions/ person/ criteria/
-data/           42 scenarios, canon modules, connection map, claims + controls, sources
-lib/            stats, simplex, aggregate, validate, session, db adapters
-research/       lab content and the researcher's log
-test/           assertions on the numerical core and the dataset
-types/          the domain model
-```
+---
 
 ## Statistics
 
-Implemented in `lib/stats.ts`, asserted in `test/math.test.ts` against hand-worked values.
+In `lib/stats.ts`, asserted against values worked out by hand.
 
-- **Total variation distance** — movement and pairwise disagreement. Range 0–1.
-- **Shannon entropy**, normalised by `log2(n)` so scenarios with different option counts compare.
+- **Total variation distance** — movement, and mean pairwise disagreement. Range 0–1.
+- **Shannon entropy** — normalised by `log2(n)` so scenarios with different option counts stay
+  comparable.
 - **KL divergence** — reported only with explicit additive smoothing, because participants
-  assign zeroes and the unsmoothed quantity would be infinite. Labelled as smoothed everywhere
-  it appears.
+  assign zeroes and the unsmoothed quantity is infinite. Labelled as smoothed wherever shown.
 - **Bayes' rule** on a discrete hypothesis space; returns `null` on a zero marginal rather
   than dividing by zero.
 
 No significance tests, and no accuracy scores. The scenarios have no ground truth by
-construction, so no proper scoring rule applies.
+construction, so no proper scoring rule applies. Reporting one would be the most
+respectable-looking mistake available here.
 
-## Content provenance
+---
 
-- 34 language scenarios: written for this experiment. No real message, email, DM or chat log.
-- 8 myth scenarios: our own paraphrases of Ovid, Homer, Aeschylus, Sophocles, Virgil and
-  Hesiod — public domain, with line references on the sources page.
-- No modern retelling is quoted or summarised.
+## Extending it
+
+**A scenario** → `data/scenarios-language.ts`, using the `S()` builder. Three to five
+interpretations, at least two evidence items, and a `designNote` per item saying what it was
+written to discriminate. Notes are shown only after the participant finishes, so the intent
+cannot steer the update it measures. `npm test` enforces shape and minimum prose length.
+
+**A claim** → `data/claims.ts`. It needs a `verdict`, `reasoning` readable by someone who
+disagrees, and `wouldChangeIf`. A claim that forbids nothing is not a claim. Add its id to
+the fixed order in `ShapeAudit.tsx` — controls are interleaved so status cannot be inferred
+from position.
+
+**A map edge** → `data/connections.ts`. Declare `structural | analogical | historical | break
+| open`. Analogical edges must state their own disanalogy; breaks must say what was cut.
+Enforced in tests.
+
+**Hypotheses** in `research/lab.ts` are pre-registered and must not be edited to match
+incoming data. Changes go in `research/log.ts` as a dated entry.
+
+---
+
+## Provenance
+
+- **34 language scenarios** — written for this experiment. No real message, email, DM or chat
+  log. The reason is on `/ethics`: the person who wrote a message cannot consent to its use,
+  and only the recipient would ever be asked.
+- **8 myth scenarios** — original paraphrases of Ovid, Homer, Aeschylus, Sophocles, Virgil and
+  Hesiod. Public domain, with line references in the sources list.
+- **The character in `/versions`** is invented.
+- No copyrighted work is quoted or reproduced anywhere. Fanfiction is the origin and the
+  method, not the content.
 
 ## Privacy
 
-A random session identifier in `localStorage`, the scenario id, the distributions, optional
-confidence, and elapsed time. No accounts, no email, no IP logging, no analytics, no tracking
-cookies. See `/ethics`, which also states the trade-off: anonymity this strong means there is
+A random identifier in `localStorage`, the scenario id, the distributions, optional
+confidence, elapsed time. No accounts, no email, no IP logging, no analytics, no tracking
+cookies. Thirteen of the fourteen pages record nothing at all.
+
+The trade-off, stated on `/ethics` rather than buried: anonymity this strong means there is
 no way to find and delete an individual response afterwards.
 
 ## Accessibility
 
-Real `<input type="range">` elements so keyboard and screen-reader behaviour is the
-platform's. Charts carry visually-hidden data tables rather than a one-line summary. Colour
-is never the only channel — every series is labelled directly. `prefers-reduced-motion` is
-respected globally in CSS and per-component through `useReducedMotion`.
+Real `<input type="range">` elements, so keyboard and screen-reader behaviour is the
+platform's rather than reimplemented. Charts carry visually-hidden data tables rather than a
+one-line summary — a line chart is not describable in a sentence. Colour is never the only
+channel; every series is labelled directly. Palette contrast measured at 4.5:1 or better
+against the paper background, with the values noted in `tailwind.config.ts`. The connection
+map has a full list view for keyboard use. `prefers-reduced-motion` is respected globally in
+CSS and per-component via `useReducedMotion`.
+
+## Stack
+
+Next.js 14 (App Router) · TypeScript · Tailwind · Framer Motion · d3-scale/shape for
+custom charts · `pg` for Postgres · `tsx` for tests. No component library, no chart library,
+no analytics.
+
+---
+
+*An investigation, not a conclusion. If a prediction here turns out wrong it stays on the
+page marked wrong; if a connection is abandoned it stays on the map drawn as severed.*
