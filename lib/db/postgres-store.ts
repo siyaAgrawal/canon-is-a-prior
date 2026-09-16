@@ -4,9 +4,12 @@ import type { ExperimentStore } from "./store";
 /**
  * Postgres implementation, used when DATABASE_URL is set (Supabase, Neon, RDS, …).
  *
- * `pg` is imported dynamically so the file store keeps working with no database
- * driver installed at all. If DATABASE_URL is set and the driver is missing we fail
- * loudly rather than silently dropping data on the floor.
+ * The driver is imported dynamically so it is only loaded when a database is actually
+ * configured, but with a literal specifier: a variable specifier is invisible to
+ * Next.js file tracing, so the package would be left out of the serverless bundle and
+ * fail at runtime with "Cannot find module 'pg'" despite being in package.json. It is
+ * also listed in serverComponentsExternalPackages, which keeps it out of the webpack
+ * bundle and lets it resolve from node_modules at runtime.
  */
 export class PostgresStore implements ExperimentStore {
   readonly kind = "postgres" as const;
@@ -17,19 +20,18 @@ export class PostgresStore implements ExperimentStore {
 
   private async pg() {
     if (this.pool) return this.pool;
-    let mod: any;
+    let mod: typeof import("pg");
     try {
-      // Optional peer dependency. The specifier is a variable so TypeScript does not
-      // require the driver's types to be installed, and webpackIgnore keeps the
-      // bundler from trying to resolve it at build time.
-      const spec = "pg";
-      mod = await import(/* webpackIgnore: true */ spec);
-    } catch {
+      mod = await import("pg");
+    } catch (err) {
       throw new Error(
-        "DATABASE_URL is set but the 'pg' driver is not installed. Run `npm i pg` or unset DATABASE_URL to use the file store.",
+        `DATABASE_URL is set but the 'pg' driver could not be loaded: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
       );
     }
-    const Pool = mod.Pool ?? mod.default?.Pool;
+    const Pool = mod.Pool ?? (mod as unknown as { default?: typeof mod }).default?.Pool;
+    if (!Pool) throw new Error("The 'pg' module did not expose a Pool constructor.");
     this.pool = new Pool({
       connectionString: this.url,
       ssl: this.url.includes("localhost") ? undefined : { rejectUnauthorized: false },

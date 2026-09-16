@@ -49,7 +49,7 @@ Copy `.env.example` to `.env.local`. Everything in it is optional except where n
 
 | Variable | Effect if unset |
 | --- | --- |
-| `DATABASE_URL` | Responses are stored in `./.data/*.jsonl` (append-only JSON lines). Set it to use Postgres — Supabase, Neon, RDS — and run `npm i pg`, which is an optional dependency. Tables are created on first write. |
+| `DATABASE_URL` | Responses are stored in `./.data/*.jsonl` (append-only JSON lines) when running locally, and refused outright on a serverless platform — see Deploying. Set it to use Postgres (Supabase, Neon, RDS); the `pg` driver ships as a dependency and tables are created on first write. |
 | `ANTHROPIC_API_KEY` | The model-evaluation route returns 501 and the UI says no runs are possible. Nothing is simulated. |
 | `AI_MODEL` | Defaults to `claude-sonnet-5`. |
 | `RESEARCH_TOKEN` | `/api/export` and model runs refuse every request. Required — there is no open default. |
@@ -64,14 +64,16 @@ anything** until `DATABASE_URL` is set: visitors see a notice before starting, a
 submission returns 503 with a readable reason. Reads are unaffected, since no storage and
 an empty dataset look the same to a reader.
 
-To start collecting, provision any Postgres (Vercel Storage, Neon, Supabase), then:
+To start collecting, provision any Postgres (Vercel Storage, Neon, Supabase) and set the
+connection string — from the project's Settings → Environment Variables, or from the CLI
+**inside this directory**, since `vercel env` needs the `.vercel` link that lives here:
 
 ```bash
 vercel env add DATABASE_URL production
-npm i pg && git add package.json package-lock.json && git commit -m "Add pg driver" && git push
 ```
 
-Tables are created on first write.
+Then redeploy so the new variable is picked up. Tables are created on first write, and the
+"not collecting" notice disappears on its own.
 
 ## Data model
 
