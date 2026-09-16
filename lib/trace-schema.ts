@@ -40,6 +40,30 @@ const ALLOWED: Record<Instrument, string[]> = {
   criteria: ["picks", "properties", "consistent", "reasoning"],
   rewrite: ["module", "premisesOpened", "dwellMs"],
   map: ["opened"],
+  canontest: [
+    "claimId",
+    "observation",
+    "prior",
+    "pattern",
+    "alternatives",
+    "discriminator",
+    "discriminatorIsGradable",
+    "counterexample",
+    "prediction",
+    "status",
+    "reasoning",
+  ],
+  judgeset: [
+    "arm",
+    "phase",
+    "setId",
+    "judgements",
+    "features",
+    "controlsAccepted",
+    "realAccepted",
+    "controlsShown",
+    "realShown",
+  ],
   discriminate: [
     "caseId",
     "preferred",
@@ -168,6 +192,66 @@ export const SCHEMAS: Record<Instrument, Check> = {
     return null;
   },
 
+  /**
+   * One pass through the Canon Test. Free text is capped per field; the whole
+   * payload is capped by the generic size check.
+   */
+  canontest: (p) => {
+    if (!optionalId(p?.claimId)) return "canontest.claimId must be an id or null";
+    for (const k of ["observation", "prior", "pattern", "counterexample", "prediction", "reasoning"]) {
+      if (!isReasoning((p as any)?.[k])) return `canontest.${k} is too long`;
+    }
+    if (!Array.isArray(p?.alternatives) || p.alternatives.length > 6)
+      return "canontest.alternatives must be a short array";
+    if (p.alternatives.some((a: unknown) => !isReasoning(a)))
+      return "canontest.alternatives contains something too long";
+    if (!isReasoning(p?.discriminator)) return "canontest.discriminator is too long";
+    if (!optionalBool(p?.discriminatorIsGradable))
+      return "canontest.discriminatorIsGradable must be null or a boolean";
+    if (
+      !["supported", "weakened", "underdetermined", "contradicted", "open", "analogical", "abandoned"].includes(
+        String(p?.status),
+      )
+    )
+      return "canontest.status is not one of the allowed statuses";
+    return null;
+  },
+
+  /**
+   * One judged claim set, before or after the intervention. `arm` records which
+   * condition the session was assigned to, so the pre/post comparison has a
+   * control that spent the same time on task.
+   */
+  judgeset: (p) => {
+    if (!["test", "control"].includes(String(p?.arm))) return "judgeset.arm must be test or control";
+    if (!["pre", "post"].includes(String(p?.phase))) return "judgeset.phase must be pre or post";
+    if (!/^[a-z0-9_-]{1,40}$/i.test(String(p?.setId ?? ""))) return "judgeset.setId is required";
+    if (typeof p?.judgements !== "object" || p.judgements === null)
+      return "judgeset.judgements must be an object";
+    const entries = Object.entries(p.judgements as Record<string, unknown>);
+    if (entries.length > 24) return "judgeset.judgements has too many entries";
+    for (const [k, v] of entries) {
+      if (!/^[a-z0-9_-]{1,40}$/i.test(k)) return "judgeset.judgements has a bad key";
+      if (v !== "found" && v !== "imposed") return "judgeset.judgements values must be found or imposed";
+    }
+    // Surface-feature ratings, used to test whether acceptance tracks fluency
+    // rather than status — the confound this design most needs to expose.
+    if (p?.features !== null && p?.features !== undefined) {
+      if (typeof p.features !== "object") return "judgeset.features must be an object or null";
+      for (const [k, v] of Object.entries(p.features as Record<string, unknown>)) {
+        if (!/^[a-z0-9_-]{1,40}$/i.test(k)) return "judgeset.features has a bad key";
+        if (typeof v !== "object" || v === null) return "judgeset.features entries must be objects";
+        const f = v as Record<string, unknown>;
+        if (typeof f.mechanism !== "boolean" || typeof f.falsifiable !== "boolean")
+          return "judgeset.features entries need boolean mechanism and falsifiable";
+      }
+    }
+    for (const k of ["controlsAccepted", "realAccepted", "controlsShown", "realShown"]) {
+      if (!isIntIn((p as any)?.[k], 0, 24)) return `judgeset.${k} must be an integer`;
+    }
+    return null;
+  },
+
   /** Which nodes were opened on the map, in order. */
   map: (p) => {
     if (!isIdList(p?.opened, 40)) return "map.opened must be a list of node ids";
@@ -233,8 +317,19 @@ export function validateTrace(
     const v = (payload as Record<string, unknown>)[k];
     if (k === "steps" && Array.isArray(v)) {
       clean[k] = v.map((step: any) => Object.fromEntries(STEP_KEYS.map((sk) => [sk, step?.[sk]])));
-    } else if (k === "reasoning" || k === "createdCategory") {
+    } else if (
+      k === "reasoning" ||
+      k === "createdCategory" ||
+      k === "observation" ||
+      k === "prior" ||
+      k === "pattern" ||
+      k === "counterexample" ||
+      k === "prediction" ||
+      k === "discriminator"
+    ) {
       clean[k] = cleanReasoning(v);
+    } else if (k === "alternatives" && Array.isArray(v)) {
+      clean[k] = v.map((a) => cleanReasoning(a)).filter(Boolean);
     } else {
       clean[k] = v;
     }

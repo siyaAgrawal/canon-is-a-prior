@@ -267,6 +267,115 @@ export function computeFindings(
     });
   }
 
+  // ── Does the protocol improve sensitivity, or only move the threshold? ───
+  {
+    const sets = of("judgeset");
+    const byArm = (arm: string, phase: string) =>
+      sets.filter((t) => (t.payload as any).arm === arm && (t.payload as any).phase === phase);
+
+    /**
+     * Sensitivity: how much more often a defended claim is accepted than a
+     * fabricated one. Bias: how often anything is accepted. A protocol that moves
+     * only the second has made people harder to convince without making them
+     * better at judging.
+     */
+    const rates = (rows: Trace[]) => {
+      let realA = 0, realN = 0, ctrlA = 0, ctrlN = 0;
+      rows.forEach((t) => {
+        const p = t.payload as any;
+        realA += Number(p.realAccepted ?? 0);
+        realN += Number(p.realShown ?? 0);
+        ctrlA += Number(p.controlsAccepted ?? 0);
+        ctrlN += Number(p.controlsShown ?? 0);
+      });
+      const real = realN ? realA / realN : 0;
+      const ctrl = ctrlN ? ctrlA / ctrlN : 0;
+      return { sensitivity: real - ctrl, bias: (realA + ctrlA) / Math.max(1, realN + ctrlN) };
+    };
+
+    const testPre = rates(byArm("test", "pre"));
+    const testPost = rates(byArm("test", "post"));
+    const ctrlPre = rates(byArm("control", "pre"));
+    const ctrlPost = rates(byArm("control", "post"));
+
+    const paired = Math.min(byArm("test", "post").length, byArm("control", "post").length);
+    const minN = 25;
+    const ready = paired >= minN;
+
+    const dSensTest = testPost.sensitivity - testPre.sensitivity;
+    const dSensCtrl = ctrlPost.sensitivity - ctrlPre.sensitivity;
+    const dBiasTest = testPost.bias - testPre.bias;
+    const diff = dSensTest - dSensCtrl;
+
+    out.push({
+      id: "c-canontest-sensitivity",
+      n: paired,
+      minN,
+      ready,
+      rule:
+        "Supported if sensitivity rises at least 0.10 more in the protocol arm than the control arm. Contradicted if bias falls by more than 0.10 while that sensitivity difference stays under 0.05 — that is a threshold shift, not an improvement. Weakened otherwise.",
+      result: ready
+        ? `Sensitivity changed ${dSensTest >= 0 ? "+" : ""}${dSensTest.toFixed(2)} under the protocol against ${dSensCtrl >= 0 ? "+" : ""}${dSensCtrl.toFixed(2)} in the control arm; overall acceptance changed ${dBiasTest >= 0 ? "+" : ""}${dBiasTest.toFixed(2)}.`
+        : null,
+      numbers: [
+        { label: "Paired sessions per arm", value: String(paired) },
+        { label: "Δ sensitivity · protocol", value: ready ? dSensTest.toFixed(2) : "—" },
+        { label: "Δ sensitivity · control", value: ready ? dSensCtrl.toFixed(2) : "—" },
+        { label: "Δ bias · protocol", value: ready ? dBiasTest.toFixed(2) : "—" },
+      ],
+      status: !ready
+        ? "open"
+        : diff >= 0.1
+          ? "supported"
+          : dBiasTest < -0.1 && diff < 0.05
+            ? "contradicted"
+            : "weakened",
+      discriminating: true,
+      caveat:
+        "Reporting both quantities is the whole design. A protocol can look effective on accuracy alone while doing nothing except make people say no more often.",
+    });
+  }
+
+  // ── Does acceptance track fluency rather than status? ────────────────────
+  {
+    const sets = of("judgeset").filter((t) => (t.payload as any).features);
+    let withMech = { accepted: 0, shown: 0 };
+    let withoutMech = { accepted: 0, shown: 0 };
+    sets.forEach((t) => {
+      const p = t.payload as any;
+      Object.entries(p.features as Record<string, { mechanism: boolean }>).forEach(([claimId, f]) => {
+        const accepted = p.judgements?.[claimId] === "found";
+        const bucket = f.mechanism ? withMech : withoutMech;
+        bucket.shown += 1;
+        if (accepted) bucket.accepted += 1;
+      });
+    });
+    const a = withMech.shown ? withMech.accepted / withMech.shown : 0;
+    const b = withoutMech.shown ? withoutMech.accepted / withoutMech.shown : 0;
+    const minN = 25;
+    const ready = sets.length >= minN && withMech.shown > 0 && withoutMech.shown > 0;
+    out.push({
+      id: "c-fluency",
+      n: sets.length,
+      minN,
+      ready,
+      rule:
+        "Supported if claims rated as naming a mechanism are accepted at least 0.15 more often, regardless of whether they are fabricated. Weakened between 0.05 and 0.15. Contradicted below 0.05.",
+      result: ready
+        ? `Claims read as naming a mechanism were accepted ${(a * 100).toFixed(0)}% of the time against ${(b * 100).toFixed(0)}% for those that were not.`
+        : null,
+      numbers: [
+        { label: "Named a mechanism", value: withMech.shown ? `${withMech.accepted}/${withMech.shown}` : "—" },
+        { label: "Did not", value: withoutMech.shown ? `${withoutMech.accepted}/${withoutMech.shown}` : "—" },
+        { label: "Difference", value: ready ? (a - b).toFixed(2) : "—" },
+      ],
+      status: !ready ? "open" : a - b >= 0.15 ? "supported" : a - b >= 0.05 ? "weakened" : "contradicted",
+      discriminating: false,
+      caveat:
+        "Features and status are confounded in the items themselves, because the fabrications were written to have good features. With three controls this may not be separable from inside this design; a second author writing controls blind is the fix, and it is not built.",
+    });
+  }
+
   // ── The abandoned one stays abandoned. ───────────────────────────────────
   out.push({
     id: "c-identity",

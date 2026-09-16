@@ -6,6 +6,29 @@
 
 ---
 
+## The outcome it is built to produce
+
+Not "some connections are real and some are imposed". The practical question:
+
+> **If you think you have found a pattern, what should you do next?**
+
+`/canon-test` is the protocol that answers it — and the protocol is itself under test.
+
+**The measure that makes that worth doing.** Almost every critical-thinking intervention that
+reports success has moved a **threshold**, not improved **discrimination**: people become warier
+of everything, reject more of both kinds, and accuracy on the bad ones rises as a side effect.
+So the analysis separates two quantities:
+
+- **Sensitivity** — the gap between accepting a defended claim and accepting a fabricated one.
+- **Bias** — how willing you are to accept anything at all.
+
+A protocol that raises sensitivity is useful. One that only lowers bias has made people harder
+to convince without making them better at judging, which is *worse* than nothing. The decision
+rule returns `CONTRADICTED` in that case, and it was verified against a simulated threshold
+shift before any real data existed.
+
+**I expect the null**, and it stays on `/discovery` if it comes.
+
 ## The three levels
 
 The project separates three problems that get collapsed routinely, and the separation is
@@ -140,6 +163,7 @@ been visited, and every URL this project has ever published still redirects some
 | `/person` | the quiet room | The model of a person is not the person. One diagram, almost no text. |
 | `/criteria` | graphite | Coherent, plausible, supported, predictive, useful, satisfying, true. Two cases where you cannot have them all — it reports which property you treated as decisive. |
 | `/discriminate` | graphite | **The flagship.** Two models, both fitting everything. Design the observation that would tell them apart, predict its result, then see it. Proposed tests are graded: a candidate either separates the models or it does not. |
+| `/canon-test` | forensic | **The protocol.** You think you've found a pattern — eight questions that make you say what it would take to be wrong. Seven have no right answer; one does. No score, ever. |
 | `/discovery` | forensic | Every candidate finding with its status, what would move it, and the rival that would explain the same data. No `proven` column, ever. |
 | `/machines` | graphite | The same ambiguous evidence, given to people and to a language model. |
 | `/map` | deep field | 25 nodes, 38 edges. Severed connections drawn as severed. Ringed nodes are places you can go — the map is also navigation. |

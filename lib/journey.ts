@@ -28,6 +28,7 @@ export const places: Place[] = [
   { href: "/criteria", title: "Criteria", line: "Three explanations, one set of facts. Find out which property you treat as decisive.", room: "inference", group: "experiments" },
   { href: "/discriminate", title: "Two models, same evidence", line: "Both fit everything. Design the observation that would tell them apart, then predict what it shows.", room: "inference", group: "experiments" },
   { href: "/shape", title: "Is the shape really there?", line: "Ten connections. Three are mine and false. Catch them before I tell you.", room: "doubt", group: "experiments" },
+  { href: "/canon-test", title: "The Canon Test", line: "You think you've found a pattern. Eight questions that make you say what it would take to be wrong.", room: "doubt", group: "experiments" },
 
   { href: "/categories", title: "When the category breaks", line: "Sort six specimens. Then meet the seventh, which has the defining property of both kinds.", room: "physics", group: "cases" },
   { href: "/person", title: "The model of a person", line: "The quiet room.", room: "human", group: "cases" },
@@ -72,7 +73,8 @@ export const onward: Record<string, string[]> = {
   "/categories": ["/shape", "/map"],
   "/person": ["/versions", "/shape"],
   "/machines": ["/criteria", "/lab"],
-  "/shape": ["/discovery", "/map"],
+  "/shape": ["/canon-test", "/discovery"],
+  "/canon-test": ["/discovery", "/discriminate"],
   "/map": ["/discovery", "/shape"],
   "/discovery": ["/shape", "/lab"],
   "/lab": ["/discovery", "/ethics"],

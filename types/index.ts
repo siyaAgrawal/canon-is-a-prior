@@ -146,7 +146,9 @@ export type Instrument =
   | "rewrite"
   | "map"
   | "discriminate"
-  | "category";
+  | "category"
+  | "canontest"
+  | "judgeset";
 
 /**
  * The three levels the project keeps apart. Every instrument declares which one
@@ -168,6 +170,8 @@ export const INSTRUMENT_LEVEL: Record<Instrument, Level> = {
   category: "justification",
   shape: "justification",
   map: "construction",
+  canontest: "justification",
+  judgeset: "justification",
 };
 
 export interface Trace {

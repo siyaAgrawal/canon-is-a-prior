@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHead, Shell } from "@/components/ui/primitives";
 import { Continue } from "@/components/ui/Continue";
 import { Reveal } from "@/components/ui/Reveal";
@@ -56,6 +57,29 @@ export default function ShapePage() {
               <p className="text-fg">
                 It is also the result, so it is what the site says.
               </p>
+            </div>
+          </div>
+        </Reveal>
+      </Shell>
+
+      <Shell className="mt-28">
+        <Reveal>
+          <div className="max-w-column">
+            <div className="hair pt-10">
+              <p className="kicker" style={{ color: "rgb(var(--accent))" }}>
+                So what do you do with the next one?
+              </p>
+              <h2 className="mt-5 font-display text-d3">
+                You have just tested somebody else&rsquo;s connections. Yours are harder.
+              </h2>
+              <p className="say mt-7 max-w-measure">
+                These ten came labelled, judged, and with the fabrications disclosed at the end. A
+                pattern you find yourself arrives with none of that — and it arrives feeling
+                exactly like the ones above felt before the reveal.
+              </p>
+              <Link href="/canon-test" className="btn btn-solid mt-9">
+                The Canon Test →
+              </Link>
             </div>
           </div>
         </Reveal>

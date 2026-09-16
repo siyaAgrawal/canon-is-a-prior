@@ -142,6 +142,34 @@ export const candidates: Candidate[] = [
     instrument: "/shape",
   },
   {
+    id: "c-canontest-sensitivity",
+    level: "justification",
+    claim:
+      "Working through the Canon Test improves sensitivity — the gap between accepting a defended connection and accepting a fabricated one.",
+    status: "open",
+    standing:
+      "Nothing collected. This is the claim the protocol has to earn, and the one I expect to fail.",
+    needs:
+      "Paired pre/post judgements from sessions in both arms, so the change in sensitivity under the protocol can be compared against the change under a matched unrelated task.",
+    rival:
+      "The protocol moves only bias: people become warier of everything, reject more of both kinds, and accuracy on the fabrications rises purely because they are rejecting more overall. This is what most critical-thinking interventions turn out to do, and the analysis reports both quantities separately for exactly that reason.",
+    instrument: "/canon-test, /shape",
+  },
+  {
+    id: "c-fluency",
+    level: "justification",
+    claim:
+      "Acceptance of a structural claim tracks its surface features — whether it names a mechanism, whether you could say what would falsify it — more closely than whether it is one I defend or one I fabricated.",
+    status: "open",
+    standing:
+      "Nothing collected. If this holds, the headline result of the audit is a fact about my prose rather than about anyone's reasoning, and the audit has to be reported that way.",
+    needs:
+      "Per-claim feature ratings alongside judgements, so acceptance can be compared against features and against true status on the same items.",
+    rival:
+      "Features and status are confounded in the item set itself, because I wrote the fabrications to have good features. With three controls this may be unresolvable from inside this design.",
+    instrument: "/shape",
+  },
+  {
     id: "c-identity",
     level: "construction",
     claim:
