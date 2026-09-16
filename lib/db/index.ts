@@ -24,14 +24,21 @@ export class StorageNotConfiguredError extends Error {
   }
 }
 
-export function storageStatus(): { usable: boolean; kind: "file" | "postgres" | "none"; reason?: string } {
+export function storageStatus(): {
+  usable: boolean;
+  kind: "file" | "postgres" | "none";
+  reason?: string;
+  detail?: string;
+} {
   const url = process.env.DATABASE_URL;
   if (url && url.trim().length > 0) return { usable: true, kind: "postgres" };
   if (isEphemeralFilesystem()) {
     return {
       usable: false,
       kind: "none",
-      reason: "No DATABASE_URL, and this platform's filesystem does not persist between requests.",
+      // Two audiences: `reason` is shown to visitors, `detail` is for whoever runs it.
+      reason: "This deployment doesn't have a database attached yet, so responses can't be stored.",
+      detail: "No DATABASE_URL is set, and this platform's filesystem does not persist between requests.",
     };
   }
   return { usable: true, kind: "file" };

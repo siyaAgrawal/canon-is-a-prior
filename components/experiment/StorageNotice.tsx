@@ -19,7 +19,7 @@ export function StorageNotice() {
       .then((r) => (r.ok ? r.json() : null))
       .then((body) => {
         if (!live || !body) return;
-        if (body.storage === "none") setNote(body.storageNote ?? "This deployment cannot store responses.");
+        if (body.storage === "none") setNote(body.storageNote ?? "This deployment can't store responses.");
       })
       .catch(() => {
         /* A failed status check is not itself evidence that storage is broken. */

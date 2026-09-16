@@ -39,6 +39,7 @@ export async function GET() {
     return NextResponse.json({
       storage: store?.kind ?? "none",
       storageNote: storageStatus().reason ?? null,
+      storageDetail: storageStatus().detail ?? null,
       threshold: MIN_N_FOR_AGGREGATE,
       totals: {
         responses: responses.length,
