@@ -1,4 +1,4 @@
-import { list, put } from "@vercel/blob";
+import { get, list, put } from "@vercel/blob";
 import type { AIResponse, ParticipantResponse, Trace } from "@/types";
 import type { ExperimentStore } from "./store";
 
@@ -30,7 +30,7 @@ export class BlobStore implements ExperimentStore {
 
   private async write(prefix: string, id: string, row: unknown) {
     await put(`${prefix}/${id}.json`, JSON.stringify(row), {
-      access: "public",
+      access: "private",
       contentType: "application/json",
       addRandomSuffix: false,
     });
@@ -41,11 +41,11 @@ export class BlobStore implements ExperimentStore {
     const cached = this.cache.get(prefix);
     if (cached) return cached as T[];
 
-    const blobs: { url: string; uploadedAt: Date }[] = [];
+    const paths: string[] = [];
     let cursor: string | undefined;
     do {
       const page = await list({ prefix: `${prefix}/`, cursor, limit: 1000 });
-      blobs.push(...page.blobs.map((b) => ({ url: b.url, uploadedAt: b.uploadedAt })));
+      paths.push(...page.blobs.map((b) => b.pathname));
       cursor = page.hasMore ? page.cursor : undefined;
     } while (cursor);
 
@@ -53,17 +53,21 @@ export class BlobStore implements ExperimentStore {
     // of a few thousand fetches will exhaust the runtime's socket pool.
     const out: T[] = [];
     const CONCURRENCY = 24;
-    for (let i = 0; i < blobs.length; i += CONCURRENCY) {
-      const slice = blobs.slice(i, i + CONCURRENCY);
+    for (let i = 0; i < paths.length; i += CONCURRENCY) {
+      const slice = paths.slice(i, i + CONCURRENCY);
       const rows = await Promise.all(
-        slice.map(async (b) => {
+        slice.map(async (pathname) => {
           try {
-            const res = await fetch(b.url, { cache: "no-store" });
-            if (!res.ok) return null;
-            return (await res.json()) as T;
+            // A private store is not readable by URL: the body has to be fetched
+            // through the SDK, which authenticates the request. That is the whole
+            // reason for choosing private access.
+            const blob = await get(pathname, { access: "private" });
+            if (!blob || blob.statusCode !== 200 || !blob.stream) return null;
+            const text = await new Response(blob.stream).text();
+            return JSON.parse(text) as T;
           } catch {
             // One unreadable row must not take down the whole read. It is
-            // dropped and the count reported is therefore a floor, not a claim.
+            // dropped, so a reported count is a floor rather than a claim.
             return null;
           }
         }),
