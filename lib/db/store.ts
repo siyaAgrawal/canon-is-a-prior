@@ -9,7 +9,7 @@ import type { AIResponse, ParticipantResponse, Trace } from "@/types";
  * response is an observation, and observations are not edited after the fact.
  */
 export interface ExperimentStore {
-  readonly kind: "file" | "postgres";
+  readonly kind: "file" | "postgres" | "blob";
   init(): Promise<void>;
   saveResponse(r: ParticipantResponse): Promise<void>;
   listResponses(scenarioId?: string): Promise<ParticipantResponse[]>;

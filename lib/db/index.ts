@@ -1,5 +1,6 @@
 import { FileStore } from "./file-store";
 import { PostgresStore } from "./postgres-store";
+import { BlobStore, blobConfigured } from "./blob-store";
 import type { ExperimentStore } from "./store";
 
 let cached: ExperimentStore | null = null;
@@ -18,7 +19,7 @@ export function isEphemeralFilesystem(): boolean {
 export class StorageNotConfiguredError extends Error {
   constructor() {
     super(
-      "This deployment has no database configured, and its filesystem does not persist between requests. Rather than tell you your response was recorded and then lose it, nothing was stored. Set DATABASE_URL to collect responses.",
+      "This deployment has no durable store attached, and its filesystem does not persist between requests. Rather than tell you your response was recorded and then lose it, nothing was stored. Attach a Blob store or set DATABASE_URL to collect responses.",
     );
     this.name = "StorageNotConfiguredError";
   }
@@ -26,12 +27,13 @@ export class StorageNotConfiguredError extends Error {
 
 export function storageStatus(): {
   usable: boolean;
-  kind: "file" | "postgres" | "none";
+  kind: "file" | "postgres" | "blob" | "none";
   reason?: string;
   detail?: string;
 } {
   const url = process.env.DATABASE_URL;
   if (url && url.trim().length > 0) return { usable: true, kind: "postgres" };
+  if (blobConfigured()) return { usable: true, kind: "blob" };
   if (isEphemeralFilesystem()) {
     return {
       usable: false,
@@ -49,6 +51,12 @@ export function getStore(): ExperimentStore {
   const url = process.env.DATABASE_URL;
   if (url && url.trim().length > 0) {
     cached = new PostgresStore(url);
+    return cached;
+  }
+  // Blob is the default durable backend: it needs no separate account and is
+  // provisioned against the deployment itself.
+  if (blobConfigured()) {
+    cached = new BlobStore();
     return cached;
   }
   if (isEphemeralFilesystem()) throw new StorageNotConfiguredError();
