@@ -23,6 +23,20 @@ export const logEntries: LogEntry[] = [
     date: "2026-09-16",
     displayDate: "16 September",
     question:
+      "Is it enough to record what people chose, if the interesting thing is why they chose it?",
+    thought:
+      "That a closed vocabulary was both safer and sufficient. Fixed options, ids and counts, nothing typed — and I said so on the ethics page as a feature.",
+    broke:
+      "Every candidate finding I wrote down needed a reason attached to be interpretable. 'Kept the reading and marked the fact as complicating it' is a behaviour; whether the person could say what it cost them is the actual question, and no set of buttons recovers that.",
+    changed:
+      "Reasoning boxes, optional and capped at 600 characters, labelled 'stored verbatim' where they appear. The previous claim is retracted rather than edited away. The closure guarantee still holds for everything else: unknown fields are dropped, not stored.",
+    unknown:
+      "Whether asking for a reason changes the choice that precedes it. It plausibly does, and I have not built the condition that would detect it.",
+  },
+  {
+    date: "2026-09-16",
+    displayDate: "16 September",
+    question:
       "Why does a different interpretation of a character sometimes feel like a different person, when nothing in the evidence has moved?",
     thought:
       "That stories give us stable character categories, and a retelling swaps one category for another. Cruel becomes frightened; the label does the work.",

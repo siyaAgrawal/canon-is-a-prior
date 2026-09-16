@@ -6,6 +6,21 @@
 
 ---
 
+## The three levels
+
+The project separates three problems that get collapsed routinely, and the separation is
+the architecture:
+
+| | Question | Where |
+|---|---|---|
+| **I · Construction** | Where does a hypothesis come from at all? | `/versions`, `/rewrite` |
+| **II · Revision** | What does evidence do to it? | `/sure`, `/machines` |
+| **III · Justification** | How would we know the new model is *better*? | `/discriminate`, `/criteria`, `/categories`, `/shape` |
+
+Bayes' rule lives entirely in Level II and describes it completely — which is why the project
+cannot be *about* Bayes. Level I is where hypotheses are generated, which no updating rule
+does. Level III is where the difficulty is.
+
 ## What this is
 
 It started in fanfiction. The same character, the same scenes, the same lines — and one
@@ -38,6 +53,8 @@ See [DESIGN.md](DESIGN.md) for why the first version of this site was scrapped.
 | Instrument | What it stores |
 |---|---|
 | `entry` | The "Sure." reading held at each stage, how often you moved, confidence before any evidence |
+| `discriminate` | Preferred model and criterion, proposed test and whether it discriminates, prediction and confidence, revision, reasoning |
+| `category` | Where each specimen went, what was done with the anomaly, any category named, reasoning |
 | `character` | Which assumptions about Draco you tried, in order |
 | `rewrite` | Which Icarus premises you opened, and dwell time |
 | `versions` | The reading held at each fact, what you did with it, switches and accommodations |
@@ -49,10 +66,34 @@ Plus the scenario experiment on `/machines`, which stores a fully typed
 `ParticipantResponse` because its statistics depend on the shape.
 
 Payloads are **closed**, not merely validated: `lib/trace-schema.ts` declares the permitted
-keys per instrument and the API strips everything else before writing. A field the schema
-does not know is dropped, so the claim "nothing you typed is stored" is enforced rather than
-intended — and asserted in `npm test`. Every recording instrument discloses what it wrote, on
-screen, where it wrote it.
+keys per instrument and the API strips everything else before writing. A field the schema does
+not know is dropped rather than kept as a blob, asserted in `npm test`.
+
+**Free-text reasoning is collected**, and this reverses an earlier position. The site used to
+store nothing typed and said so as a feature. That was wrong: *why* someone answered is more
+informative than what they answered, and no fixed vocabulary recovers a reason. Reasoning
+boxes are optional, capped at 600 characters, stripped of control characters, and labelled
+*stored verbatim* where they appear. The retraction is in `/log` rather than edited away.
+
+### The deliverable
+
+Not this site. Token-protected:
+
+| Endpoint | What |
+|---|---|
+| `/api/export?kind=traces&format=csv` | Long format — one row per response, per field |
+| `/api/export?kind=responses&format=csv` | Scenario distributions |
+| `/api/export?kind=ai&format=json` | Model runs with pinned prompt version |
+| `/api/paper` | Draft manuscript, results generated from storage at request time |
+
+The manuscript prints **insufficient data** wherever n is below 30 rather than omitting the
+section — an absent section reads as an oversight; "insufficient" reads as a fact about the
+state of the work.
+
+If this succeeds, what exists at the end is evidence about **which criterion people reach for
+when the evidence runs out**, whether it is stable across domains, whether people distinguish
+confirming from discriminating observations, and whether a language model reaches for the
+same one. A clear null on any of those is a result.
 
 ## The rule everything else depends on
 
@@ -95,9 +136,11 @@ been visited, and every URL this project has ever published still redirects some
 | `/versions` | night library | Why fanfiction is the original laboratory, then seven facts about an invented person — measuring what it costs to keep your first reading. |
 | `/rewrite` | ground → sun | Scroll and he climbs. The sky lightens, the figure rises, and changing why he climbed re-reads all four fixed events. |
 | `/shape` | forensic | Ten structural claims. Some defended, one abandoned, **three written as controls**. Judge before the reveal. |
-| `/categories` | cold bench | de Broglie, and a working V² + D² ≤ 1 model of what it costs to have some of each description. |
+| `/categories` | cold bench | Sort six specimens, then meet the seventh, which has the defining property of both kinds. de Broglie is named only afterwards. |
 | `/person` | the quiet room | The model of a person is not the person. One diagram, almost no text. |
 | `/criteria` | graphite | Coherent, plausible, supported, predictive, useful, satisfying, true. Two cases where you cannot have them all — it reports which property you treated as decisive. |
+| `/discriminate` | graphite | **The flagship.** Two models, both fitting everything. Design the observation that would tell them apart, predict its result, then see it. Proposed tests are graded: a candidate either separates the models or it does not. |
+| `/discovery` | forensic | Every candidate finding with its status, what would move it, and the rival that would explain the same data. No `proven` column, ever. |
 | `/machines` | graphite | The same ambiguous evidence, given to people and to a language model. |
 | `/map` | deep field | 25 nodes, 38 edges. Severed connections drawn as severed. Ringed nodes are places you can go — the map is also navigation. |
 | `/lab` | archive | Live counts, pre-registered predictions, method, limitations. |

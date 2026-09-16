@@ -34,10 +34,15 @@ export async function GET(req: Request) {
 
   const format = url.searchParams.get("format") ?? "json";
   const kind = url.searchParams.get("kind") ?? "responses";
-  let rows: unknown[];
+  let rows: any[];
   try {
     const store = getStore();
-    rows = kind === "ai" ? await store.listAIResponses() : await store.listResponses();
+    rows =
+      kind === "ai"
+        ? await store.listAIResponses()
+        : kind === "traces"
+          ? await store.listTraces()
+          : await store.listResponses();
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "storage unavailable" },
@@ -55,6 +60,36 @@ export async function GET(req: Request) {
   }
 
   if (format !== "csv") return NextResponse.json({ error: "format must be json or csv" }, { status: 400 });
+
+  // Traces are heterogeneous by instrument, so the CSV is long-format with the
+  // payload flattened one key per row. Anything nested is JSON-encoded in place
+  // rather than dropped.
+  if (kind === "traces") {
+    const lines = ["trace_id,session_id,instrument,field,value,duration_ms,created_at"];
+    for (const t of rows) {
+      Object.entries(t.payload ?? {}).forEach(([field, value]) => {
+        lines.push(
+          [
+            t.id,
+            t.sessionId,
+            t.instrument,
+            field,
+            typeof value === "object" && value !== null ? JSON.stringify(value) : String(value ?? ""),
+            t.durationMs,
+            t.createdAt,
+          ]
+            .map(csvEscape)
+            .join(","),
+        );
+      });
+    }
+    return new NextResponse(lines.join("\n"), {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="canon-traces-${new Date().toISOString().slice(0, 10)}.csv"`,
+      },
+    });
+  }
 
   // Long format: one row per (response, stage, interpretation). This is the shape that
   // goes straight into pandas or R without reshaping.

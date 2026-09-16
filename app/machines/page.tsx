@@ -22,7 +22,7 @@ export default function MachinesPage() {
       <section className="pt-16 sm:pt-24">
         <Shell>
           <div className="max-w-column">
-            <p className="kicker">The comparison</p>
+            <p className="kicker">Level II · the same question, asked of something else</p>
             <h1 className="mt-5 font-display text-d2">
               Given the same ambiguous evidence, how do a person and a model move?
             </h1>

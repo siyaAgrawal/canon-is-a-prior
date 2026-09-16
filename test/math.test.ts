@@ -19,7 +19,10 @@ import { evenDistribution, isValid, roundToSum, setAndRebalance, sum } from "../
 import { allScenarios } from "../data";
 import { canonModules } from "../data/canon";
 import { mapEdges, mapNodes } from "../data/connections";
-import { validateTrace, INSTRUMENTS } from "../lib/trace-schema";
+import { validateTrace, INSTRUMENTS, REASONING_MAX } from "../lib/trace-schema";
+import { cases as discriminateCases } from "../data/discriminate";
+import { categoryCase, RESPONSES } from "../data/category";
+import { candidates } from "../research/discovery";
 
 let failures = 0;
 function check(name: string, fn: () => void) {
@@ -279,6 +282,79 @@ check("unknown fields are stripped, not stored", () => {
   assert.deepEqual(Object.keys((r.clean.steps as any[])[0]).sort(), ["itemId", "reading", "stance"]);
   assert.ok(!JSON.stringify(r.clean).includes("free text"));
   assert.ok(!JSON.stringify(r.clean).includes("never reach storage"));
+});
+
+check("reasoning is kept, trimmed and capped", () => {
+  const long = "x".repeat(REASONING_MAX + 400);
+  const r = validateTrace("category", {
+    caseId: "kinds",
+    assignments: { s1: "alpha" },
+    anomalyResponse: "stretch",
+    createdCategory: null,
+    reasoning: "  because the rule said never  ",
+  });
+  assert.ok(r.ok, "valid reasoning was rejected");
+  if (!r.ok) return;
+  assert.equal(r.clean.reasoning, "because the rule said never");
+
+  const capped = validateTrace("category", {
+    caseId: "kinds",
+    assignments: { s1: "alpha" },
+    anomalyResponse: "keep",
+    createdCategory: null,
+    reasoning: long,
+  });
+  assert.ok(capped.ok);
+  if (!capped.ok) return;
+  assert.equal((capped.clean.reasoning as string).length, REASONING_MAX);
+});
+
+check("control characters never reach storage", () => {
+  const r = validateTrace("discriminate", {
+    caseId: "seminar", preferred: "chilled", preferenceCriterion: "fit",
+    prediction: "chilled", predictionConfidence: 50, proposedTestId: "other-seminar",
+    proposedTestIsDiscriminating: true, afterOutcome: "chilled", revised: true,
+    reasoning: `a${String.fromCharCode(7)}b\nc`,
+  });
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  const stored = r.clean.reasoning as string;
+  assert.ok(![...stored].some((ch) => ch.charCodeAt(0) < 32), `control char survived: ${JSON.stringify(stored)}`);
+});
+
+check("every underdetermination case has both discriminating and non-discriminating tests", () => {
+  discriminateCases.forEach((c) => {
+    const yes = c.candidates.filter((t) => t.discriminates).length;
+    const no = c.candidates.filter((t) => !t.discriminates).length;
+    assert.ok(yes >= 2, `${c.id}: only ${yes} discriminating candidates`);
+    assert.ok(no >= 2, `${c.id}: only ${no} non-discriminating candidates`);
+    assert.ok(
+      c.candidates.every((t) => t.note.length > 80),
+      `${c.id}: a candidate has no substantive note`,
+    );
+    const ids = c.candidates.map((t) => t.id);
+    assert.ok(ids.includes(c.resolution.testId), `${c.id}: resolution names an unknown test`);
+    assert.ok(
+      c.resolution.favours === null || c.models.some((m) => m.id === c.resolution.favours),
+      `${c.id}: resolution favours an unknown model`,
+    );
+  });
+});
+
+check("the category task has exactly one anomaly and four costed responses", () => {
+  const anomalies = categoryCase.specimens.filter((s) => s.fits === null);
+  assert.equal(anomalies.length, 1);
+  assert.equal(anomalies[0].id, categoryCase.anomalyId);
+  assert.equal(RESPONSES.length, 4);
+  RESPONSES.forEach((r) => assert.ok(r.note.length > 80, `${r.id} has no substantive cost note`));
+});
+
+check("every candidate finding names what would move it and a rival", () => {
+  candidates.forEach((c) => {
+    assert.ok(c.needs.length > 40, `${c.id} does not say what would move it`);
+    assert.ok(c.rival.length > 1, `${c.id} has no rival explanation`);
+  });
+  assert.ok(!candidates.some((c) => (c.status as string) === "proven"), "a candidate is marked proven");
 });
 
 check("malformed values are refused rather than coerced", () => {

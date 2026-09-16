@@ -14,6 +14,7 @@ const STORED = [
   ["A random identifier", "Generated in your browser, kept in your browser. It lets several answers from one person be recognised as one person's during analysis. It links to nothing and traces back to nobody."],
   ["Which instrument", "Which of the seven you used."],
   ["Ids and counts", "Which reading you held, what you did with each fact, how many times you switched. Drawn from fixed vocabularies and checked server-side against a closed schema."],
+  ["Your reasoning, if you write any", "Verbatim, up to 600 characters, from the boxes marked 'stored verbatim'. Always optional, never required to continue, and control characters are stripped before writing. This is the only place your own words are kept."],
   ["Elapsed time", "Milliseconds. Used only to spot answers submitted too fast to have been read."],
 ];
 
@@ -22,7 +23,7 @@ const NOT = [
   "IP address",
   "Any analytics or tracking cookie. There is no analytics on this site at all",
   "Location, device fingerprint, referrer",
-  "Anything you typed — there is nowhere on this site to type",
+  "Anything typed anywhere except the boxes explicitly marked 'stored verbatim'",
   "Any private message, of yours or of anybody else's",
 ];
 
@@ -56,9 +57,9 @@ export default function EthicsPage() {
               </dl>
               <p className="mt-6 max-w-measure text-[0.86rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
                 Payloads are closed, not merely validated: the schema declares which keys may be
-                written and the API strips everything else before storing. That is what makes
-                &ldquo;nothing you typed&rdquo; enforced rather than intended, and it is asserted in
-                the test suite.
+                written and the API strips everything else before storing. A field the schema does
+                not know is dropped rather than kept as a blob, and that is asserted in the test
+                suite.
               </p>
             </section>
           </Reveal>
@@ -97,6 +98,20 @@ export default function EthicsPage() {
                     are written for this experiment and the eight myth ones paraphrase texts that
                     have been public for millennia. The cost is artificiality, and it is listed as a
                     limitation on the <Link href="/lab">lab page</Link> rather than argued away.
+                  </p>
+                </Boundary>
+                <Boundary title="This page used to say the opposite">
+                  <p>
+                    Until this build, nothing you typed was stored — there was nowhere to type, and
+                    the site said so with some satisfaction. That was the wrong call. What someone
+                    answered turns out to be far less informative than why, and no fixed vocabulary
+                    recovers a reason.
+                  </p>
+                  <p>
+                    So reasoning boxes exist now, optional and capped, labelled where they appear
+                    rather than only here. The earlier claim is retracted in the{" "}
+                    <Link href="/log">log</Link> rather than quietly edited out, because a project
+                    about protecting readings should show what it stopped protecting.
                   </p>
                 </Boundary>
                 <Boundary title="Refusing rather than losing">

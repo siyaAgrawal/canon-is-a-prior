@@ -1,129 +1,82 @@
-# Design document — rebuild
+# Design document — third architecture
 
-Written before the rebuild. Kept in the repo because the reasoning should be
-inspectable, and because a later version of me should be able to see what this
-version believed.
+## What changed, and why
 
-## What was wrong with the first build
+The site could measure whether an interpretation moved. It could not measure
+whether the move was *warranted*. That gap is the whole project, and until now the
+instruments were not built to reach it.
 
-It worked. Every instrument functioned, the statistics were correct, the data
-integrity held. And it read like a course: twelve numbered chapters, each opening
-with a standfirst that told you what you were about to understand.
+Three levels, kept apart everywhere:
 
-Three specific failures:
+| Level | Question | Where it lives |
+|---|---|---|
+| **I · Construction** | Where does a hypothesis come from at all? | `/sure` (free hypothesis), `/versions` |
+| **II · Revision** | What happens when new evidence arrives? | `/sure`, `/versions`, `/machines` |
+| **III · Justification** | How would we know the new model is *better*? | `/discriminate`, `/criteria`, `/categories`, `/shape` |
 
-1. **It explained the interesting part before the reader could find it.** Chapter
-   00 stated the thesis. Everything after was elaboration. The reader was never
-   in a position to notice anything.
-2. **The origin was hidden.** The project came from reading and rewriting
-   fanfiction. That was buried in an About page as a sentence about "connecting
-   ideas that were not supposed to belong together" — which is the sanitised
-   version, and the sanitised version is less interesting and less true.
-3. **It pattern-matched without prosecuting itself.** It found the same shape in
-   myth, physics, inference and machines, and declared the shape real. The map
-   labelled edges "analogical" and stated a disanalogy, which was a start. But
-   nothing in the project seriously entertained the possibility that the whole
-   thing is apophenia with good typography.
+Bayesian updating lives entirely in Level II. It presupposes the hypothesis set —
+which is why the project cannot be *about* Bayes. Level I is Peirce's territory and
+Level III is where the actual difficulty is.
 
-## The central question, restated
+## The flagship addition: discriminating evidence
 
-Not "how do humans and machines revise interpretations under incomplete
-evidence." That is a real question and it is the *second* question.
+Two models. Both fit every observation so far. Neither is wrong yet.
 
-The first one:
+The participant is not asked which they prefer — that measures taste. They are
+asked to **design an observation that would tell the two apart**, then to predict
+what each model implies about it. Only then is the outcome revealed.
 
-> **How do you tell a structural connection you found from one you imposed?**
+This measures something no other instrument here reaches: whether a person
+understands that more evidence is not the same as *discriminating* evidence. It
+turns participants from interpreters into experiment designers, and it produces a
+gradable response — a proposed test either separates the models or does not.
 
-This project keeps finding the same shape — inherited model, incomplete evidence,
-interpretation, revision — in places that have nothing to do with each other. The
-shape might be real. It might also be what a sufficiently determined reader finds
-anywhere, the way constellations are real patterns of light and not real objects.
+## Prediction, not post-hoc fit
 
-That makes the project recursive. It studies how models get built while being a
-model of its own. So the self-critique cannot be an appendix. It has to be an
-instrument the reader operates.
+Every interpretive instrument now asks for a prediction **before** the next
+observation. A reading that explains everything after the fact and predicts
+nothing is exactly the failure mode the project is about, and it is invisible
+unless you make people commit first.
 
-## Secondary questions
+## Parameter / model / category
 
-- Why does changing one assumption sometimes change an entire world, while the
-  events stay identical?
-- How much of an interpretation came from the evidence, and how much was already
-  there before the evidence arrived?
-- When does a model help us see, and when does it stop us seeing?
-- What does it cost to protect a reading, and do we notice paying it?
-- When is a coherent story a trap?
+Three kinds of revision that the previous build collapsed into one:
 
-## The recursion, made operable
+- **Parameter** — same model, different weights.
+- **Model** — different model, same categories.
+- **Category** — the options themselves were the wrong shape.
 
-`/shape` is the new core: an instrument that presents structural claims — some
-this project defends, some it has abandoned, some invented as controls — and asks
-the reader to judge which are found and which are imposed. Then it shows the
-project's own verdict and reasoning.
+The physics room now presents a classification task where the third becomes
+necessary, before de Broglie is mentioned at all.
 
-The reader performs the discrimination the project is about, on the project's own
-claims, including the ones it got wrong. Nothing else on the site makes the
-recursion felt rather than asserted.
+## Free-text reasoning — a reversal, logged
 
-## Architecture
+Until now the site stored nothing typed, and said so proudly. That is now wrong:
+*why* someone answered is more informative than what they answered, and no
+closed vocabulary recovers it.
 
-No numbered sequence. Five territories, and a homepage that is an entry rather
-than a menu.
+So reasoning is collected — optional, capped, explicitly labelled at the point of
+entry, never required, with a warning not to include identifying detail. The old
+claim is retracted in the log rather than quietly edited out, which is the
+discipline the rest of the project demands.
 
-- `/` — the entry. One word of evidence. You interpret it. Then you find out you
-  were interpreting before any evidence arrived, and that the options you chose
-  between were themselves someone's prior. Then the scale breaks: the same
-  operation on a character, a myth, a measurement, a dataset, a person.
-- `/rewrite` — counterfactual laboratory. Same events, changed premise, watch the
-  model reorganise. Icarus, plus an original character scenario built the way
-  fanfiction builds one.
-- `/versions` — the character lab. Fixed evidence, revealed in order. Measures
-  what you discount, what you accommodate, and what it costs to keep a reading.
-- `/person` — the quiet one. The model of a person is not the person. One page,
-  one diagram, very little text.
-- `/categories` — de Broglie. What happens when inherited categories stop fitting.
-- `/criteria` — coherent, plausible, supported, true, useful. Not synonyms. The
-  reader is made to choose and then shown which criterion they actually used.
-- `/machines` — the same ambiguous evidence given to people and to a model.
-- `/shape` — is the shape really there. The self-prosecution, as an instrument.
-- `/map` — the graph, with break edges drawn as breaks.
-- `/lab` — method, data, limits. `/log` — the human record. `/about`, `/ethics`.
+## Hypothesis status
 
-## Preserved
+`/shape` gains a state machine that has no terminal success:
 
-Every instrument that worked: simplex elicitation, belief trajectories, the
-complementarity model, the aggregate threshold, the storage honesty guard, the
-statistics module and its tests, the scenario corpus, real sources.
+`OPEN → SUPPORTED ⇄ WEAKENED → CONTRADICTED → ABANDONED`
 
-## Removed
+There is no `PROVEN`. A hypothesis that has survived every attempt is
+`SUPPORTED`, which is a statement about the attempts made.
 
-The twelve-chapter sequence. Every standfirst that announced what the page would
-teach. The `/bayes` explainer page — Bayes stays, distributed through the site as
-the formal spine, not as a lesson. `/underdetermination` as a standalone concept
-page. `/end` as a summary. Most connective prose.
+## The deliverable
 
-## Labels
+Not a website. A dataset with a stated schema, a pre-registered set of
+predictions, an export that loads into a notebook unreshaped, and a paper
+skeleton that fills itself from live data and says "insufficient" wherever the
+data is insufficient.
 
-An epistemic apparatus used everywhere, as small monospace tags:
-
-`OBSERVED` `MODEL` `INTERPRETATION` `ANALOGY` `HYPOTHESIS` `ILLUSTRATION`
-`OPEN` `ABANDONED`
-
-If a claim has no label it is prose, not a claim.
-
-## Voice
-
-Short. Specific. No standfirsts. No "this project seeks to explore." Fragments
-where a fragment is the honest unit. A page may be one sentence if the sentence
-earns it. The creator appears through what she notices and what she refuses to
-let go, not through autobiography.
-
-## What the reader should experience, in order
-
-1. Something small and uncomfortable.
-2. The realisation they brought the interpretation with them.
-3. A second realisation: the options were a prior too.
-4. Scale break — the same move on a myth, a particle, a dataset, a person.
-5. "Are those actually the same thing?"
-6. "No. Here is where each one breaks."
-7. "But something is going on."
-8. "She knows it might be nothing. She built the test anyway."
+If the project succeeds, what exists at the end is: **evidence about which
+criterion people actually use when the evidence does not decide — and whether a
+language model uses the same one.** That is a real finding or a real null result,
+and both are publishable.

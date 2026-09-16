@@ -26,14 +26,16 @@ export const places: Place[] = [
   { href: "/versions", title: "Versions", line: "Seven facts about an invented person. How much evidence before you change your mind?", room: "origin", group: "experiments" },
   { href: "/rewrite", title: "Icarus", line: "Scroll and he climbs. Change why, and the same fall means something else.", room: "myth", group: "experiments" },
   { href: "/criteria", title: "Criteria", line: "Three explanations, one set of facts. Find out which property you treat as decisive.", room: "inference", group: "experiments" },
+  { href: "/discriminate", title: "Two models, same evidence", line: "Both fit everything. Design the observation that would tell them apart, then predict what it shows.", room: "inference", group: "experiments" },
   { href: "/shape", title: "Is the shape really there?", line: "Ten connections. Three are mine and false. Catch them before I tell you.", room: "doubt", group: "experiments" },
 
-  { href: "/categories", title: "When the category breaks", line: "de Broglie. The anomaly was not in the electron.", room: "physics", group: "cases" },
+  { href: "/categories", title: "When the category breaks", line: "Sort six specimens. Then meet the seventh, which has the defining property of both kinds.", room: "physics", group: "cases" },
   { href: "/person", title: "The model of a person", line: "The quiet room.", room: "human", group: "cases" },
   { href: "/machines", title: "Humans and models", line: "The same ambiguous evidence, given to people and to a language model.", room: "inference", group: "cases" },
 
   { href: "/map", title: "The map", line: "Every connection, with the severed ones drawn as severed. Also the way around.", room: "spatial", group: "connections" },
 
+  { href: "/discovery", title: "What we know so far", line: "Every candidate finding, its status, what would move it, and the rival that would explain the same data.", room: "doubt", group: "connections" },
   { href: "/lab", title: "Lab", line: "Question, pre-registered predictions, method, live data, limitations.", room: "record", group: "record" },
   { href: "/log", title: "Log", line: "What I thought. What broke. What I still don't know.", room: "record", group: "record" },
   { href: "/ethics", title: "Ethics", line: "What is stored, what is not, and why the dataset is deliberately poorer than it could be.", room: "record", group: "record" },
@@ -61,17 +63,19 @@ export function roomFor(pathname: string): Room {
 
 /** Two onward routes per page. A suggestion — never the only way forward. */
 export const onward: Record<string, string[]> = {
-  "/": ["/sure", "/shape"],
+  "/": ["/sure", "/discriminate"],
   "/sure": ["/versions", "/machines"],
   "/versions": ["/rewrite", "/person"],
-  "/rewrite": ["/categories", "/shape"],
-  "/criteria": ["/machines", "/shape"],
+  "/rewrite": ["/discriminate", "/categories"],
+  "/criteria": ["/discriminate", "/machines"],
+  "/discriminate": ["/categories", "/shape"],
   "/categories": ["/shape", "/map"],
   "/person": ["/versions", "/shape"],
   "/machines": ["/criteria", "/lab"],
-  "/shape": ["/map", "/log"],
-  "/map": ["/shape", "/lab"],
-  "/lab": ["/machines", "/ethics"],
+  "/shape": ["/discovery", "/map"],
+  "/map": ["/discovery", "/shape"],
+  "/discovery": ["/shape", "/lab"],
+  "/lab": ["/discovery", "/ethics"],
   "/log": ["/shape", "/about"],
   "/ethics": ["/lab", "/about"],
   "/about": ["/versions", "/rewrite"],

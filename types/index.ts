@@ -144,7 +144,31 @@ export type Instrument =
   | "versions"
   | "criteria"
   | "rewrite"
-  | "map";
+  | "map"
+  | "discriminate"
+  | "category";
+
+/**
+ * The three levels the project keeps apart. Every instrument declares which one
+ * it is measuring, because collapsing them is the mistake the earlier builds made.
+ *
+ *  I   construction  — where a hypothesis comes from (abduction)
+ *  II  revision      — what evidence does to it (Bayes lives entirely here)
+ *  III justification — how we would know the new model is better
+ */
+export type Level = "construction" | "revision" | "justification";
+
+export const INSTRUMENT_LEVEL: Record<Instrument, Level> = {
+  entry: "revision",
+  character: "construction",
+  versions: "revision",
+  rewrite: "construction",
+  criteria: "justification",
+  discriminate: "justification",
+  category: "justification",
+  shape: "justification",
+  map: "construction",
+};
 
 export interface Trace {
   id: string;

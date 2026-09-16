@@ -178,8 +178,8 @@ export function Dashboard() {
       <section>
         <h3 className="font-display text-d4">Everything else that is recorded</h3>
         <p className="mt-3 max-w-reading text-[0.86rem] leading-relaxed text-faint">
-          Every instrument on the site writes one row when you finish with it — ids and counts, never
-          anything typed, because there is nowhere to type. These are the totals.
+          Every instrument writes one row when you finish with it: ids, counts, and — where a box
+          invited you to write — your reasoning, verbatim and optional. These are the totals.
         </p>
         <ul className="mt-6">
           {Object.keys(INSTRUMENT_LABEL).map((k) => (

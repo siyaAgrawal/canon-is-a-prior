@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { items, readings, STANCE_LABEL, type Stance } from "@/data/character";
 import { recordTrace } from "@/lib/record";
 import { Recorded } from "@/components/ui/Recorded";
+import { Reasoning } from "@/components/ui/Reasoning";
 
 /**
  * What it costs to keep a reading.
@@ -15,9 +16,8 @@ import { Recorded } from "@/components/ui/Recorded";
  * reading they then kept — accommodation, which is how a good model survives
  * awkward evidence and also how a wrong one does.
  *
- * The trajectory is recorded — reading ids, stances and counts, nothing typed —
- * because how often a first reading survives is the thing this instrument exists
- * to find out. The page says so where it happens.
+ * The trajectory is recorded — reading ids, stances and counts — because how
+ * often a first reading survives is what this instrument exists to find out.
  */
 
 interface Step {
@@ -33,6 +33,9 @@ export function CharacterLab() {
   const [idx, setIdx] = useState(0);
   const [stance, setStance] = useState<Stance | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
+  /** A commitment made before the last fact, so the reading can actually fail. */
+  const [prediction, setPrediction] = useState<string | null>(null);
+  const [reasoning, setReasoning] = useState("");
   const startedAt = useRef(Date.now());
   const sent = useRef(false);
 
@@ -59,8 +62,8 @@ export function CharacterLab() {
   ).length;
   const survived = firstReading === finalReading;
 
-  // Recorded once the trajectory is complete. The payload is ids and counts —
-  // there is nothing here a participant typed, because there is nowhere to type.
+  // Recorded once the trajectory is complete. The payload is ids and counts; the
+  // optional reasoning box is the only free text, and it is labelled where it is.
   useEffect(() => {
     if (phase !== "done" || sent.current || steps.length === 0) return;
     sent.current = true;
@@ -71,10 +74,13 @@ export function CharacterLab() {
         switches,
         accommodations: accommodations + breaksAbsorbed,
         survived,
+        prediction,
+        predictionHeld: prediction === null ? null : prediction === finalReading,
+        reasoning: reasoning.trim() || null,
       },
       Date.now() - startedAt.current,
     );
-  }, [phase, steps, switches, accommodations, breaksAbsorbed, survived]);
+  }, [phase, steps, switches, accommodations, breaksAbsorbed, survived, prediction, reasoning]);
 
   const fade = reduce
     ? {}
@@ -164,6 +170,29 @@ export function CharacterLab() {
                 </li>
               ))}
             </ul>
+
+            {idx === items.length - 1 && prediction === null && (
+              <div className="hair mt-8 pt-6">
+                <p className="font-display text-d5">Before the last fact — what will it show?</p>
+                <p className="mt-1.5 text-[0.82rem]" style={{ color: "rgb(var(--faint))" }}>
+                  Which reading do you expect to be holding once you have seen everything? A reading
+                  that only ever explains what already happened cannot fail.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {readings.map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setPrediction(r.id)}
+                      className="border px-3 py-1.5 font-mono text-[0.64rem] uppercase tracking-[0.12em] transition-colors"
+                      style={{ borderColor: "rgb(var(--line) / 0.25)", color: "rgb(var(--faint))" }}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="hair mt-8 pt-6">
               <p className="text-[0.86rem] text-faint">Keep your reading, or change it.</p>
@@ -266,7 +295,25 @@ export function CharacterLab() {
         })}
       </ol>
 
-      <div className="hair pt-8">
+      {prediction !== null && (
+        <p className="mt-10 max-w-measure text-[0.96rem] leading-relaxed" style={{ color: "rgb(var(--fg))" }}>
+          {prediction === finalReading
+            ? `You predicted you would end on ${labelOf(prediction)}, and you did.`
+            : `You predicted you would end on ${labelOf(prediction)}. You ended on ${labelOf(finalReading)}.`}
+        </p>
+      )}
+
+      <div className="mt-10 max-w-measure">
+        <Reasoning
+          id="versions-reasoning"
+          value={reasoning}
+          onChange={setReasoning}
+          label="What would have made you drop the reading entirely?"
+          placeholder="Name the fact that isn't there."
+        />
+      </div>
+
+      <div className="hair mt-10 pt-8">
         <p className="max-w-measure text-[0.8rem] leading-relaxed text-faint">
           Wren does not exist, and the seven facts were written to press in particular directions —
           which I have now told you, and could not have told you before without changing what you
@@ -284,6 +331,8 @@ export function CharacterLab() {
             setIdx(0);
             setReading(null);
             setStance(null);
+            setPrediction(null);
+            setReasoning("");
             sent.current = false;
             startedAt.current = Date.now();
           }}

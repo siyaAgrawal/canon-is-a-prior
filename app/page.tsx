@@ -10,6 +10,44 @@ import { Tag } from "@/components/ui/Tag";
  * The arc: ambiguous word → interpretation → fanfiction → character → the other
  * five cases → the suspicion. Nothing is explained before it has been done.
  */
+/**
+ * Each rung is a question the previous answer created. This is the actual
+ * intellectual sequence rather than a subject list, which is why none of these
+ * is named after a discipline.
+ */
+const LADDER = [
+  {
+    q: "You began somewhere. Evidence arrived. You moved.",
+    a: "There is a formal rule for that part, and it is exact: the update is forced once you have a hypothesis set and a sense of how expected the evidence is under each.",
+    href: "/sure",
+    label: "Do it properly, forty-two times",
+  },
+  {
+    q: "But where did the hypotheses come from?",
+    a: "The rule redistributes belief across options you already had. It cannot generate the one you hadn't thought of — and on the homepage above, I chose the five.",
+    href: "/versions",
+    label: "Build one from seven facts",
+  },
+  {
+    q: "And what if two of them fit everything?",
+    a: "Then nothing you currently have separates them, and more of the same evidence never will.",
+    href: "/discriminate",
+    label: "Design the observation that would",
+  },
+  {
+    q: "What if the options were the wrong shape?",
+    a: "A third kind of revision, rarer and more expensive than changing your answer or changing your model. It happened once, in public, to physics.",
+    href: "/categories",
+    label: "Sort the seventh specimen",
+  },
+  {
+    q: "What if a machine builds the story instead?",
+    a: "It will be coherent. Coherence is what it is optimised for, and coherence is the property people use as a proxy for all the others.",
+    href: "/machines",
+    label: "Same evidence, two readers",
+  },
+];
+
 export default function Home() {
   return (
     <>
@@ -95,7 +133,39 @@ export default function Home() {
         </Shell>
       </section>
 
-      {/* ── 6 · The uncomfortable turn ───────────────────────────────────── */}
+      {/* ── 6 · The ladder ───────────────────────────────────────────────── */}
+      <section className="pt-32">
+        <Shell>
+          <Reveal>
+            <div className="max-w-column">
+              <h2 className="font-display text-d3">Every answer opened a worse question.</h2>
+              <ol className="mt-12">
+                {LADDER.map((r, i) => (
+                  <li key={r.q} className="hair grid gap-x-8 gap-y-2 py-7 sm:grid-cols-[2.5rem_1fr]">
+                    <span className="font-mono text-[0.62rem] tabular" style={{ color: "rgb(var(--faint))" }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span>
+                      <span className="block font-display text-d5 leading-snug">{r.q}</span>
+                      <span className="mt-2 block max-w-measure text-[0.9rem] leading-relaxed" style={{ color: "rgb(var(--muted))" }}>
+                        {r.a}
+                      </span>
+                      {r.href && (
+                        <Link href={r.href} className="btn-quiet mt-3">
+                          {r.label} →
+                        </Link>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <div className="hair" />
+            </div>
+          </Reveal>
+        </Shell>
+      </section>
+
+      {/* ── 7 · The uncomfortable turn ───────────────────────────────────── */}
       <section className="py-32">
         <Shell>
           <Reveal>
@@ -120,10 +190,10 @@ export default function Home() {
 
               <div className="mt-12 flex flex-wrap items-center gap-6">
                 <Link href="/shape" className="btn btn-solid">
-                  Is the shape really there?
+                  Try to break it
                 </Link>
-                <Link href="/about" className="btn-quiet">
-                  Or start at the beginning
+                <Link href="/discovery" className="btn-quiet">
+                  Or see what we actually know
                 </Link>
               </div>
             </div>
