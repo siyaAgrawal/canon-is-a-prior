@@ -57,8 +57,12 @@ export async function GET() {
         scenariosTotal: allScenarios.length,
         aiResponses: aiResponses.length,
         aiModels: Array.from(new Set(aiResponses.map((a) => a.model))),
-        firstResponseAt: responses.length ? responses[0].createdAt : null,
-        lastResponseAt: responses.length ? responses[responses.length - 1].createdAt : null,
+        // Drawn from every instrument, not just distributions — the same conflation
+        // that made the dashboard report an empty dataset.
+        firstResponseAt:
+          [...responses, ...traces].map((r) => r.createdAt).sort()[0] ?? null,
+        lastResponseAt:
+          [...responses, ...traces].map((r) => r.createdAt).sort().slice(-1)[0] ?? null,
       },
       perScenario,
     });

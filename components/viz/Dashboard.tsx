@@ -172,7 +172,7 @@ export function Dashboard() {
         <p className="mt-8 font-mono text-[0.66rem] uppercase tracking-[0.14em] text-faint">
           Storage: {stats.storage} ·{" "}
           {totals.firstResponseAt
-            ? `first response ${new Date(totals.firstResponseAt).toISOString().slice(0, 10)}`
+            ? `collecting since ${new Date(totals.firstResponseAt).toISOString().slice(0, 10)}`
             : "no responses recorded"}
         </p>
       </section>
