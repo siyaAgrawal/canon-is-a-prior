@@ -109,10 +109,17 @@ export function parseStageResponse(scenario: Scenario, raw: string): StageResult
   };
 }
 
-/** Calls the Anthropic Messages API. Throws if no key is configured — never fabricates. */
-export async function callModel(prompt: string, model: string): Promise<string> {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error("ANTHROPIC_API_KEY is not configured on this deployment.");
+/**
+ * Calls the Anthropic Messages API. Throws if no key is available — never fabricates.
+ *
+ * A key may be supplied per request instead of via the environment, so runs can be
+ * performed without a redeploy. A per-request key is used for that call and is
+ * never stored, never written to a response row, and never included in an error
+ * message.
+ */
+export async function callModel(prompt: string, model: string, overrideKey?: string): Promise<string> {
+  const key = overrideKey?.trim() || process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error("No model API key available: none configured, and none supplied with the request.");
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -131,7 +138,9 @@ export async function callModel(prompt: string, model: string): Promise<string> 
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Model API returned ${res.status}: ${text.slice(0, 300)}`);
+    // Scrub anything key-shaped out of upstream errors before it reaches a client.
+    const safe = text.replace(/sk-[A-Za-z0-9_-]{8,}/g, "sk-***").slice(0, 300);
+    throw new Error(`Model API returned ${res.status}: ${safe}`);
   }
 
   const body = await res.json();
@@ -143,14 +152,18 @@ export async function callModel(prompt: string, model: string): Promise<string> 
   return text;
 }
 
-export async function runScenario(scenario: Scenario, model: string): Promise<AIResponse> {
+export async function runScenario(
+  scenario: Scenario,
+  model: string,
+  overrideKey?: string,
+): Promise<AIResponse> {
   const steps: BeliefStep[] = [];
   const rationales: string[] = [];
   let previous: Distribution | null = null;
 
   for (let stage = 0; stage <= scenario.evidence.length; stage++) {
     const prompt = buildStagePrompt(scenario, stage, previous);
-    const raw = await callModel(prompt, model);
+    const raw = await callModel(prompt, model, overrideKey);
     const result = parseStageResponse(scenario, raw);
     steps.push({
       evidenceId: stage === 0 ? null : scenario.evidence[stage - 1].id,

@@ -20,6 +20,8 @@ interface Stats {
   threshold: number;
   totals: {
     responses: number;
+    traces: number;
+    allResponses: number;
     sessions: number;
     scenariosAttempted: number;
     scenariosTotal: number;
@@ -144,8 +146,8 @@ export function Dashboard() {
         <div className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           <Metric
             label="Responses"
-            value={String(totals.responses)}
-            note="Completed trajectories, each one a full set of distributions."
+            value={String(totals.allResponses ?? totals.responses)}
+            note="Every completed instrument, across the whole site."
           />
           <Metric
             label="Participants"
@@ -153,9 +155,9 @@ export function Dashboard() {
             note="Distinct anonymous session identifiers. One person using two browsers counts twice."
           />
           <Metric
-            label="Scenarios attempted"
-            value={`${totals.scenariosAttempted} / ${totals.scenariosTotal}`}
-            note="How much of the scenario set has been touched at all."
+            label="Scenario distributions"
+            value={`${totals.responses}`}
+            note={`Across ${totals.scenariosAttempted} of ${totals.scenariosTotal} scenarios. These are the only rows the per-scenario charts below can use.`}
           />
           <Metric
             label="Model runs"
@@ -194,16 +196,43 @@ export function Dashboard() {
       </section>
 
       {totals.responses === 0 ? (
-        <EmptyState title="The dataset is empty." n={0}>
-          <p>
-            Nothing has been collected yet, so there is nothing to visualise. Every chart on this
-            page appears the moment there is something real to put in it, and not before.
-          </p>
-          <p className="mt-3">
-            <Link href="/machines" className="underline decoration-dotted underline-offset-2">
-              The first response can be yours.
-            </Link>
-          </p>
+        <EmptyState
+          title={
+            (totals.allResponses ?? 0) > 0
+              ? "Responses exist, but none of them are scenario distributions yet."
+              : "Nothing has been collected yet."
+          }
+          n={totals.allResponses ?? 0}
+        >
+          {(totals.allResponses ?? 0) > 0 ? (
+            <>
+              <p>
+                The charts below need the hundred-point distributions from the scenario experiment.
+                Everything recorded so far came from the other instruments, and it is counted on the{" "}
+                <Link href="/discovery" className="underline decoration-dotted underline-offset-2">
+                  findings page
+                </Link>
+                .
+              </p>
+              <p className="mt-3">
+                <Link href="/sure" className="underline decoration-dotted underline-offset-2">
+                  A distribution takes about two minutes.
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                Every chart on this page appears the moment there is something real to put in it, and
+                not before.
+              </p>
+              <p className="mt-3">
+                <Link href="/sure" className="underline decoration-dotted underline-offset-2">
+                  The first response can be yours.
+                </Link>
+              </p>
+            </>
+          )}
         </EmptyState>
       ) : (
         <>

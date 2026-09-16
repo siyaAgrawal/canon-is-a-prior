@@ -16,9 +16,9 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const store = getStoreOrNull();
-    const [responses, aiResponses] = store
-      ? await Promise.all([store.listResponses(), store.listAIResponses()])
-      : [[], []];
+    const [responses, aiResponses, traces] = store
+      ? await Promise.all([store.listResponses(), store.listAIResponses(), store.listTraces()])
+      : [[], [], []];
 
     const perScenario = allScenarios
       .map((s) => {
@@ -42,8 +42,17 @@ export async function GET() {
       storageDetail: storageStatus().detail ?? null,
       threshold: MIN_N_FOR_AGGREGATE,
       totals: {
+        /**
+         * Two different things, kept apart on purpose. `responses` counts only
+         * scenario distributions, because the per-scenario charts cannot be drawn
+         * without them. `traces` counts every other instrument. An earlier version
+         * reported only the first and therefore called a dataset with real sessions
+         * in it empty.
+         */
         responses: responses.length,
-        sessions: new Set(responses.map((r) => r.sessionId)).size,
+        traces: traces.length,
+        allResponses: responses.length + traces.length,
+        sessions: new Set([...responses, ...traces].map((r) => r.sessionId)).size,
         scenariosAttempted: new Set(responses.map((r) => r.scenarioId)).size,
         scenariosTotal: allScenarios.length,
         aiResponses: aiResponses.length,

@@ -26,6 +26,9 @@ export function AIConsole({ scenarios }: { scenarios: Scenario[] }) {
   const [token, setToken] = useState("");
   const [scenarioId, setScenarioId] = useState(scenarios[0]?.id ?? "");
   const [model, setModel] = useState("");
+  /** Held in component state for this page only. Never persisted anywhere. */
+  const [apiKey, setApiKey] = useState("");
+  const [batchSize, setBatchSize] = useState(1);
   const [state, setState] = useState<"idle" | "running" | "done" | "error">("idle");
   const [message, setMessage] = useState<string | null>(null);
 
@@ -46,12 +49,22 @@ export function AIConsole({ scenarios }: { scenarios: Scenario[] }) {
       const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-        body: JSON.stringify({ scenarioId, model: model.trim() || undefined }),
+        body: JSON.stringify({
+          scenarioId,
+          scenarioIds:
+            batchSize > 1
+              ? scenarios.slice(scenarios.findIndex((s) => s.id === scenarioId)).slice(0, batchSize).map((s) => s.id)
+              : undefined,
+          model: model.trim() || undefined,
+          apiKey: apiKey.trim() || undefined,
+        }),
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? `Request failed (${res.status})`);
       setState("done");
-      setMessage(`Stored run ${body.response.id} for ${body.response.model} (prompt ${body.response.promptVersion}).`);
+      setMessage(
+        `Stored ${body.ran ?? 1} run${(body.ran ?? 1) === 1 ? "" : "s"}. Prompt version pinned; runs from different prompt versions are never pooled.`,
+      );
       void refresh();
     } catch (err) {
       setState("error");
@@ -133,6 +146,41 @@ export function AIConsole({ scenarios }: { scenarios: Scenario[] }) {
 
           <label className="block">
             <span className="mb-1.5 block text-[0.84rem] text-muted">
+              Model API key <span className="text-faint">(optional — skips a redeploy)</span>
+            </span>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              autoComplete="off"
+              placeholder={config?.configured ? "using the deployment's key" : "sk-ant-…"}
+              className="w-full px-3 py-2 font-mono text-[0.82rem]"
+            />
+            <span className="mt-1.5 block text-[0.76rem]" style={{ color: "rgb(var(--faint))" }}>
+              Used for this request only. Never stored, never written to a result row, and scrubbed
+              out of any error the API returns. Leave empty to use ANTHROPIC_API_KEY if one is set.
+            </span>
+          </label>
+
+          <label className="block">
+            <span className="mb-1.5 block text-[0.84rem] text-muted">
+              How many scenarios <span className="text-faint">(from the one selected, onward)</span>
+            </span>
+            <input
+              type="range"
+              min={1}
+              max={20}
+              value={batchSize}
+              onChange={(e) => setBatchSize(Number(e.target.value))}
+              aria-label="Number of scenarios to run in one batch"
+            />
+            <span className="mt-1 block font-mono text-[0.8rem] tabular">
+              {batchSize} run{batchSize === 1 ? "" : "s"} · about {batchSize * 4} API calls
+            </span>
+          </label>
+
+          <label className="block">
+            <span className="mb-1.5 block text-[0.84rem] text-muted">
               Model override <span className="text-faint">(optional)</span>
             </span>
             <input
@@ -147,10 +195,10 @@ export function AIConsole({ scenarios }: { scenarios: Scenario[] }) {
           <button
             type="button"
             className="btn"
-            disabled={state === "running" || !token || !scenarioId}
+            disabled={state === "running" || !token || !scenarioId || (!config?.configured && !apiKey)}
             onClick={() => void run()}
           >
-            {state === "running" ? "Running…" : "Run and store"}
+            {state === "running" ? `Running ${batchSize}…` : `Run ${batchSize} and store`}
           </button>
 
           {message && (

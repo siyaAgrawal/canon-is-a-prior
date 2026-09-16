@@ -51,16 +51,6 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!isAIConfigured()) {
-    return NextResponse.json(
-      {
-        error:
-          "No model API key is configured on this deployment, so no model run can be performed. Nothing has been stored, and no simulated result is returned.",
-      },
-      { status: 501 },
-    );
-  }
-
   let body: any;
   try {
     body = await req.json();
@@ -68,15 +58,47 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
   }
 
+  /**
+   * A key may travel with the request so runs can happen without a redeploy. It
+   * is used for this call only: never stored, never attached to the response row,
+   * and scrubbed out of upstream error text.
+   */
+  const overrideKey = typeof body?.apiKey === "string" ? body.apiKey.trim() : "";
+
+  if (!isAIConfigured() && !overrideKey) {
+    return NextResponse.json(
+      {
+        error:
+          "No model API key available — none configured on this deployment and none supplied with the request. Nothing has been stored, and no simulated result is returned.",
+      },
+      { status: 501 },
+    );
+  }
+
   const scenario = getScenario(body?.scenarioId);
-  if (!scenario) return NextResponse.json({ error: "unknown scenarioId" }, { status: 400 });
+  if (!scenario && !Array.isArray(body?.scenarioIds)) {
+    return NextResponse.json({ error: "unknown scenarioId" }, { status: 400 });
+  }
 
   const model = typeof body?.model === "string" && body.model.trim() ? body.model.trim() : defaultModel();
 
+  // Optional batch: run several scenarios in one request, so a session's worth of
+  // runs does not need one click each.
+  const batch = Array.isArray(body?.scenarioIds)
+    ? body.scenarioIds
+        .map((id: unknown) => getScenario(String(id)))
+        .filter((s: unknown): s is NonNullable<typeof scenario> => Boolean(s))
+    : [scenario];
+
   try {
-    const result = await runScenario(scenario, model);
-    await getStore().saveAIResponse(result);
-    return NextResponse.json({ ok: true, response: result }, { status: 201 });
+    const store = getStore();
+    const done: string[] = [];
+    for (const s of batch) {
+      const result = await runScenario(s, model, overrideKey || undefined);
+      await store.saveAIResponse(result);
+      done.push(result.id);
+    }
+    return NextResponse.json({ ok: true, ran: done.length, ids: done }, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : "model run failed";
     // Failed runs are reported, not retried silently and not partially stored.
