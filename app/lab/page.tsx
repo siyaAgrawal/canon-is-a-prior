@@ -2,32 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Continue } from "@/components/ui/Continue";
 import { Reveal } from "@/components/ui/Reveal";
-import { Shell, Boundary } from "@/components/ui/primitives";
+import { Shell } from "@/components/ui/primitives";
 import { Tag } from "@/components/ui/Tag";
 import { Dashboard } from "@/components/viz/Dashboard";
-import { ForgetButton } from "@/components/ui/ForgetButton";
 import { hypotheses, limitations, method, nextQuestions } from "@/research/lab";
 
 export const metadata: Metadata = {
   title: "Method & data",
   description: "What is measured, what has been collected, what this cannot show, and what is stored about you.",
 };
-
-const STORED = [
-  ["A random identifier", "Made in your browser, kept in your browser. It lets several answers from one person be recognised as one person's. It links to nothing."],
-  ["Which instrument", "One of six, plus the scenario experiment."],
-  ["Ids and counts", "Which reading, which stance, how many switches. Drawn from fixed vocabularies and checked server-side against a closed schema."],
-  ["Elapsed time", "Used only to spot answers submitted too fast to have been read."],
-];
-
-const NOT = [
-  "Name, email, account — there is no account",
-  "IP address",
-  "Any analytics or tracking cookie. There is no analytics here",
-  "Location, device fingerprint, referrer",
-  "Anything you typed — there is nowhere on this site to type",
-  "Any private message, of yours or anyone's",
-];
 
 export default function LabPage() {
   return (
@@ -94,47 +77,16 @@ export default function LabPage() {
           </Reveal>
 
           <Reveal>
-            <section id="ethics" className="scroll-mt-24">
-              <h2 className="font-display text-d3">What is stored about you</h2>
-              <dl className="mt-7">
-                {STORED.map(([k, v]) => (
-                  <div key={k} className="hair grid gap-1.5 py-4 sm:grid-cols-[11rem_1fr] sm:gap-7">
-                    <dt className="text-[0.92rem]">{k}</dt>
-                    <dd className="text-[0.88rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>{v}</dd>
-                  </div>
-                ))}
-              </dl>
-
-              <h3 className="mt-12 font-display text-d5">Not stored</h3>
-              <ul className="mt-4 space-y-2">
-                {NOT.map((n) => (
-                  <li key={n} className="flex gap-3 text-[0.92rem] leading-relaxed" style={{ color: "rgb(var(--muted))" }}>
-                    <span aria-hidden="true" className="mt-[10px] h-px w-3 flex-none" style={{ background: "rgb(var(--accent))" }} />
-                    <span>{n}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-12">
-                <Boundary title="Two trade-offs, stated rather than buried">
-                  <p>
-                    <strong>No deletion.</strong> Answers are anonymous, so nothing links a stored row
-                    to you and none can be found and removed on request. Stronger anonymity, no
-                    deletion mechanism. You can clear the identifier your browser holds, which stops
-                    future answers being grouped with past ones.
-                  </p>
-                  <p>
-                    <strong>A worse dataset, on purpose.</strong> Real screenshots of ambiguous
-                    exchanges would be far richer. The person who wrote a message cannot consent to
-                    its use and only the recipient would ever be asked, so all thirty-four scenarios
-                    are written and the eight myth ones paraphrase texts millennia old. The cost is
-                    artificiality, listed below rather than argued away.
-                  </p>
-                </Boundary>
-              </div>
-              <div className="mt-8">
-                <ForgetButton />
-              </div>
+            <section>
+              <h2 className="font-display text-d3">What is stored about participants</h2>
+              <p className="say mt-6 max-w-measure">
+                A random identifier, which instrument you used, ids and counts, and elapsed time. No
+                account, no email, no IP, no analytics, and nothing typed — there is nowhere on this
+                site to type. Payloads are closed rather than merely validated.
+              </p>
+              <Link href="/ethics" className="btn mt-7">
+                The full statement →
+              </Link>
             </section>
           </Reveal>
 

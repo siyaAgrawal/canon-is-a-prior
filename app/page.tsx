@@ -1,48 +1,93 @@
 import Link from "next/link";
+import { Sure } from "@/components/origin/Sure";
 import { SameEvidence } from "@/components/origin/SameEvidence";
 import { ScaleBreak } from "@/components/shape/ScaleBreak";
 import { Reveal } from "@/components/ui/Reveal";
 import { Shell } from "@/components/ui/primitives";
 import { Tag } from "@/components/ui/Tag";
-import { places } from "@/lib/journey";
 
+/**
+ * The arc: ambiguous word → interpretation → fanfiction → character → the other
+ * five cases → the suspicion. Nothing is explained before it has been done.
+ */
 export default function Home() {
-  const doors = places.filter((p) => ["/versions", "/rewrite", "/shape", "/map"].includes(p.href));
-
   return (
     <>
-      <section className="pb-24 pt-10 sm:pt-16">
+      {/* ── 1 · The word ─────────────────────────────────────────────────── */}
+      <section className="pt-10 sm:pt-14">
         <Shell>
-          <SameEvidence />
+          <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+            <h1 className="font-display text-[1.6rem] tracking-tight sm:text-[1.9rem]">
+              The Canon Is a Prior
+            </h1>
+            <p className="max-w-measure text-[0.86rem] leading-snug" style={{ color: "rgb(var(--faint))" }}>
+              An open investigation into how we build versions of things from incomplete evidence —
+              and whether the pattern it keeps finding is really there.
+            </p>
+          </div>
+          <div className="mt-14 sm:mt-20">
+            <Sure />
+          </div>
         </Shell>
       </section>
 
-      <section className="py-24">
+      {/* ── 2 · The turn into the origin ─────────────────────────────────── */}
+      <section className="pt-28 sm:pt-36">
         <Shell>
           <Reveal>
             <div className="max-w-column">
-              <h2 className="font-display text-d3">I thought I was reading stories.</h2>
+              <h2 className="font-display text-d3">I thought I was reading fanfiction.</h2>
               <div className="say mt-8 max-w-measure">
                 <p>
-                  Hundreds of thousands of words of fanfiction, mostly one pairing, written by
-                  strangers who had all read the same seven books and disagreed completely about who
-                  was in them.
+                  Hundreds of thousands of words of it. Mostly one pairing, written by strangers who
+                  had all read the same seven books and disagreed completely about who was in them.
                 </p>
-                <p>Then I noticed I was doing it to Icarus.</p>
-                <p>Then to a physics problem.</p>
-                <p>Then to a dataset.</p>
-                <p style={{ color: "rgb(var(--fg))" }}>Then to someone I knew.</p>
+                <p>
+                  Not disagreed about the events — nobody changes those. Disagreed about what the
+                  events were evidence of.
+                </p>
               </div>
             </div>
           </Reveal>
         </Shell>
       </section>
 
-      <section className="pb-28">
+      {/* ── 3 · Same evidence, different person ──────────────────────────── */}
+      <section className="pt-16 sm:pt-20">
+        <Shell>
+          <SameEvidence />
+        </Shell>
+      </section>
+
+      {/* ── 4 · I did it again ───────────────────────────────────────────── */}
+      <section className="pt-32">
+        <Shell>
+          <Reveal>
+            <div className="max-w-column">
+              <h2 className="font-display text-d3">Then I did it to Icarus.</h2>
+              <div className="say mt-8 max-w-measure">
+                <p>
+                  The wings, the warning, the climb, the wax, the sea. Nobody disputes any of it.
+                </p>
+                <p>
+                  Three thousand years of the story meaning <em>pride</em> rests on an assumption the
+                  text does not state.
+                </p>
+              </div>
+              <Link href="/rewrite" className="btn mt-9">
+                Climb with him →
+              </Link>
+            </div>
+          </Reveal>
+        </Shell>
+      </section>
+
+      {/* ── 5 · And again ────────────────────────────────────────────────── */}
+      <section className="pt-32">
         <Shell>
           <Reveal>
             <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
-              <p className="kicker">Six cases. In none of them does the evidence change.</p>
+              <h2 className="font-display text-d3">And again. And again.</h2>
               <Tag kind="interpretation" />
             </div>
             <ScaleBreak />
@@ -50,55 +95,37 @@ export default function Home() {
         </Shell>
       </section>
 
-      <section className="pb-28">
+      {/* ── 6 · The uncomfortable turn ───────────────────────────────────── */}
+      <section className="py-32">
         <Shell>
           <Reveal>
             <div className="max-w-column">
-              <h2 className="font-display text-d3">
-                Six things with nothing to do with each other.
-              </h2>
-              <div className="say mt-8 max-w-measure">
-                <p>
-                  I keep finding the same move in all of them, and I have not been able to decide
-                  whether that is a discovery or a symptom.
-                </p>
-                <p>
-                  Because this is what it feels like from the inside when someone has found a pattern
-                  that is not there. The shape gets clearer the more examples you add. Examples are
-                  easy to add. Adding them feels like evidence.
-                </p>
-                <p style={{ color: "rgb(var(--fg))" }}>
-                  So the first thing I built was not an argument for the connection. It was an
-                  instrument for prosecuting it.
-                </p>
-              </div>
-            </div>
-          </Reveal>
-        </Shell>
-      </section>
+              <p className="say max-w-measure">
+                Six things with almost nothing to do with one another. I keep finding the same move
+                in all of them.
+              </p>
+              <p className="say mt-5 max-w-measure">
+                Which leaves one problem, and it is the reason this site exists rather than an essay.
+              </p>
 
-      <section className="pb-32">
-        <Shell>
-          <Reveal>
-            <div className="hair pt-10">
-              <p className="kicker mb-8">Start anywhere</p>
-              <ul className="grid gap-x-12 gap-y-10 sm:grid-cols-2">
-                {doors.map((p) => (
-                  <li key={p.href}>
-                    <Link href={p.href} className="group block">
-                      <span className="block font-display text-d4">
-                        <span className="transition-opacity group-hover:opacity-70">{p.title} →</span>
-                      </span>
-                      <span
-                        className="mt-2 block max-w-measure text-[0.88rem] leading-snug"
-                        style={{ color: "rgb(var(--faint))" }}
-                      >
-                        {p.line}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-12 font-display text-d2" style={{ color: "rgb(var(--accent))" }}>
+                What if the connection isn&rsquo;t there?
+              </p>
+
+              <p className="say mt-8 max-w-measure">
+                Because this is exactly what it feels like from the inside when someone has found a
+                pattern that is not. It gets clearer with every example. Examples are easy to add.
+                Adding them feels like evidence.
+              </p>
+
+              <div className="mt-12 flex flex-wrap items-center gap-6">
+                <Link href="/shape" className="btn btn-solid">
+                  Is the shape really there?
+                </Link>
+                <Link href="/about" className="btn-quiet">
+                  Or start at the beginning
+                </Link>
+              </div>
             </div>
           </Reveal>
         </Shell>

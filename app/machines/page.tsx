@@ -4,7 +4,6 @@ import { Continue } from "@/components/ui/Continue";
 import { Reveal } from "@/components/ui/Reveal";
 import { Shell, Boundary, Rule } from "@/components/ui/primitives";
 import { Tag } from "@/components/ui/Tag";
-import { CriteriaTest } from "@/components/criteria/CriteriaTest";
 import { MachineTrack } from "@/components/experiment/MachineTrack";
 import { languageScenarios } from "@/data";
 import { hypotheses } from "@/research/lab";
@@ -23,47 +22,21 @@ export default function MachinesPage() {
       <section className="pt-16 sm:pt-24">
         <Shell>
           <div className="max-w-column">
-            <p className="kicker">Two instruments</p>
-            <h1 className="mt-5 font-display text-d2">A story can be coherent and wrong.</h1>
+            <p className="kicker">The comparison</p>
+            <h1 className="mt-5 font-display text-d2">
+              Given the same ambiguous evidence, how do a person and a model move?
+            </h1>
             <p className="say mt-7 max-w-measure">
-              Coherent, plausible, satisfying, predictive, useful, supported, true. Seven words used
-              as though they were one.
+              Not which is smarter. Not which is more human. Just: what happens to each
+              interpretation as the evidence arrives.
             </p>
           </div>
         </Shell>
       </section>
 
-      <Shell className="mt-16">
-        <Reveal>
-          <CriteriaTest />
-        </Reveal>
-      </Shell>
-
       <Shell className="mt-28">
         <Reveal>
-          <div className="max-w-column">
-            <Boundary title="Why that was the page about machines">
-              <p>
-                A language model is optimised toward the first column. Producing text that holds
-                together is close to a description of what it does.
-              </p>
-              <p>
-                And coherence is the column people use as a proxy for the rest, because it is the
-                only one you can assess instantly. Support takes work. Falsifiability takes
-                imagination. Coherence arrives free.
-              </p>
-              <p>
-                The mismatch is not a defect in the model. It is a defect in the proxy, and it
-                predates models entirely.
-              </p>
-            </Boundary>
-          </div>
-        </Reveal>
-      </Shell>
-
-      <Shell className="mt-28">
-        <Reveal>
-          <Rule label="So test it" />
+          
           <div className="max-w-column">
             <div className="say max-w-measure">
               <p>

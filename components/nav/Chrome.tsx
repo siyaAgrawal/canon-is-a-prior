@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { places, roomFor } from "@/lib/journey";
+import { roomFor } from "@/lib/journey";
+
+/** Four named destinations in the bar. Everything else lives in Explore. */
+const PRIMARY = [
+  { href: "/sure", label: "Start" },
+  { href: "/map", label: "Map" },
+  { href: "/lab", label: "Research" },
+  { href: "/about", label: "About" },
+];
 import { Index } from "./Index";
 
 /**
@@ -45,7 +53,7 @@ export function Chrome({ children }: { children: React.ReactNode }) {
     const onKey = (e: KeyboardEvent) => {
       const typing = ["INPUT", "SELECT", "TEXTAREA"].includes((e.target as HTMLElement)?.tagName);
       if (e.key === "Escape") setIndexOpen(false);
-      if (!typing && (e.key === "i" || e.key === "I") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (!typing && (e.key === "e" || e.key === "E") && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
         setIndexOpen((v) => !v);
       }
@@ -61,7 +69,7 @@ export function Chrome({ children }: { children: React.ReactNode }) {
     };
   }, [indexOpen]);
 
-  const quick = places.filter((p) => ["/versions", "/rewrite", "/shape"].includes(p.href));
+
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -83,35 +91,47 @@ export function Chrome({ children }: { children: React.ReactNode }) {
             The Canon Is a Prior
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
-            {quick.map((p) => (
-              <Link
-                key={p.href}
-                href={p.href}
-                aria-current={pathname === p.href ? "page" : undefined}
-                className="font-mono text-[0.64rem] uppercase tracking-[0.16em] transition-colors hover:opacity-100"
-                style={{ color: pathname === p.href ? "rgb(var(--accent))" : "rgb(var(--faint))" }}
-              >
-                {p.title}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex items-center gap-6 sm:gap-8">
+            <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+              {PRIMARY.map((p) => {
+                const active = pathname === p.href;
+                return (
+                  <Link
+                    key={p.href}
+                    href={p.href}
+                    aria-current={active ? "page" : undefined}
+                    className="relative font-mono text-[0.64rem] uppercase tracking-[0.16em] transition-colors"
+                    style={{ color: active ? "rgb(var(--accent))" : "rgb(var(--faint))" }}
+                  >
+                    {p.label}
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute -bottom-1.5 left-0 h-px w-full"
+                        style={{ background: "rgb(var(--accent))" }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-          <button
-            type="button"
-            onClick={() => setIndexOpen(true)}
-            aria-expanded={indexOpen}
-            aria-controls="project-index"
-            className="btn-quiet"
-          >
-            Index
-            <kbd
-              className="ml-1 hidden border px-1 text-[0.58rem] opacity-60 md:inline"
-              style={{ borderColor: "rgb(var(--line) / 0.3)" }}
+            <button
+              type="button"
+              onClick={() => setIndexOpen(true)}
+              aria-expanded={indexOpen}
+              aria-controls="project-index"
+              className="btn-quiet"
             >
-              I
-            </kbd>
-          </button>
+              Explore
+              <kbd
+                className="ml-1 hidden border px-1 text-[0.58rem] opacity-60 md:inline"
+                style={{ borderColor: "rgb(var(--line) / 0.3)" }}
+              >
+                E
+              </kbd>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -129,10 +149,11 @@ export function Chrome({ children }: { children: React.ReactNode }) {
               You have not seen the project — you have seen one interface for it.
             </p>
             <nav aria-label="Secondary" className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link href="/lab" className="btn-quiet">Method</Link>
-              <Link href="/lab#ethics" className="btn-quiet">What is stored</Link>
+              <Link href="/lab" className="btn-quiet">Lab</Link>
               <Link href="/log" className="btn-quiet">Log</Link>
-              <Link href="/about" className="btn-quiet">Origin</Link>
+              <Link href="/ethics" className="btn-quiet">Ethics</Link>
+              <Link href="/map" className="btn-quiet">Map</Link>
+              <Link href="/about" className="btn-quiet">About</Link>
             </nav>
           </div>
         </div>

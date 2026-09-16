@@ -137,7 +137,14 @@ export interface ScenarioAggregate {
  * is ever accepted, so a trace cannot carry anything a participant typed, because
  * there is nowhere on this site to type.
  */
-export type Instrument = "entry" | "shape" | "versions" | "criteria" | "rewrite" | "map";
+export type Instrument =
+  | "entry"
+  | "character"
+  | "shape"
+  | "versions"
+  | "criteria"
+  | "rewrite"
+  | "map";
 
 export interface Trace {
   id: string;

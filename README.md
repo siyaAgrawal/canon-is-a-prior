@@ -37,7 +37,8 @@ See [DESIGN.md](DESIGN.md) for why the first version of this site was scrapped.
 
 | Instrument | What it stores |
 |---|---|
-| `entry` | Which assumptions about Draco you tried, in order |
+| `entry` | The "Sure." reading held at each stage, how often you moved, confidence before any evidence |
+| `character` | Which assumptions about Draco you tried, in order |
 | `rewrite` | Which Icarus premises you opened, and dwell time |
 | `versions` | The reading held at each fact, what you did with it, switches and accommodations |
 | `shape` | Your ten judgements, and how many of the three controls passed |
@@ -83,21 +84,24 @@ They are load-bearing. Do not "fix" them into real claims.
 
 ## Routes
 
-Twelve pages in four rooms. **Every route loads standalone, survives a refresh, and is
+Fifteen routes in eight rooms. **Every route loads standalone, survives a refresh, and is
 reachable from the index (or the `I` key) on every page.** No page requires another to have
 been visited, and every URL this project has ever published still redirects somewhere useful.
 
 | Route | Room | What you do there |
 |---|---|---|
-| `/` | night library | A name, some words people have used for him, three things he does. Change what the cruelty is evidence of; the facts hold still and every reading rewrites. |
+| `/` | night library | **"Sure."** — one word, five readings. Commit, say how certain you are, then three facts arrive *after* the commitment. Then the same move on a character, a myth, and four other things. |
+| `/sure` | night library | The full version: forty-two scenarios, a hundred points spread across readings, evidence one piece at a time, then what everyone else did. |
 | `/versions` | night library | Why fanfiction is the original laboratory, then seven facts about an invented person — measuring what it costs to keep your first reading. |
 | `/rewrite` | ground → sun | Scroll and he climbs. The sky lightens, the figure rises, and changing why he climbed re-reads all four fixed events. |
 | `/shape` | forensic | Ten structural claims. Some defended, one abandoned, **three written as controls**. Judge before the reveal. |
 | `/categories` | cold bench | de Broglie, and a working V² + D² ≤ 1 model of what it costs to have some of each description. |
 | `/person` | the quiet room | The model of a person is not the person. One diagram, almost no text. |
-| `/machines` | graphite | Which criterion you actually use, then the same ambiguous evidence given to people and to a language model. |
+| `/criteria` | graphite | Coherent, plausible, supported, predictive, useful, satisfying, true. Two cases where you cannot have them all — it reports which property you treated as decisive. |
+| `/machines` | graphite | The same ambiguous evidence, given to people and to a language model. |
 | `/map` | deep field | 25 nodes, 38 edges. Severed connections drawn as severed. Ringed nodes are places you can go — the map is also navigation. |
-| `/lab` | archive | Live counts, pre-registered predictions, limitations, and `#ethics` — everything stored about you. |
+| `/lab` | archive | Live counts, pre-registered predictions, method, limitations. |
+| `/ethics` | archive | What is stored, what is not, and the three trade-offs that buys. |
 | `/log` | archive | Question / what I thought / what broke / what changed / what I still don't know. |
 | `/about` | archive | Fanfiction, plainly. Plus every source with a note on how it is used. |
 | `/console` | archive | Model runs. Token-protected, not indexed. |

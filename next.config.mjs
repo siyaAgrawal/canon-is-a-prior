@@ -11,12 +11,10 @@ const nextConfig = {
  * architecture improved.
  */
 nextConfig.redirects = async () => [
-  { source: "/criteria", destination: "/machines", permanent: true },
-  { source: "/ethics", destination: "/lab#ethics", permanent: true },
-  { source: "/experiment", destination: "/machines", permanent: true },
+  { source: "/experiment", destination: "/sure", permanent: true },
   { source: "/humans-vs-machines", destination: "/machines", permanent: true },
-  { source: "/bayes", destination: "/machines", permanent: true },
-  { source: "/underdetermination", destination: "/machines", permanent: true },
+  { source: "/bayes", destination: "/sure", permanent: true },
+  { source: "/underdetermination", destination: "/sure", permanent: true },
   { source: "/canon", destination: "/rewrite", permanent: true },
   { source: "/category", destination: "/categories", permanent: true },
   { source: "/philosophy", destination: "/shape", permanent: true },

@@ -87,7 +87,7 @@ export function SameEvidence() {
       if (sent.current || h.length === 0) return;
       sent.current = true;
       void recordTrace(
-        "entry",
+        "character",
         { assumptions: h, switches: Math.max(0, h.length - 1) },
         Date.now() - startedAt.current,
       );
@@ -114,10 +114,7 @@ export function SameEvidence() {
       <div className="relative">
         <p className="kicker">Somebody who has been written several thousand times</p>
 
-        <h1 className="mt-6 font-display text-d1 leading-[0.84]">
-          <span className="sr-only">Draco — same evidence, different person</span>
-          <span aria-hidden="true">Draco</span>
-        </h1>
+        <h3 className="mt-6 font-display text-d2 leading-[0.9]">Draco</h3>
 
         <ul className="mt-7 flex max-w-column flex-wrap gap-x-5 gap-y-2" aria-hidden="true">
           {SCATTER.map((w, i) => {

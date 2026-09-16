@@ -22,7 +22,8 @@ type Check = (payload: any) => string | null;
  * stores anything you typed; this is what makes that true rather than intended.
  */
 const ALLOWED: Record<Instrument, string[]> = {
-  entry: ["assumptions", "switches"],
+  entry: ["path", "changes", "confidence", "completed"],
+  character: ["assumptions", "switches"],
   shape: ["judgements", "controlsAccepted", "realRejected"],
   versions: ["steps", "switches", "accommodations", "survived"],
   criteria: ["picks", "properties", "consistent"],
@@ -40,11 +41,25 @@ const isIntIn = (v: unknown, lo: number, hi: number): boolean =>
   typeof v === "number" && Number.isInteger(v) && v >= lo && v <= hi;
 
 export const SCHEMAS: Record<Instrument, Check> = {
-  /** The homepage: which assumptions were tried, in order. */
+  /**
+   * The "Sure." reading: which of five at each stage, plus confidence in the
+   * first commitment. Index 0 is the reading taken on the word alone.
+   */
   entry: (p) => {
-    if (!isIdList(p?.assumptions, 12)) return "entry.assumptions must be a short list of ids";
-    if (p.assumptions.length < 1) return "entry.assumptions is empty";
-    if (!isIntIn(p?.switches, 0, 12)) return "entry.switches must be an integer";
+    if (!isIdList(p?.path, 8)) return "entry.path must be a short list of reading ids";
+    if (p.path.length < 1) return "entry.path is empty";
+    if (!isIntIn(p?.changes, 0, 8)) return "entry.changes must be an integer";
+    if (p?.confidence !== null && !isIntIn(p?.confidence, 0, 100))
+      return "entry.confidence must be null or 0-100";
+    if (typeof p?.completed !== "boolean") return "entry.completed must be a boolean";
+    return null;
+  },
+
+  /** The character hook: which assumptions about Draco were tried, in order. */
+  character: (p) => {
+    if (!isIdList(p?.assumptions, 12)) return "character.assumptions must be a short list of ids";
+    if (p.assumptions.length < 1) return "character.assumptions is empty";
+    if (!isIntIn(p?.switches, 0, 12)) return "character.switches must be an integer";
     return null;
   },
 
