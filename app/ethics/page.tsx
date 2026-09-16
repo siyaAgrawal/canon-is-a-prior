@@ -100,6 +100,20 @@ export default function EthicsPage() {
                     limitation on the <Link href="/lab">lab page</Link> rather than argued away.
                   </p>
                 </Boundary>
+                <Boundary title="If you contribute a model run">
+                  <p>
+                    The comparison on the machines page needs an API key and this project does not
+                    have one, so anyone with their own can run a batch and contribute the results.
+                    That key is sent once over HTTPS, used for that request, and discarded. It is
+                    never stored, never written to a result row, and stripped out of any error the
+                    model API returns before it reaches your browser.
+                  </p>
+                  <p>
+                    That endpoint is not a general proxy to the model. Prompts are built on the
+                    server from a fixed template and a fixed scenario, nothing from the form reaches
+                    them, replies are parsed into a schema before storage, and the batch is capped.
+                  </p>
+                </Boundary>
                 <Boundary title="This page used to say the opposite">
                   <p>
                     Until this build, nothing you typed was stored — there was nowhere to type, and

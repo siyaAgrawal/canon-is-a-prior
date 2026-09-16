@@ -5,6 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Shell, Boundary, Rule } from "@/components/ui/primitives";
 import { Tag } from "@/components/ui/Tag";
 import { MachineTrack } from "@/components/experiment/MachineTrack";
+import { ContributeRun } from "@/components/experiment/ContributeRun";
 import { languageScenarios } from "@/data";
 import { hypotheses } from "@/research/lab";
 
@@ -91,20 +92,6 @@ export default function MachinesPage() {
                 the finding turns out to be.
               </p>
             </div>
-            <div className="mt-10 border-l-2 pl-5" style={{ borderColor: "rgb(var(--accent))" }}>
-              <p className="kicker mb-2" style={{ color: "rgb(var(--accent))" }}>
-                Why this half is empty
-              </p>
-              <p className="max-w-measure text-[0.92rem] leading-relaxed" style={{ color: "rgb(var(--muted))" }}>
-                No model API key is attached to this deployment, so there are no runs — and nothing
-                is simulated in their place. A key can be pasted into the{" "}
-                <Link href="/console" className="underline decoration-dotted underline-offset-2">
-                  console
-                </Link>{" "}
-                for a single batch without redeploying; it is used for that request and never stored.
-              </p>
-            </div>
-
             <p className="mt-8 max-w-measure text-[0.84rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
               Prompt wording changes what a model reports as confidence, so every run is pinned to a
               prompt version and versions are never pooled. Counts are on the{" "}
@@ -113,6 +100,14 @@ export default function MachinesPage() {
               </Link>
               .
             </p>
+          </div>
+        </Reveal>
+      </Shell>
+
+      <Shell className="mt-28">
+        <Reveal>
+          <div className="mx-auto max-w-3xl">
+            <ContributeRun scenarios={languageScenarios} />
           </div>
         </Reveal>
       </Shell>

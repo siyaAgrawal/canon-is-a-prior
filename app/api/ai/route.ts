@@ -6,13 +6,28 @@ import { defaultModel, isAIConfigured, runScenario, PROMPT_VERSION } from "@/lib
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
-/** Running a model costs money, so this route requires the same token as data export. */
-function authorised(req: Request): boolean {
+/**
+ * Two ways to run a model, with different gates.
+ *
+ * Using the deployment's own key costs the project money, so that path needs the
+ * research token. Supplying your own key costs the project nothing, so that path
+ * is open — anyone with an Anthropic key can contribute runs to the dataset
+ * without the owner being involved at all.
+ *
+ * The open path is not a general proxy to the model API. Prompts are built
+ * server-side from a fixed template and a fixed scenario, nothing from the
+ * request reaches the prompt, replies are parsed into a schema before storage,
+ * and the batch is capped. There is no input through which arbitrary text could
+ * be sent to the model.
+ */
+function hasToken(req: Request): boolean {
   const token = process.env.RESEARCH_TOKEN;
   if (!token) return false;
-  const header = req.headers.get("authorization") ?? "";
-  return header === `Bearer ${token}`;
+  return (req.headers.get("authorization") ?? "") === `Bearer ${token}`;
 }
+
+/** Batch cap for runs on a visitor's own key. Their money, but not unbounded. */
+const BYO_BATCH_CAP = 6;
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -44,13 +59,6 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  if (!authorised(req)) {
-    return NextResponse.json(
-      { error: "Not authorised. Set RESEARCH_TOKEN and send it as a bearer token." },
-      { status: 401 },
-    );
-  }
-
   let body: any;
   try {
     body = await req.json();
@@ -64,6 +72,18 @@ export async function POST(req: Request) {
    * and scrubbed out of upstream error text.
    */
   const overrideKey = typeof body?.apiKey === "string" ? body.apiKey.trim() : "";
+  const withToken = hasToken(req);
+
+  // Without your own key you are spending the project's, which needs the token.
+  if (!overrideKey && !withToken) {
+    return NextResponse.json(
+      {
+        error:
+          "Runs on this deployment's key need the research token. To contribute a run without it, supply your own model API key — it is used for the request and never stored.",
+      },
+      { status: 401 },
+    );
+  }
 
   if (!isAIConfigured() && !overrideKey) {
     return NextResponse.json(
@@ -84,11 +104,12 @@ export async function POST(req: Request) {
 
   // Optional batch: run several scenarios in one request, so a session's worth of
   // runs does not need one click each.
-  const batch = Array.isArray(body?.scenarioIds)
+  const requested = Array.isArray(body?.scenarioIds)
     ? body.scenarioIds
         .map((id: unknown) => getScenario(String(id)))
         .filter((s: unknown): s is NonNullable<typeof scenario> => Boolean(s))
     : [scenario];
+  const batch = withToken ? requested : requested.slice(0, BYO_BATCH_CAP);
 
   try {
     const store = getStore();
