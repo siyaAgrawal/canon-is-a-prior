@@ -2,6 +2,8 @@
 
 > How do we decide what a story means when the evidence is incomplete?
 
+**Live:** https://canon-is-a-prior.vercel.app
+
 An open, unfinished experiment on how humans and language models revise interpretations
 when evidence changes — and what makes one interpretation more justified than another.
 
@@ -54,8 +56,22 @@ Copy `.env.example` to `.env.local`. Everything in it is optional except where n
 
 ### Deploying
 
-Vercel-compatible. On a serverless platform the filesystem is ephemeral, so set
-`DATABASE_URL` for anything beyond local use — otherwise responses will not survive.
+Deployed on Vercel, with the GitHub repository connected, so a push to `main` ships.
+
+On a serverless platform the filesystem does not survive a request. Rather than accept a
+response, report success and lose it, the site detects that case and **refuses to store
+anything** until `DATABASE_URL` is set: visitors see a notice before starting, and a
+submission returns 503 with a readable reason. Reads are unaffected, since no storage and
+an empty dataset look the same to a reader.
+
+To start collecting, provision any Postgres (Vercel Storage, Neon, Supabase), then:
+
+```bash
+vercel env add DATABASE_URL production
+npm i pg && git add package.json package-lock.json && git commit -m "Add pg driver" && git push
+```
+
+Tables are created on first write.
 
 ## Data model
 
