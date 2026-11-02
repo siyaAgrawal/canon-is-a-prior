@@ -109,7 +109,7 @@ export function ContributeRun({ scenarios }: { scenarios: Scenario[] }) {
             type="text"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            placeholder="claude-sonnet-5"
+            placeholder="claude-sonnet-5-5"
             className="w-full px-3 py-2.5 font-mono text-[0.82rem]"
           />
         </label>

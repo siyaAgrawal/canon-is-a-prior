@@ -192,5 +192,5 @@ export function isAIConfigured(): boolean {
 }
 
 export function defaultModel(): string {
-  return process.env.AI_MODEL ?? "claude-sonnet-5";
+  return process.env.AI_MODEL ?? "claude-sonnet-5-5";
 }
