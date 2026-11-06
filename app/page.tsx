@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Shell } from "@/components/ui/primitives";
 import { Tag } from "@/components/ui/Tag";
 import { Pulse } from "@/components/research/Pulse";
+import { SiteDirectory } from "@/components/nav/SiteDirectory";
 
 /**
  * The arc: ambiguous word → interpretation → fanfiction → character → the other
@@ -203,6 +204,24 @@ export default function Home() {
               </div>
             </div>
           </Reveal>
+        </Shell>
+      </section>
+
+      {/* ── 8 · Everything here ──────────────────────────────────────────── */}
+      {/* After the arc, never before it: the visitor has done the thing by now.
+          Every page, in its section, in the order of the suggested path. */}
+      <section id="everything" className="scroll-mt-20 pb-8">
+        <Shell>
+          <div className="hair pt-10">
+            <h2 className="font-display text-d3">Everything here.</h2>
+            <p className="say mt-5 max-w-measure">
+              Sixteen pages in four sections. The order is one way through; none of them needs the one
+              before it.
+            </p>
+            <div className="mt-12">
+              <SiteDirectory detail />
+            </div>
+          </div>
         </Shell>
       </section>
     </>

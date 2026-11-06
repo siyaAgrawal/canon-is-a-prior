@@ -5,14 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { roomFor } from "@/lib/journey";
 
-/** Four named destinations in the bar. Everything else lives in Explore. */
-const PRIMARY = [
-  { href: "/sure", label: "Start" },
-  { href: "/map", label: "Map" },
-  { href: "/lab", label: "Research" },
-  { href: "/about", label: "About" },
-];
 import { Index } from "./Index";
+import { SectionMenu } from "./SectionMenu";
+import { WhereBar } from "./WhereBar";
+import { SiteDirectory } from "./SiteDirectory";
 
 /**
  * Persistent navigation.
@@ -92,38 +88,20 @@ export function Chrome({ children }: { children: React.ReactNode }) {
           </Link>
 
           <div className="flex items-center gap-6 sm:gap-8">
-            <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
-              {PRIMARY.map((p) => {
-                const active = pathname === p.href;
-                return (
-                  <Link
-                    key={p.href}
-                    href={p.href}
-                    aria-current={active ? "page" : undefined}
-                    className="relative font-mono text-[0.64rem] uppercase tracking-[0.16em] transition-colors"
-                    style={{ color: active ? "rgb(var(--accent))" : "rgb(var(--faint))" }}
-                  >
-                    {p.label}
-                    {active && (
-                      <span
-                        aria-hidden="true"
-                        className="absolute -bottom-1.5 left-0 h-px w-full"
-                        style={{ background: "rgb(var(--accent))" }}
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
+            <SectionMenu pathname={pathname} />
 
             <button
               type="button"
               onClick={() => setIndexOpen(true)}
               aria-expanded={indexOpen}
               aria-controls="project-index"
-              className="btn-quiet"
+              className="btn-quiet border px-3 py-1.5"
+              style={{ borderColor: "rgb(var(--line) / 0.3)", color: "rgb(var(--fg))" }}
             >
-              Explore
+              <svg aria-hidden="true" viewBox="0 0 12 9" className="h-[9px] w-[12px]">
+                <path d="M0 .5h12M0 4.5h12M0 8.5h12" stroke="currentColor" strokeWidth="1.1" />
+              </svg>
+              All pages
               <kbd
                 className="ml-1 hidden border px-1 text-[0.58rem] opacity-60 md:inline"
                 style={{ borderColor: "rgb(var(--line) / 0.3)" }}
@@ -138,6 +116,7 @@ export function Chrome({ children }: { children: React.ReactNode }) {
       <Index open={indexOpen} onClose={() => setIndexOpen(false)} pathname={pathname} />
 
       <main id="main" className="flex-1">
+        <WhereBar pathname={pathname} onOpenIndex={() => setIndexOpen(true)} />
         {children}
       </main>
 
@@ -148,13 +127,13 @@ export function Chrome({ children }: { children: React.ReactNode }) {
               An investigation, not a conclusion. Nothing is reported that the data does not contain.
               You have not seen the project — you have seen one interface for it.
             </p>
-            <nav aria-label="Secondary" className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link href="/lab" className="btn-quiet">Lab</Link>
-              <Link href="/log" className="btn-quiet">Log</Link>
-              <Link href="/ethics" className="btn-quiet">Ethics</Link>
-              <Link href="/map" className="btn-quiet">Map</Link>
-              <Link href="/about" className="btn-quiet">About</Link>
+          </div>
+          {pathname !== "/" && (
+            <nav aria-label="Site map" className="mt-10">
+              <SiteDirectory current={pathname} showHome />
             </nav>
+          )}
+          <div>
           </div>
         </div>
       </footer>

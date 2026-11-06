@@ -86,7 +86,7 @@ export function Index({
         >
           <div className="shell flex min-h-screen flex-col py-5">
             <div className="flex items-center justify-between">
-              <p className="kicker">Explore — every page, from any page</p>
+              <p className="kicker">All pages — every page, from any page</p>
               <button type="button" onClick={onClose} className="btn-quiet">
                 Close
                 <kbd className="ml-1 border px-1 text-[0.58rem] opacity-60" style={{ borderColor: "rgb(var(--line) / 0.3)" }}>
@@ -95,12 +95,20 @@ export function Index({
               </button>
             </div>
 
-            <div className="my-auto grid gap-x-10 gap-y-12 py-10 sm:grid-cols-2 lg:grid-cols-3">
+            <Link
+              href="/"
+              aria-current={pathname === "/" ? "page" : undefined}
+              className="mt-8 self-start font-display text-[1.2rem] transition-opacity hover:opacity-70"
+            >
+              ← Home <span className="text-[0.82rem] text-faint">— the “Sure.” opening</span>
+            </Link>
+
+            <div className="my-auto grid gap-x-10 gap-y-12 py-10 sm:grid-cols-2 lg:grid-cols-4">
               {groupOrder.map((g, gi) => {
                 const inGroup = places.filter((p) => p.group === g);
                 if (inGroup.length === 0) return null;
                 return (
-                  <section key={g} className={g === "experiments" ? "lg:row-span-2" : undefined}>
+                  <section key={g} >
                     <div className="mb-5 flex items-center gap-3">
                       <span aria-hidden="true" className="h-px w-6 flex-none" style={{ background: "rgb(var(--accent))" }} />
                       <h2 className="kicker" style={{ color: "rgb(var(--fg))" }}>
@@ -143,6 +151,9 @@ export function Index({
                                   style={{ color: active ? ROOM_COLOR[p.room] : "rgb(var(--fg))" }}
                                 >
                                   {p.title}
+                                  {active && (
+                                    <span className="ml-2 font-mono text-[0.56rem] uppercase tracking-[0.16em]">you are here</span>
+                                  )}
                                 </span>
                                 <span className="mt-0.5 block text-[0.82rem] leading-snug" style={{ color: "rgb(var(--faint))" }}>
                                   {p.line}
@@ -159,8 +170,8 @@ export function Index({
             </div>
 
             <p className="text-[0.76rem] leading-relaxed" style={{ color: "rgb(var(--faint))" }}>
-              These groupings are mine — a model of the project, not the project. Nothing here has to
-              be visited in this order, or at all.
+              These groupings are mine — a model of the project, not the project. The order is one
+              suggested path; nothing here has to be visited in it, or at all.
             </p>
           </div>
         </motion.div>

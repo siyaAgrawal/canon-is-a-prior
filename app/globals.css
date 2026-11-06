@@ -153,6 +153,9 @@
   body {
     @apply bg-bg font-sans text-fg antialiased;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    /* The homepage glows bleed past the edges on purpose; clip, not hidden, so the
+       page never scrolls sideways on a phone and sticky elements still stick. */
+    overflow-x: clip;
     transition: background-color 700ms cubic-bezier(0.22, 1, 0.36, 1),
       color 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }

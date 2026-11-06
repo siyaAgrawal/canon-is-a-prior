@@ -291,6 +291,9 @@ export function Sure({ onDone }: { onDone?: () => void }) {
               >
                 ↺ Run it again, differently
               </button>
+              <a href="#everything" className="btn-quiet ml-8 mt-8">
+                Or skip to every instrument ↓
+              </a>
             </motion.div>
           )}
         </AnimatePresence>
